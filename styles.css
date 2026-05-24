@@ -637,7 +637,7 @@ ul.clean{
 }
 
 #trainingList a:hover {
-  color: var(--accent-light);
+  color: #FFFFFF;
 }
 
 /* Scrollbar styling */
