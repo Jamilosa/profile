@@ -89,8 +89,6 @@ function renderTrainingList(el, spec) {
       const a = document.createElement('a');
       a.href = href;
       a.textContent = description;
-      a.style.color = 'inherit';
-      a.style.textDecoration = 'none';
       li.appendChild(a);
     } else {
       li.textContent = description;
