@@ -25,21 +25,37 @@ const TRAINING_BY_SPEC = {
   'cloud': [
     'Launched EC2/Linux VM and secured SSH (key-based auth, ufw).',
     'Configured S3 static hosting and CloudFront distribution.',
-    'Wrote basic IaC snippets (AWS CLI / user data) and deployment notes.'
+    'Wrote basic IaC snippets (AWS CLI / user data) and deployment notes.',
   ],
   'cybersecurity': [
     'Built a Wazuh SIEM lab and tuned basic rules.',
     'Practiced packet capture and log analysis (tcpdump/Wireshark).',
-    'Hardened Linux services with firewall rules and least-privilege users.'
+    'Hardened Linux services with firewall rules and least-privilege users.',
   ],
   'it-support': [
     'Resolved simulated tickets (account lockout, printer setup, Wi-Fi issues).',
     'Documented SOPs for password resets and on-boarding.',
-    'Performed AD user lifecycle tasks in a lab (create/disable, groups).'
-  ]
+    'Performed AD user lifecycle tasks in a lab (create/disable, groups).',
+  ],
 };
 
-function getUrlParameter(name) {
+const TRAINING_LINKS_BY_SPEC = {
+  'cloud': {
+    'Launched EC2/Linux VM and secured SSH (key-based auth, ufw).': 'blogs/building-a-cross-cloud-data-pipeline.html',
+    'Configured S3 static hosting and CloudFront distribution.': 'blogs/weaponizing-public-buckets.html',
+    'Wrote basic IaC snippets (AWS CLI / user data) and deployment notes.': 'blogs/weaponizing-public-buckets.html',
+  },
+  'cybersecurity': {
+    'Built a Wazuh SIEM lab and tuned basic rules.': 'projects/iptables-firewall-setup.html',
+    'Practiced packet capture and log analysis (tcpdump/Wireshark).': 'projects/iptables-firewall-setup.html',
+    'Hardened Linux services with firewall rules and least-privilege users.': 'blogs/building-a-cross-cloud-data-pipeline.html',
+  },
+  'it-support': {
+    'Resolved simulated tickets (account lockout, printer setup, Wi-Fi issues).': 'blogs/powershell-onboarding-scripts-in-a-hybrid-ad-azure-environment.html',
+    'Documented SOPs for password resets and on-boarding.': 'blogs/secret-management-in-aws-secrets-manager-vs.-google-secret-manager.html',
+    'Performed AD user lifecycle tasks in a lab (create/disable, groups).': 'blogs/powershell-onboarding-scripts-in-a-hybrid-ad-azure-environment.html',
+  },
+};function getUrlParameter(name) {
   name = name.replace(/[[]/, '\\[').replace(/[\]]/, '\\]');
   const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
   const results = regex.exec(location.search);
@@ -56,6 +72,30 @@ function renderList(el, items) {
   items.forEach(txt => {
     const li = document.createElement('li');
     li.textContent = txt;
+    el.appendChild(li);
+  });
+}
+
+function renderTrainingList(el, spec) {
+  el.innerHTML = '';
+  const items = TRAINING_BY_SPEC[spec] || [];
+  const links = TRAINING_LINKS_BY_SPEC[spec] || {};
+  
+  items.forEach(description => {
+    const li = document.createElement('li');
+    const href = links[description];
+    
+    if (href) {
+      const a = document.createElement('a');
+      a.href = href;
+      a.textContent = description;
+      a.style.color = 'inherit';
+      a.style.textDecoration = 'none';
+      li.appendChild(a);
+    } else {
+      li.textContent = description;
+    }
+    
     el.appendChild(li);
   });
 }
@@ -144,8 +184,8 @@ function updateView() {
 
   knowledgeEmpty.style.display = visibleCount === 0 ? '' : 'none';
 
-  // Practical training
-  renderList(trainingList, TRAINING_BY_SPEC[spec] || []);
+  // Practical training - now with links from spec files
+  renderTrainingList(trainingList, spec);
 
   // Update CV view link
   if (downloadCvBtn) { //Specialized CV filename: `Ryan_Jamilosa_${spec}_resume_2026.pdf` 

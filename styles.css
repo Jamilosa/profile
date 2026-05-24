@@ -624,6 +624,28 @@ ul.clean{
   }
 }
 
+/* Training list interactive links */
+#trainingList li {
+  transition: all 0.2s ease;
+}
+
+#trainingList a {
+  cursor: pointer;
+  position: relative;
+  padding-bottom: 2px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+#trainingList li:hover a {
+  color: var(--accent-light);
+  border-bottom-color: var(--accent-light);
+}
+
+#trainingList li:hover {
+  padding-left: 8px;
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
