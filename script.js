@@ -147,10 +147,10 @@ function updateView() {
   // Practical training
   renderList(trainingList, TRAINING_BY_SPEC[spec] || []);
 
-  // Update CV download link
-  if (downloadCvBtn) {
-    const filename = `Ryan_Jamilosa_${spec}_resume_2025.pdf`;
-    downloadCvBtn.href = `./cv/${filename}`;
+  // Update CV view link
+  if (downloadCvBtn) { //Specialized CV filename: `Ryan_Jamilosa_${spec}_resume_2026.pdf` 
+    const filename = `Ryan_Jamilosa_resume_2026.pdf`;
+    downloadCvBtn.dataset.cvPath = `./cv/${filename}`;
   }
 }
 
@@ -164,6 +164,55 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 specializationSelect.addEventListener('change', updateView);
+
+/* ---------- CV Modal Popup Handler ---------- */
+document.addEventListener('DOMContentLoaded', () => {
+  const cvModal = document.getElementById('cvModal');
+  const cvFrame = document.getElementById('cvFrame');
+  const cvModalClose = document.getElementById('cvModalClose');
+  const cvBtn = document.getElementById('download-cv');
+  
+  // Open modal
+  if (cvBtn) {
+    cvBtn.addEventListener('click', () => {
+      const cvPath = cvBtn.dataset.cvPath;
+      if (cvPath) {
+        cvFrame.src = cvPath;
+        cvModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+    });
+  }
+  
+  // Close modal - close button
+  if (cvModalClose) {
+    cvModalClose.addEventListener('click', () => {
+      cvModal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+      cvFrame.src = '';
+    });
+  }
+  
+  // Close modal - click outside
+  if (cvModal) {
+    cvModal.addEventListener('click', (e) => {
+      if (e.target === cvModal.querySelector('.cv-modal-overlay')) {
+        cvModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        cvFrame.src = '';
+      }
+    });
+  }
+  
+  // Close modal - ESC key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && cvModal && cvModal.style.display !== 'none') {
+      cvModal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+      cvFrame.src = '';
+    }
+  });
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   const halo = document.createElement('div');
