@@ -1,3 +1,25 @@
+/* ---------- Development Modal ---------- */
+const devModal = document.getElementById('devModal');
+const closeModalBtn = document.getElementById('closeModal');
+const dismissModalBtn = document.getElementById('dismissModal');
+const devModalOverlay = document.getElementById('devModalOverlay');
+
+if (closeModalBtn && dismissModalBtn) {
+  const closeModal = () => {
+    devModal.classList.add('hidden');
+    localStorage.setItem('devModalClosed', 'true');
+  };
+
+  closeModalBtn.addEventListener('click', closeModal);
+  dismissModalBtn.addEventListener('click', closeModal);
+  devModalOverlay.addEventListener('click', closeModal);
+
+  // Check if modal was previously closed
+  if (localStorage.getItem('devModalClosed') === 'true') {
+    devModal.classList.add('hidden');
+  }
+}
+
 /* ---------- Collapsible sidebar for small screens ---------- */
 const toggleBtn = document.getElementById('toggleSidebar');
 const sidebarContent = document.getElementById('sidebarContent');
