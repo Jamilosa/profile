@@ -135,6 +135,7 @@ function renderChips(container, freqMap, kind, limit) {
       const toggleChip = document.createElement('a');
       toggleChip.href = '#';
       toggleChip.className = 'chip see-all';
+      toggleChip.dataset.kind = kind;
       toggleChip.textContent = isExpanded ? 'Show less' : 'Show all';
       toggleChip.addEventListener('click', (e) => {
         e.preventDefault();
