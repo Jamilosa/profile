@@ -392,8 +392,9 @@ h1{
 }
 
 .icon:hover {
-  background-color: var(--clickable-hover);
   color: #DCDDDE;
+  transform: translateY(-2px);
+  box-shadow: var(--glow);
 }
 
 .icon:hover svg {
@@ -410,6 +411,11 @@ h1{
   flex-grow: 1; /* Expand to fill available space */
   flex-shrink: 1;
   min-width: 75px !important; /* Allow shrinking but keep text on one line */
+}
+
+#download-cv:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glow);
 }
 
 /* ---- Content / Sections ---- */
@@ -704,8 +710,9 @@ ul.clean{
 }
 
 .toggle:hover {
-  background-color: #252A32;
   color: #DCDDDE;
+  transform: translateY(-2px);
+  box-shadow: var(--glow);
 }
 
 @media (max-width: 640px){
