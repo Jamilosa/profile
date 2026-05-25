@@ -227,7 +227,7 @@ body{
 aside.sidebar{
   min-width:35%;
   max-width: 520px;
-  padding:56px 56px;
+  padding:56px 40px; /* Further reduced right padding to accommodate icons */
   position:sticky;
   top:0;
   align-self:flex-start;
@@ -325,10 +325,11 @@ h1{
 
 .icons { 
   display: flex; 
-  gap: 12px; 
+  gap: 12px; /* Back to 12px for tighter fit */
   margin-top: auto; /* Push icons to bottom in flexbox */
   padding-top: 24px; /* Reduced from 40px to save space */
   flex-shrink: 0; /* Prevent icons from shrinking */
+  justify-content: flex-start; /* Align icons to the left */
 }
 
 /* Media query for larger screens to ensure proper spacing */
@@ -344,7 +345,7 @@ h1{
 @media (min-width: 981px) and (max-height: 800px) {
   .icons {
     margin-bottom: 50px; /* Fixed margin instead of auto on shorter screens */
-    gap: 8px; /* Reduce gap to save space */
+    gap: 12px; /* Maintain gap even on smaller screens */
     padding-top: 16px; /* Reduce padding */
   }
   
@@ -380,6 +381,7 @@ h1{
   transition: all 0.2s ease;
   font: inherit;
   cursor: pointer;
+  flex-shrink: 0; /* Keep icons at fixed square size */
 }
 
 .icon svg {
@@ -401,6 +403,13 @@ h1{
 .icon:focus {
   border-color: var(--accent);
   outline: none;
+}
+
+/* Allow View CV button to shrink while keeping icons at full size */
+#download-cv {
+  flex-grow: 1; /* Expand to fill available space */
+  flex-shrink: 1;
+  min-width: 75px !important; /* Allow shrinking but keep text on one line */
 }
 
 /* ---- Content / Sections ---- */
