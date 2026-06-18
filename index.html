@@ -7,9 +7,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="styles.css">
 <title>Jamilosa</title>
+
 <style>
 /* Hide _files directories in file explorer */
+/* Hide parent when child has _files in data-path */
+.tree-item > .tree-item-self[data-path*="_files"],
 .tree-item[data-path*="_files"] {
+  display: none !important;
+}
+/* Hide sibling children of the folder */
+.tree-item-self[data-path*="_files"] ~ .tree-item-children {
+  display: none !important;
+}
+/* Hide the entire tree-item folder wrapper */
+.nav-folder:has(> .tree-item-self[data-path*="_files"]) {
   display: none !important;
 }
 </style>
@@ -129,76 +140,52 @@
       <h2 class="section-title">Projects and Blogs</h2>
 
       <div class="card-grid" id="projectGrid">
-        <article class="card project" data-specialization="cloud">
-          <div class="thumb"><a href="blogs/building-a-cross-cloud-data-pipeline.html"><img src="_files/pasted-image-20260104202514.png" alt="Building A Cross Cloud Data Pipeline"></a></div>
-          <h3><a href="blogs/building-a-cross-cloud-data-pipeline.html" style="color: inherit; text-decoration: none;">Building A Cross Cloud Data Pipeline</a></h3>
-          <p>Blog post</p>
+        <article class="card project" data-specialization="cybersecurity it-support">
+          <div class="thumb"><a href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html"><img src="_files/pasted-image-20260614083711.png" alt="Turning 32-bit laptop into an nftables Firewall"></a></div>
+          <h3><a href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html" style="color: inherit; text-decoration: none;">Turning 32-bit laptop into an nftables Firewall</a></h3>
+          <p>This project repurposed a retired 32-bit laptop into a Linux-based firewall for a small cybersecurity lab. Using AntiX Linux, nftables, dnsmasq, rsyslog, and logrotate, the firewall provides network address translation (NAT), stateful packet filtering, DNS sinkholing, and centralized logging.</p>
           <div class="tags">
-            <a href="tags/data-engineering.html" class="chip" data-kind="concept">Data Engineering</a><a href="tags/bigquery.html" class="chip" data-kind="tool">BigQuery</a><a href="tags/s3.html" class="chip" data-kind="tool">S3</a><a href="tags/google-cloud-platform.html" class="chip" data-kind="domain">Google Cloud Platform</a><a href="tags/amazon-web-services.html" class="chip" data-kind="domain">Amazon Web Services</a>
+            <a href="tags/log-management.html" class="chip" data-kind="concept">Log Management</a><a href="tags/linux.html" class="chip" data-kind="tool">Linux</a><a href="tags/nftables.html" class="chip" data-kind="tool">nftables</a><a href="tags/rsyslog.html" class="chip" data-kind="tool">rsyslog</a><a href="tags/network-security.html" class="chip" data-kind="domain">Network Security</a><a href="tags/firewall.html" class="chip" data-kind="concept">Firewall</a>
           </div>
         </article>
-        <article class="card project" data-specialization="cybersecurity cloud">
-          <div class="thumb"><a href="blogs/containing-a-cryptojacking-incident-in-gcp.html"><img src="_files/pasted-image-20260104202603.png" alt="Containing A Cryptojacking Incident In Gcp"></a></div>
-          <h3><a href="blogs/containing-a-cryptojacking-incident-in-gcp.html" style="color: inherit; text-decoration: none;">Containing A Cryptojacking Incident In Gcp</a></h3>
-          <p>Blog post</p>
+        <article class="card project" data-specialization="cloud">
+          <div class="thumb"><a href="blogs/building-a-cross-cloud-data-pipeline.html"><img src="_files/pasted-image-20260104202514.png" alt="Building a Cross-Cloud Data Pipeline"></a></div>
+          <h3><a href="blogs/building-a-cross-cloud-data-pipeline.html" style="color: inherit; text-decoration: none;">Building a Cross-Cloud Data Pipeline</a></h3>
+          <p>description BCCDP</p>
           <div class="tags">
-            <a href="tags/incident-response.html" class="chip" data-kind="domain">Incident Response</a><a href="tags/forensics.html" class="chip" data-kind="concept">Forensics</a><a href="tags/monitoring.html" class="chip" data-kind="concept">Monitoring</a><a href="tags/google-cloud-cli.html" class="chip" data-kind="tool">Google Cloud CLI</a><a href="tags/google-cloud-platform.html" class="chip" data-kind="domain">Google Cloud Platform</a>
+            <a href="tags/amazon-web-services.html" class="chip" data-kind="domain">Amazon Web Services</a><a href="tags/bigquery.html" class="chip" data-kind="tool">BigQuery</a><a href="tags/data-engineering.html" class="chip" data-kind="concept">Data Engineering</a><a href="tags/google-cloud-platform.html" class="chip" data-kind="domain">Google Cloud Platform</a><a href="tags/s3.html" class="chip" data-kind="tool">S3</a>
           </div>
         </article>
         <article class="card project" data-specialization="it-support">
-          <div class="thumb"><a href="blogs/powershell-onboarding-scripts-in-a-hybrid-ad-azure-environment.html"><img src="_files/pasted-image-20260104202623.png" alt="Powershell Onboarding Scripts In A Hybrid Ad Azure Environment"></a></div>
-          <h3><a href="blogs/powershell-onboarding-scripts-in-a-hybrid-ad-azure-environment.html" style="color: inherit; text-decoration: none;">Powershell Onboarding Scripts In A Hybrid Ad Azure Environment</a></h3>
-          <p>Blog post</p>
+          <div class="thumb"><a href="blogs/powershell-onboarding-scripts-in-a-hybrid-ad-azure-environment.html"><img src="_files/pasted-image-20260104202623.png" alt="PowerShell Onboarding Scripts in a Hybrid AD-Azure Environment"></a></div>
+          <h3><a href="blogs/powershell-onboarding-scripts-in-a-hybrid-ad-azure-environment.html" style="color: inherit; text-decoration: none;">PowerShell Onboarding Scripts in a Hybrid AD-Azure Environment</a></h3>
+          <p>description POSHADAE</p>
           <div class="tags">
-            <a href="tags/powershell.html" class="chip" data-kind="tool">PowerShell</a><a href="tags/automation.html" class="chip" data-kind="concept">Automation</a><a href="tags/active-directory.html" class="chip" data-kind="concept">Active Directory</a><a href="tags/onboarding.html" class="chip" data-kind="concept">Onboarding</a><a href="tags/it-support.html" class="chip" data-kind="domain">IT Support</a><a href="tags/azure-ad.html" class="chip" data-kind="concept">Azure AD</a>
+            <a href="tags/onboarding.html" class="chip" data-kind="concept">Onboarding</a><a href="tags/it-support.html" class="chip" data-kind="domain">IT Support</a><a href="tags/automation.html" class="chip" data-kind="concept">Automation</a><a href="tags/powershell.html" class="chip" data-kind="tool">PowerShell</a><a href="tags/active-directory.html" class="chip" data-kind="concept">Active Directory</a><a href="tags/azure-ad.html" class="chip" data-kind="concept">Azure AD</a>
           </div>
         </article>
         <article class="card project" data-specialization="it-support cloud">
-          <div class="thumb"><a href="blogs/secret-management-in-aws-secrets-manager-vs.-google-secret-manager.html"><img src="_files/default-thumbnail.png" alt="Secret Management In Aws Secrets Manager Vs. Google Secret Manager"></a></div>
-          <h3><a href="blogs/secret-management-in-aws-secrets-manager-vs.-google-secret-manager.html" style="color: inherit; text-decoration: none;">Secret Management In Aws Secrets Manager Vs. Google Secret Manager</a></h3>
-          <p>Blog post</p>
+          <div class="thumb"><a href="blogs/secret-management-in-aws-secrets-manager-vs.-google-secret-manager.html"><img src="_files/default-thumbnail.png" alt="Secret Management in AWS Secrets Manager vs. Google Secret Manager"></a></div>
+          <h3><a href="blogs/secret-management-in-aws-secrets-manager-vs.-google-secret-manager.html" style="color: inherit; text-decoration: none;">Secret Management in AWS Secrets Manager vs. Google Secret Manager</a></h3>
+          <p>description SMASMGPSM</p>
           <div class="tags">
-            <a href="tags/google-cloud-platform.html" class="chip" data-kind="domain">Google Cloud Platform</a><a href="tags/devops.html" class="chip" data-kind="concept">DevOps</a><a href="tags/amazon-web-services.html" class="chip" data-kind="domain">Amazon Web Services</a><a href="tags/secrets-management.html" class="chip" data-kind="concept">Secrets Management</a><a href="tags/security.html" class="chip" data-kind="concept">Security</a>
+            <a href="tags/secrets-management.html" class="chip" data-kind="concept">Secrets Management</a><a href="tags/amazon-web-services.html" class="chip" data-kind="domain">Amazon Web Services</a><a href="tags/security.html" class="chip" data-kind="concept">Security</a><a href="tags/google-cloud-platform.html" class="chip" data-kind="domain">Google Cloud Platform</a><a href="tags/devops.html" class="chip" data-kind="concept">DevOps</a>
           </div>
         </article>
         <article class="card project" data-specialization="it-support">
-          <div class="thumb"><a href="blogs/troubleshooting-gpo-driven-drive-mappings.html"><img src="_files/default-thumbnail.png" alt="Troubleshooting Gpo Driven Drive Mappings"></a></div>
-          <h3><a href="blogs/troubleshooting-gpo-driven-drive-mappings.html" style="color: inherit; text-decoration: none;">Troubleshooting Gpo Driven Drive Mappings</a></h3>
-          <p>Blog post</p>
+          <div class="thumb"><a href="blogs/troubleshooting-gpo-driven-drive-mappings.html"><img src="_files/default-thumbnail.png" alt="Troubleshooting GPO-Driven Drive Mappings"></a></div>
+          <h3><a href="blogs/troubleshooting-gpo-driven-drive-mappings.html" style="color: inherit; text-decoration: none;">Troubleshooting GPO-Driven Drive Mappings</a></h3>
+          <p>description TGDD</p>
           <div class="tags">
-            <a href="tags/windows.html" class="chip" data-kind="tool">Windows</a><a href="tags/group-policy.html" class="chip" data-kind="concept">Group Policy</a><a href="tags/dfs.html" class="chip" data-kind="concept">DFS</a><a href="tags/it-support.html" class="chip" data-kind="domain">IT Support</a><a href="tags/networking.html" class="chip" data-kind="concept">Networking</a><a href="tags/troubleshooting.html" class="chip" data-kind="concept">Troubleshooting</a>
+            <a href="tags/networking.html" class="chip" data-kind="concept">Networking</a><a href="tags/windows.html" class="chip" data-kind="tool">Windows</a><a href="tags/group-policy.html" class="chip" data-kind="concept">Group Policy</a><a href="tags/it-support.html" class="chip" data-kind="domain">IT Support</a><a href="tags/troubleshooting.html" class="chip" data-kind="concept">Troubleshooting</a><a href="tags/dfs.html" class="chip" data-kind="concept">DFS</a>
           </div>
         </article>
         <article class="card project" data-specialization="cybersecurity">
           <div class="thumb"><a href="blogs/weaponizing-public-buckets.html"><img src="_files/default-thumbnail.png" alt="Weaponizing Public Buckets"></a></div>
           <h3><a href="blogs/weaponizing-public-buckets.html" style="color: inherit; text-decoration: none;">Weaponizing Public Buckets</a></h3>
-          <p>Blog post</p>
+          <p>description WPB</p>
           <div class="tags">
-            <a href="tags/privilege-escalation.html" class="chip" data-kind="concept">Privilege Escalation</a><a href="tags/reconnaissance.html" class="chip" data-kind="concept">Reconnaissance</a><a href="tags/penetration-testing.html" class="chip" data-kind="domain">Penetration Testing</a><a href="tags/amazon-web-services.html" class="chip" data-kind="domain">Amazon Web Services</a><a href="tags/cloud-security.html" class="chip" data-kind="domain">Cloud Security</a>
-          </div>
-        </article>
-        <article class="card project" data-specialization="cybersecurity">
-          <div class="thumb"><a href="projects/iptables-firewall-setup.html"><img src="_files/default-thumbnail.png" alt="Iptables Firewall Setup"></a></div>
-          <h3><a href="projects/iptables-firewall-setup.html" style="color: inherit; text-decoration: none;">Iptables Firewall Setup</a></h3>
-          <p>Project</p>
-          <div class="tags">
-            <a href="tags/network-security.html" class="chip" data-kind="domain">Network Security</a>
-          </div>
-        </article>
-        <article class="card project">
-          <div class="thumb"><a href="projects/new-files.html"><img src="_files/default-thumbnail.png" alt="New Files"></a></div>
-          <h3><a href="projects/new-files.html" style="color: inherit; text-decoration: none;">New Files</a></h3>
-          <p>Project</p>
-          <div class="tags">
-            
-          </div>
-        </article>
-        <article class="card project" data-specialization="cybersecurity">
-          <div class="thumb"><a href="projects/ubuntu-server-setup.html"><img src="_files/default-thumbnail.png" alt="Ubuntu Server Setup"></a></div>
-          <h3><a href="projects/ubuntu-server-setup.html" style="color: inherit; text-decoration: none;">Ubuntu Server Setup</a></h3>
-          <p>Project</p>
-          <div class="tags">
-            <a href="tags/troubleshooting.html" class="chip" data-kind="concept">Troubleshooting</a>
+            <a href="tags/reconnaissance.html" class="chip" data-kind="concept">Reconnaissance</a><a href="tags/amazon-web-services.html" class="chip" data-kind="domain">Amazon Web Services</a><a href="tags/privilege-escalation.html" class="chip" data-kind="concept">Privilege Escalation</a><a href="tags/penetration-testing.html" class="chip" data-kind="domain">Penetration Testing</a><a href="tags/cloud-security.html" class="chip" data-kind="domain">Cloud Security</a>
           </div>
         </article>
       

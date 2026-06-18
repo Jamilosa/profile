@@ -1,0 +1,626 @@
+<!DOCTYPE html> <html lang="en"><head>
+<title>Turning 32-bit laptop into an nftables Firewall</title>
+<base href="..">
+<meta name="pathname" content="projects/turning-32-bit-laptop-into-an-nftables-firewall.html">
+<meta name="description" content="Explorer - Turning 32-bit laptop into an nftables Firewall">
+<meta property="og:title" content="Turning 32-bit laptop into an nftables Firewall">
+<meta property="og:description" content="Explorer - Turning 32-bit laptop into an nftables Firewall">
+<meta property="og:type" content="website">
+<meta property="og:url" content="projects/turning-32-bit-laptop-into-an-nftables-firewall.html">
+<meta property="og:image" content="_files/pasted-image-20260614083711.png">
+<meta charset="UTF-8"><meta property="og:site_name" content="Explorer"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=1.0, maximum-scale=5.0"><script async="" id="webpage-script" src="site-lib/scripts/webpage.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><script async="" id="graph-wasm-script" src="site-lib/scripts/graph-wasm.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><script async="" id="graph-render-worker-script" src="site-lib/scripts/graph-render-worker.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><link rel="icon" href="site-lib/media/favicon.ico"><link rel="preload" href="site-lib/styles/snippets.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="site-lib/styles/snippets.css"></noscript><link rel="stylesheet" href="site-lib/styles/obsidian.css"><link rel="stylesheet" href="site-lib/styles/theme.css"><link rel="preload" href="site-lib/styles/global-variable-styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="site-lib/styles/global-variable-styles.css"></noscript><link rel="preload" href="site-lib/styles/main-styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="site-lib/styles/main-styles.css"></noscript><style>body{--line-width:40em;--line-width-adaptive:40em;--file-line-width:40em;--sidebar-width:min(20em, 80vw);--collapse-arrow-size:11px;--tree-vertical-spacing:1.3em;--sidebar-margin:12px}:root{background-color:#202124}.sidebar{height:100%;font-size:14px;z-index:10;min-width:calc(var(--sidebar-width) + var(--divider-width-hover));max-width:calc(var(--sidebar-width) + var(--divider-width-hover));position:relative;overflow:hidden;overflow:clip;transition:min-width ease-in-out,max-width ease-in-out;transition-duration:.2s;contain:size}#left-sidebar{left:0}#right-sidebar{right:0}.sidebar.is-collapsed{min-width:0;max-width:0}.sidebar.floating{position:absolute}.sidebar .leaf-content{height:100%;min-width:calc(var(--sidebar-width) - var(--divider-width-hover));top:0;padding:var(--sidebar-margin);padding-top:4em;line-height:var(--line-height-tight);background-color:var(--background-secondary);transition:background-color,border-right,border-left,box-shadow;transition-duration:var(--color-fade-speed);transition-timing-function:ease-in-out;position:absolute;display:flex;flex-direction:column}.sidebar:not(.is-collapsed) .leaf-content{min-width:calc(max(100%,var(--sidebar-width)) - 3px);max-width:calc(max(100%,var(--sidebar-width)) - 3px)}#left-sidebar-content{left:0;border-top-right-radius:var(--radius-l);border-bottom-right-radius:var(--radius-l)}#right-sidebar-content{right:0;border-top-left-radius:var(--radius-l);border-bottom-left-radius:var(--radius-l)}.sidebar #left-sidebar-content,.sidebar #right-sidebar-content{contain:none!important;container-type:normal!important;animation:none!important}.sidebar:has(.leaf-content:empty):has(.topbar-content:empty){display:none}.sidebar-topbar{height:calc(2.3em + 2 * var(--sidebar-margin));width:var(--sidebar-width);padding:var(--sidebar-margin);z-index:1;position:fixed;display:flex;align-items:center;transition:width ease-in-out;transition-duration:inherit}.sidebar.is-collapsed .sidebar-topbar{width:calc(2.3em + var(--sidebar-margin) * 2)}.sidebar .sidebar-topbar.is-collapsed{width:0}#left-sidebar .sidebar-topbar{left:0;flex-direction:row;border-top-right-radius:var(--radius-l)}#right-sidebar .sidebar-topbar{right:0;flex-direction:row-reverse;border-top-left-radius:var(--radius-l)}#left-sidebar .topbar-content{margin-right:calc(2.3em + var(--sidebar-margin));flex-direction:row}#right-sidebar .topbar-content{margin-left:calc(2.3em + var(--sidebar-margin));flex-direction:row-reverse}.topbar-content{overflow:hidden visible;overflow:clip visible;width:100%;height:100%;display:flex;align-items:center;transition:inherit}.sidebar.is-collapsed .topbar-content{width:0;transition:inherit}.clickable-icon.sidebar-collapse-icon{background-color:transparent;color:var(--icon-color-focused);padding:2px!important;margin:0!important;height:100%!important;width:2.3em!important;margin-inline:0.14em!important;position:absolute}#left-sidebar .clickable-icon.sidebar-collapse-icon{transform:rotateY(180deg);right:var(--sidebar-margin)}#right-sidebar .clickable-icon.sidebar-collapse-icon{transform:rotateY(180deg);left:var(--sidebar-margin)}.clickable-icon.sidebar-collapse-icon svg.svg-icon{width:100%;height:100%}.feature-title{margin-left:1px;text-transform:uppercase;letter-spacing:.06em;margin-top:.75em;margin-bottom:.75em}.feature-header{display:flex;align-items:center;padding-top:0;font-size:1em;padding-left:0}body.floating-sidebars .sidebar{position:absolute}body{transition:background-color var(--color-fade-speed) ease-in-out}#navbar:not(:empty){display:flex;align-items:center;justify-content:space-between;padding:.5em 1em;width:100%}#main{display:flex;flex-direction:column;height:100%;width:100%;align-items:stretch;justify-content:center}#main-horizontal{display:flex;flex-direction:row;flex-grow:1;width:100%;align-items:stretch;justify-content:center}#center-content{flex-basis:100%;max-width:100%;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;transition:opacity .2s ease-in-out;contain:inline-size}.hide{opacity:0!important;transition:opacity .2s ease-in-out;pointer-events:none}#center-content>.obsidian-document{padding-left:2em;padding-right:1em;margin-bottom:0;width:100%;width:-webkit-fill-available;width:-moz-available;width:fill-available;transition:background-color var(--color-fade-speed) ease-in-out;border-top-right-radius:var(--window-radius,var(--radius-m));border-top-left-radius:var(--window-radius,var(--radius-m));overflow-x:hidden!important;overflow-y:auto!important;display:flex!important;flex-direction:column!important;align-items:center!important;contain:inline-size}body #center-content>.obsidian-document>.markdown-preview-sizer{padding-bottom:80vh;width:100%;max-width:var(--line-width);flex-basis:var(--line-width);transition:background-color var(--color-fade-speed) ease-in-out;contain:inline-size}#center-content>.obsidian-document>div{width:100%!important;transition:background-color var(--color-fade-speed) ease-in-out;contain:inline-size}#center-content>.obsidian-document:not([data-type=markdown]).embed{display:flex;padding:1em;height:100%;width:100%;align-items:center;justify-content:center}#center-content>.obsidian-document:not([data-type=markdown]).embed>*{max-width:100%;max-height:100%;object-fit:contain}:not(h1,h2,h3,h4,h5,h6,li):has(> :is(.math,table)){overflow-x:auto!important}#center-content>.obsidian-document:not([data-type=markdown]){overflow-x:auto;contain:content;padding:0;margin:0;height:100%}.obsidian-document[data-type=attachment]{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;width:100%}.obsidian-document[data-type=attachment]>*{outline:0;border:none;box-shadow:none}.obsidian-document[data-type=attachment] :is(img){max-width:90%;max-height:90%;object-fit:contain}.obsidian-document[data-type=attachment]>:is(audio){width:100%;max-width:min(90%,var(--line-width))}.obsidian-document[data-type=attachment]>:is(embed,iframe,video){width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain}.canvas-wrapper>:is(.header,.footer){z-index:100;position:absolute;display:flex;justify-content:center;flex-direction:column;width:100%;align-items:center}.scroll-highlight{position:absolute;width:100%;height:100%;pointer-events:none;z-index:1000;background-color:hsla(var(--color-accent-hsl),.25);opacity:0;padding:1em;inset:50%;translate:-50% -50%;border-radius:var(--radius-s)}</style><script defer="">async function loadIncludes(){let e=document.querySelectorAll("link[itemprop='include']");for(const t of e){let e=t.getAttribute("href");try{let o="";if(e.startsWith("https:")||e.startsWith("http:")||"file:"!=window.location.protocol){const n=await fetch(e);if(!n.ok){console.log("Could not include file: "+e),t?.remove();continue}o=await n.text()}else{const t=document.getElementById(btoa(encodeURI(e)));if(t){const e=JSON.parse(decodeURI(atob(t.getAttribute("value")??"")));o=e?.data??""}}let n=document.createRange().createContextualFragment(o);t.before(n),t.remove(),console.log("Included text: "+o),console.log("Included file: "+e)}catch(o){t?.remove(),console.log("Could not include file: "+e,o);continue}}}document.addEventListener("DOMContentLoaded",(()=>{loadIncludes()}));let isFileProtocol="file:"==location.protocol;function waitLoadScripts(e,t){let o=e.map((e=>document.getElementById(e+"-script")));!function e(n){let l=o[n],c=n+1;l?(l&&"true"!=l.getAttribute("loaded")||n<o.length&&e(c),n<o.length&&l.addEventListener("load",(()=>e(c)))):n<o.length?e(c):t()}(0)}</script><style>
+/* Hide _files directories in file explorer */
+/* Hide parent when child has _files in data-path */
+.tree-item > .tree-item-self[data-path*="_files"],
+.tree-item[data-path*="_files"] {
+  display: none !important;
+}
+/* Hide sibling children of the folder */
+.tree-item-self[data-path*="_files"] ~ .tree-item-children {
+  display: none !important;
+}
+/* Hide the entire tree-item folder wrapper */
+.nav-folder:has(> .tree-item-self[data-path*="_files"]) {
+  display: none !important;
+}
+</style>
+</head><body class="publish css-settings-manager styled-scrollbars show-inline-title show-ribbon is-focused"><script defer="">document.body.classList.add("theme-dark");document.body.classList.remove("theme-light");window.innerWidth<480?document.body.classList.add("is-phone"):window.innerWidth<768?document.body.classList.add("is-tablet"):window.innerWidth<1024?document.body.classList.add("is-small-screen"):document.body.classList.add("is-large-screen")</script><div class="parsed-feature-container" style="display: contents;"><link itemprop="include" href="site-lib/html/custom-head-content-content.html"></div><div id="main"><div id="navbar"></div><div id="main-horizontal"><div id="left-content" class="leaf" style="--sidebar-width: var(--sidebar-width-left);"><div id="left-sidebar" class="sidebar"><div class="sidebar-handle"></div><div class="sidebar-topbar"><div class="topbar-content"><div id="search-container"><div id="search-wrapper"><input enterkeyhint="search" type="search" spellcheck="false" placeholder="Search..."><div aria-label="Clear search" id="search-clear-button"></div></div></div></div><div class="clickable-icon sidebar-collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21 3H3C1.89543 3 1 3.89543 1 5V19C1 20.1046 1.89543 21 3 21H21C22.1046 21 23 20.1046 23 19V5C23 3.89543 22.1046 3 21 3Z"></path><path d="M10 4V20"></path><path d="M4 7H7"></path><path d="M4 10H7"></path><path d="M4 13H7"></path></svg></div></div><div class="sidebar-content-wrapper"><div id="left-sidebar-content" class="leaf-content"><link itemprop="include" href="site-lib/html/file-tree-content.html"></div></div><script defer="">let ls = document.querySelector("#left-sidebar"); ls.classList.toggle("is-collapsed", window.innerWidth < 768); ls.style.setProperty("--sidebar-width", localStorage.getItem("sidebar-left-width"));</script></div></div><div id="center-content" class="leaf"><div class="obsidian-document markdown-preview-view markdown-rendered node-insert-event is-readable-line-width allow-fold-headings allow-fold-lists show-indentation-guide show-properties" data-type="markdown"><style id="MJX-CHTML-styles"></style><div class="markdown-preview-sizer markdown-preview-section"><div class="header"><h1 class="page-title heading inline-title" id="Turning_32-bit_laptop_into_an_nftables_Firewall_0">Turning 32-bit laptop into an nftables Firewall</h1><div class="data-bar"></div></div><div class="markdown-preview-pusher" style="width: 1px; height: 0.1px; margin-bottom: 0px;"></div><div class="el-h1"><h1 data-heading="Title: Turning 32-bit laptop into an nftables Firewall" dir="auto" class="heading" id="Title_Turning_32-bit_laptop_into_an_nftables_Firewall_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>Title: Turning 32-bit laptop into an nftables Firewall</h1></div><div class="el-p"><p dir="auto"><strong>Date</strong>: Jun 14, 2026<br>
+<strong>Tags</strong>: <a data-href="Network Security" href="tags/network-security.html" class="internal-link" target="_self" rel="noopener nofollow">Network Security</a> <a data-href="Firewall" href="tags/firewall.html" class="internal-link" target="_self" rel="noopener nofollow">Firewall</a> <a data-href="Log Management" href="tags/log-management.html" class="internal-link" target="_self" rel="noopener nofollow">Log Management</a> <a data-href="Linux" href="tags/linux.html" class="internal-link" target="_self" rel="noopener nofollow">Linux</a> <a data-href="nftables" href="tags/nftables.html" class="internal-link" target="_self" rel="noopener nofollow">nftables</a> <a data-href="rsyslog" href="tags/rsyslog.html" class="internal-link" target="_self" rel="noopener nofollow">rsyslog</a></p></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="" data-callout="impact" class="callout"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-briefcase"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path><rect x="2" y="6" width="20" height="14" rx="2"></rect></svg></div><div class="callout-title-inner">Project Summary</div></div><div class="callout-content">
+<p dir="auto">This project repurposed a retired 32-bit laptop into a Linux-based firewall for a small cybersecurity lab. Using AntiX Linux, nftables, dnsmasq, rsyslog, and logrotate, the firewall provides network address translation (NAT), stateful packet filtering, DNS sinkholing, and centralized logging. The implementation was validated through connectivity, domain-blocking, and traffic-filtering tests while addressing challenges associated with aging hardware and limited resources.</p>
+</div></div></div><div class="el-p"><p dir="auto"><span alt="Pasted image 20260614083711.png" src="_files/pasted-image-20260614083711.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260614083711.png" src="_files/pasted-image-20260614083711.png" target="_self"></span></p></div><div class="el-h2"><h2 data-heading="I. Introduction" dir="auto" class="heading" id="I._Introduction_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>I. Introduction</h2></div><div class="el-h5"><h5 data-heading="1.1 Context &amp; Purpose" dir="auto" class="heading" id="1.1_Context_&amp;_Purpose_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>1.1 Context &amp; Purpose</h5></div><div class="el-p"><p dir="auto">Firewall is one of the most common and crucial defenses for network security. It controls incoming and outgoing traffic based on predefined rules. Due to limited resources, I am using an old laptop running on 32-bit AntiX Linux. The firewall will use the nftables, the default backend firewall of Linux.</p></div><div class="el-h5"><h5 data-heading="1.2 What This Covers" dir="auto" class="heading" id="1.2_What_This_Covers_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>1.2 What This Covers</h5></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span>Configure network configuration for the AntiX Linux.</li>
+<li data-line="1" dir="auto"><span class="list-bullet"></span>Configure AntiX Linux as a nftables firewall and DNS sinkhole.</li>
+<li data-line="2" dir="auto"><span class="list-bullet"></span>Configure Log rotation.</li>
+<li data-line="3" dir="auto"><span class="list-bullet"></span>Configure Lab Router for the lab.</li>
+<li data-line="4" dir="auto"><span class="list-bullet"></span>Apply, test, and verify basic firewall rules.</li>
+</ul></div><div class="el-h2"><h2 data-heading="II. Setup &amp; Environment" dir="auto" class="heading" id="II._Setup_&amp;_Environment_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>II. Setup &amp; Environment</h2></div><div class="el-h5"><h5 data-heading="2.1 Network &amp; Tools Overview" dir="auto" class="heading" id="2.1_Network_&amp;_Tools_Overview_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>2.1 Network &amp; Tools Overview</h5></div><div class="el-p"><p dir="auto">Figure 1 shows the network diagram for this entry. The firewall will use <code>nftables</code> for Network Address Translation and filtering on the network and transport layer. While <code>dnsmasq</code> is used for DNS sinkholing in the application layer. The Lab router will bridge the lab hosts to external networks.<br>
+<span alt="Pasted image 20260615183604.png" src="_files/pasted-image-20260615183604.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260615183604.png" src="_files/pasted-image-20260615183604.png" target="_self"></span><br>
+Figure 1: Network diagram</p></div><div class="el-p"><p dir="auto">Software and Hardware components used:</p></div><div class="el-table" dir="ltr" style="overflow-x: auto;"><table>
+<thead>
+<tr>
+<th dir="ltr">Components</th>
+<th dir="ltr">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td dir="ltr">AntiX Linux (32-bit)</td>
+<td dir="ltr">Operating System</td>
+</tr>
+<tr>
+<td dir="ltr">Spare Router</td>
+<td dir="ltr">Used as lab router</td>
+</tr>
+<tr>
+<td dir="ltr"><code>nftables</code></td>
+<td dir="ltr">Packet filtering framework built-in on linux kernel</td>
+</tr>
+<tr>
+<td dir="ltr"><code>dnsmasq</code></td>
+<td dir="ltr">Used for DNS logging and domain blocking</td>
+</tr>
+<tr>
+<td dir="ltr"><code>chrony</code></td>
+<td dir="ltr">Uses Network Time Protocol to synchronize system clocks</td>
+</tr>
+<tr>
+<td dir="ltr"><code>logrotate</code></td>
+<td dir="ltr">Log management tool used in linux</td>
+</tr>
+</tbody>
+</table></div><div class="el-h5"><h5 data-heading="2.2 Prerequisites / Preparations" dir="auto" class="heading" id="2.2_Prerequisites_/_Preparations_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>2.2 Prerequisites / Preparations</h5></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span>Installed AntiX Linux with atleast 2 Network Interface Cards (NIC).</li>
+<li data-line="1" dir="auto"><span class="list-bullet"></span>SSH enabled on AntiX for remote management.</li>
+</ul></div><div class="el-h2"><h2 data-heading="III. Execution &amp; Findings" dir="auto" class="heading" id="III._Execution_&amp;_Findings_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>III. Execution &amp; Findings</h2></div><div class="el-h5"><h5 data-heading="3.1 Steps Taken" dir="auto" class="heading" id="3.1_Steps_Taken_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>3.1 Steps Taken</h5></div><div class="el-h6"><h6 data-heading="3.1.1 Configure network configuration for the AntiX Linux." dir="auto" class="heading" id="3.1.1_Configure_network_configuration_for_the_AntiX_Linux._0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>3.1.1 Configure network configuration for the AntiX Linux.</h6></div><div class="el-ol"><ol>
+<li data-line="0" dir="auto">I start by renaming the laptop's interfaces. </li>
+</ol></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="" data-callout="rationale" class="callout"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-lightbulb"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg></div><div class="callout-title-inner">Rationale</div></div><div class="callout-content">
+<p dir="auto">By setting the interface names to something more intuitive like <code>lan0</code> and <code>wan0</code>, it will be easier for the future to manage, test, and troubleshooting in the future.</p>
+</div></div></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="cmd" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-terminal"><path d="M12 19h8"></path><path d="m4 17 6-6-6-6"></path></svg></div><div class="callout-title-inner">Renaming <strong>wan0</strong> and <strong>lan0</strong> interface</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto">I first identified the MAC Addresses of the interface with <code>ip addr</code>, then changed their <code>NAME=</code> on <code>/etc/udev/rules.d/70-persistent-net.rules</code>.</p>
+<p dir="auto"><span alt="Pasted image 20260615182814.png" src="_files/pasted-image-20260615182814.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260615182814.png" src="_files/pasted-image-20260615182814.png" target="_self"></span></p>
+</div></div></div><div class="el-ol"><ol start="2">
+<li data-line="0" dir="auto">Then, I configured the network interfaces. To make IP addresses easier to distinguish, and given that <code>wan0</code> is on <code>192.168.11.0/24</code>. I set <code>lan0</code> interface to <code>173.16.0.0/24</code> and intended to use <code>10.0.0.0/24</code> for the lab. Figure 2 shows the current network connection on the firewall host.</li>
+</ol></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="cmd" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-terminal"><path d="M12 19h8"></path><path d="m4 17 6-6-6-6"></path></svg></div><div class="callout-title-inner">Network interface configuration</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<ul class="has-list-bullet">
+<li data-line="1" dir="auto"><span class="list-bullet"></span>In line 12-15, I set the <code>lan0</code> to <code>172.168.0.1/24</code>, it is important that the interface connected to this is also on the same network.</li>
+<li data-line="2" dir="auto"><span class="list-bullet"></span>In line 18-27, <code>wan0</code> I set the static IP address of the firewall host to <code>192.168.11.200</code>, setting static IP on servers and network hosts helps with accessibility and reduce configuration errors.   </li>
+<li data-line="3" dir="auto"><span class="list-bullet"></span>In line 30, I added a route to <code>LabNetwork</code> (<code>10.0.0.0/24</code>) via firwall's <code>lan0</code> (172.16.0.1) interface was specified. Without this, traffic going to <code>10.0.0.0/24</code> will be forwarded to <code>192.168.11.1</code> (gateway).</li>
+</ul>
+<pre class="language-bash"><code data-line="5" class="language-bash is-loaded"><span class="token punctuation">..</span>.
+ <span class="token number">7</span>
+ <span class="token number">8</span>  auto lo
+ <span class="token number">9</span>  iface lo inet loopback
+<span class="token number">10</span>
+<span class="token number">11</span>  <span class="token comment"># LAN - (Ethernet)</span>
+<span class="token number">12</span>  auto lan0
+<span class="token number">13</span>  iface lan0 inet static
+<span class="token number">14</span>      address <span class="token number">172.16</span>.0.1
+<span class="token number">15</span>      netmask <span class="token number">255.255</span>.255.0
+<span class="token number">16</span>
+<span class="token number">17</span>  <span class="token comment"># WAN (Wireless)</span>
+<span class="token number">18</span>  auto wan0
+<span class="token number">19</span>  iface wan0 inet static
+<span class="token number">20</span>      address <span class="token number">192.168</span>.11.200
+<span class="token number">21</span>      netmask <span class="token number">255.255</span>.255.0
+<span class="token number">22</span>      gateway <span class="token number">192.168</span>.11.1
+<span class="token number">23</span>      dns-nameservers <span class="token number">8.8</span>.8.8 <span class="token number">8.8</span>.4.4
+<span class="token number">24</span>
+<span class="token number">25</span>
+<span class="token number">26</span>
+<span class="token number">27</span>      wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+<span class="token number">28</span>
+<span class="token number">29</span>  <span class="token comment"># Route to LAB network</span>
+<span class="token number">30</span>  up <span class="token function">ip</span> route <span class="token function">add</span> <span class="token number">10.0</span>.0.0/24 via <span class="token number">172.16</span>.0.2 dev lan0
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+</div></div></div><div class="el-p"><p dir="auto"><span alt="Pasted image 20260618161212.png" src="_files/pasted-image-20260618161212.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260618161212.png" src="_files/pasted-image-20260618161212.png" target="_self"></span><br>
+Figure 2: Network connection and routing table on firewall host (AntiX Linux).</p></div><div class="el-h6"><h6 data-heading="3.1.2 Configure AntiX as nftables firewall and DNS sinkhole" dir="auto" class="heading" id="3.1.2_Configure_AntiX_as_nftables_firewall_and_DNS_sinkhole_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>3.1.2 Configure AntiX as nftables firewall and DNS sinkhole</h6></div><div class="el-ol"><ol>
+<li data-line="0" dir="auto">I enabled IP forwarding and Network Address Translation (NAT) on the firewall. </li>
+</ol></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="" data-callout="rationale" class="callout"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-lightbulb"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg></div><div class="callout-title-inner">Rationale</div></div><div class="callout-content">
+<p dir="auto">The default policy on all <code>chains</code> for <code>table inet filter</code> was set to <code>drop</code> following a Zero Trust approach where all connections are denied unless explicitly allowed.</p>
+</div></div></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="cmd" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-terminal"><path d="M12 19h8"></path><path d="m4 17 6-6-6-6"></path></svg></div><div class="callout-title-inner">Initial <strong>nftables</strong> firewall config</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto"> The logging prefix on my config will follow the pattern <code>NFT-[CHAIN]-[ACTION]-[KEYWORD]</code> to make logs easier to analyze and because the action is not included on nftables logs by default.</p>
+<pre class="language-bash"><code data-line="3" class="language-bash is-loaded"><span class="token number">1</span>  flush ruleset
+ <span class="token number">2</span>
+ <span class="token number">3</span>  table inet filter <span class="token punctuation">{</span>
+ <span class="token number">4</span>      chain input <span class="token punctuation">{</span>
+ <span class="token number">5</span>          <span class="token builtin class-name">type</span> filter hook input priority filter<span class="token punctuation">;</span> policy drop<span class="token punctuation">;</span>
+ <span class="token number">6</span>          iif <span class="token string">"lo"</span> accept
+ <span class="token number">7</span>          ct state established,related accept
+ <span class="token number">8</span>          ct state invalid log prefix <span class="token string">"NFT-IN-DROP-INVALID "</span> drop
+ <span class="token number">9</span>          <span class="token function">ip</span> saddr <span class="token number">10.0</span>.0.50 tcp dport <span class="token number">22</span> accept
+<span class="token number">10</span>          tcp dport <span class="token number">53</span> accept
+<span class="token number">11</span>          udp dport <span class="token number">53</span> accept
+<span class="token number">12</span>          icmp <span class="token builtin class-name">type</span> <span class="token punctuation">{</span> echo-reply, echo-request <span class="token punctuation">}</span> accept
+<span class="token number">13</span>          log prefix <span class="token string">"NFT-IN-DROP-DEFAULT "</span>
+<span class="token number">14</span>      <span class="token punctuation">}</span>
+<span class="token number">15</span>
+<span class="token number">16</span>      chain forward <span class="token punctuation">{</span>
+<span class="token number">17</span>          <span class="token builtin class-name">type</span> filter hook forward priority filter<span class="token punctuation">;</span> policy drop<span class="token punctuation">;</span>
+<span class="token number">18</span>          ct state established,related accept
+<span class="token number">19</span>          ct state invalid log prefix <span class="token string">"NFT-FOR-DROP-INVALID "</span> drop
+<span class="token number">20</span>          <span class="token function">ip</span> daddr <span class="token number">9.9</span>.9.9 log prefix <span class="token string">"NFT-FOR-DROP-QUAD9 "</span> drop
+<span class="token number">21</span>          tcp dport <span class="token punctuation">{</span> <span class="token number">80</span>, <span class="token number">443</span> <span class="token punctuation">}</span> accept
+<span class="token number">22</span>          udp dport <span class="token punctuation">{</span> <span class="token number">53</span>, <span class="token number">123</span> <span class="token punctuation">}</span> accept
+<span class="token number">23</span>          icmp <span class="token builtin class-name">type</span> <span class="token punctuation">{</span> echo-reply, echo-request <span class="token punctuation">}</span> accept
+<span class="token number">24</span>          log prefix <span class="token string">"NFT-FOR-DROP-DEFAULT "</span>
+<span class="token number">25</span>      <span class="token punctuation">}</span>
+<span class="token number">26</span>
+<span class="token number">27</span>      chain output <span class="token punctuation">{</span>
+<span class="token number">28</span>          <span class="token builtin class-name">type</span> filter hook output priority filter<span class="token punctuation">;</span> policy drop<span class="token punctuation">;</span>
+<span class="token number">29</span>          ct state established,related accept
+<span class="token number">30</span>          ct state invalid log prefix <span class="token string">"NFT-OUT-DROP-INVALID "</span> drop
+<span class="token number">31</span>          hour <span class="token string">"17:00"</span>-<span class="token string">"04:00"</span> tcp dport <span class="token punctuation">{</span> <span class="token number">80</span>, <span class="token number">443</span>, <span class="token number">53</span> <span class="token punctuation">}</span> log prefix <span class="token string">"NFT-OUT-ACCEPT-OFFHOUR_TRAFFIC "</span> accept
+<span class="token number">32</span>          hour <span class="token string">"17:00"</span>-<span class="token string">"04:00"</span> udp dport <span class="token punctuation">{</span> <span class="token number">53</span>, <span class="token number">123</span> <span class="token punctuation">}</span> log prefix <span class="token string">"NFT-OUT-ACCEPT-OFFHOUR_TRAFFIC "</span> accept
+<span class="token number">33</span>          tcp dport <span class="token punctuation">{</span> <span class="token number">53</span>, <span class="token number">80</span>, <span class="token number">443</span> <span class="token punctuation">}</span> accept
+<span class="token number">34</span>          udp dport <span class="token punctuation">{</span> <span class="token number">53</span>, <span class="token number">123</span> <span class="token punctuation">}</span> accept
+<span class="token number">35</span>          icmp <span class="token builtin class-name">type</span> <span class="token punctuation">{</span> echo-reply, echo-request <span class="token punctuation">}</span> accept
+<span class="token number">36</span>          log prefix <span class="token string">"NFT-OUT-DROP-DEFAULT "</span>
+<span class="token number">37</span>      <span class="token punctuation">}</span>
+<span class="token number">38</span>  <span class="token punctuation">}</span>
+<span class="token number">39</span>  table <span class="token function">ip</span> nat <span class="token punctuation">{</span>
+<span class="token number">40</span>      chain prerouting <span class="token punctuation">{</span>
+<span class="token number">41</span>          <span class="token builtin class-name">type</span> nat hook prerouting priority dstnat<span class="token punctuation">;</span> policy accept<span class="token punctuation">;</span>
+<span class="token number">42</span>          iifname <span class="token string">"lan0"</span> udp dport <span class="token number">53</span> dnat to <span class="token number">172.16</span>.0.1
+<span class="token number">43</span>          iifname <span class="token string">"lan0"</span> tcp dport <span class="token number">53</span> dnat to <span class="token number">172.16</span>.0.1
+<span class="token number">44</span>      <span class="token punctuation">}</span>
+<span class="token number">45</span>
+<span class="token number">46</span>      chain postrouting <span class="token punctuation">{</span>
+<span class="token number">47</span>          <span class="token builtin class-name">type</span> nat hook postrouting priority srcnat<span class="token punctuation">;</span> policy accept<span class="token punctuation">;</span>
+<span class="token number">48</span>          oifname <span class="token string">"wan0"</span> masquerade
+<span class="token number">49</span>      <span class="token punctuation">}</span>
+<span class="token number">50</span>  <span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+</div></div></div><div class="el-ol"><ol start="2">
+<li data-line="0" dir="auto">Since nftables is filtering on the OSI network layer (L3) and transport layer (L4). I also added a DNS Sinkhole using <code>dnsmasq</code> to filter domains. In Figure 7, I blocked the domain <code>chess.com</code> for testing purposes.</li>
+</ol></div><div class="el-pre"><pre class="language-bash"><code data-line="0" class="language-bash is-loaded"> <span class="token number">1</span>  <span class="token comment"># DNS sinkhole list</span>
+ <span class="token number">2</span>  <span class="token assign-left variable">address</span><span class="token operator">=</span>/chess.com/
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">Figure 3: List of domain names blocked on <code>/etc/dnsmasq.d/blocklist.conf</code>.</p></div><div class="el-ol"><ol start="3">
+<li data-line="0" dir="auto">Lastly, I set up the logging mechanism on rsyslog using the config on Figure 4. This creates dedicated log files to store firewall logs. The <code>$syslogtag</code> was set by using <code>imfile</code> on <code>rsyslog.conf</code>. </li>
+</ol></div><div class="el-pre"><pre class="language-bash"><code data-line="0" class="language-bash is-loaded"> <span class="token number">1</span>  <span class="token comment"># 1. Capture Firewall logs</span>
+ <span class="token number">2</span>  :msg, contains, <span class="token string">"NFT-"</span> /var/log/nftables.log
+ <span class="token number">3</span>  <span class="token operator">&amp;</span> stop
+ <span class="token number">4</span>
+ <span class="token number">5</span>  <span class="token comment"># 2. Capture DNS queries</span>
+ <span class="token number">6</span>  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">$syslogtag</span> <span class="token operator">==</span> <span class="token string">'dnsmasq_log'</span><span class="token punctuation">)</span> <span class="token keyword">then</span> <span class="token punctuation">{</span>
+ <span class="token number">7</span>      /var/log/dns.log
+ <span class="token number">8</span>      stop
+ <span class="token number">9</span>  <span class="token punctuation">}</span>
+<span class="token number">10</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">Figure 4: 1. All logs that has string that has <code>"NFT-"</code> will be stored on <code>/var/log/nftables.log</code>. 2. All <code>dnsmasq_log</code> will be stored on <code>/var/log/dns.log</code></p></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="cmd" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-terminal"><path d="M12 19h8"></path><path d="m4 17 6-6-6-6"></path></svg></div><div class="callout-title-inner">Importing imfile module on rsyslog.conf</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto">This gives rsyslog access to dnsmasq.log to add <code>tag=dnsmasq_log</code></p>
+<pre class="language-bash"><code data-line="2" class="language-bash is-loaded"><span class="token comment"># &lt;Redacted&gt;</span>
+<span class="token number">23</span>  module<span class="token punctuation">(</span>load<span class="token operator">=</span><span class="token string">"imfile"</span><span class="token punctuation">)</span>
+<span class="token number">24</span>
+<span class="token number">25</span>  input<span class="token punctuation">(</span>type<span class="token operator">=</span><span class="token string">"imfile"</span>
+<span class="token number">26</span>        <span class="token assign-left variable">File</span><span class="token operator">=</span><span class="token string">"/var/log/dnsmasq.log"</span>
+<span class="token number">27</span>        <span class="token assign-left variable">Tag</span><span class="token operator">=</span><span class="token string">"dnsmasq_log"</span>
+<span class="token number">28</span>        <span class="token assign-left variable">Severity</span><span class="token operator">=</span><span class="token string">"info"</span>
+<span class="token number">29</span>        <span class="token assign-left variable">Facility</span><span class="token operator">=</span><span class="token string">"local0"</span><span class="token punctuation">)</span>
+<span class="token comment"># &lt;Redacted&gt;</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+</div></div></div><div class="el-h6"><h6 data-heading="3.1.3 Configure log rotation." dir="auto" class="heading" id="3.1.3_Configure_log_rotation._0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>3.1.3 Configure log rotation.</h6></div><div class="el-ol"><ol>
+<li data-line="0" dir="auto">I created a logrotate config that keeps logs in manageable size. Since <code>dns.log</code> would certainly contain a lot more logs, I set the frequency to daily and only store up to 7 log archives at once.<br>
+<span alt="Pasted image 20260614235930.png" src="_files/pasted-image-20260614235930.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260614235930.png" src="_files/pasted-image-20260614235930.png" target="_self"></span><br>
+Figure 5 Log rotation config on <code>/etc/logrotate.d/firewall</code>. </li>
+</ol></div><div class="el-h6"><h6 data-heading="3.1.4 Configure Lab Router for the lab." dir="auto" class="heading" id="3.1.4_Configure_Lab_Router_for_the_lab._0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>3.1.4 Configure Lab Router for the lab.</h6></div><div class="el-ol"><ol>
+<li data-line="0" dir="auto">I set the network configuration first by following Figure 6 and Figure 7.</li>
+</ol></div><div class="el-table" dir="ltr" style="overflow-x: auto;"><table>
+<thead>
+<tr>
+<th dir="ltr">Connection Type</th>
+<th dir="ltr">IP Address</th>
+<th dir="ltr">Subnet Mask</th>
+<th dir="ltr">Default Gateway</th>
+<th dir="ltr">DNS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td dir="ltr">Static IP</td>
+<td dir="auto">172.16.0.2</td>
+<td dir="auto">255.255.255.0</td>
+<td dir="auto">172.16.0.1</td>
+<td dir="auto">172.16.0.1, 8.8.8.8</td>
+</tr>
+</tbody>
+</table></div><div class="el-p"><p dir="auto">Figure 6: Lab router's WAN configuration.  </p></div><div class="el-table" dir="ltr" style="overflow-x: auto;"><table>
+<thead>
+<tr>
+<th dir="ltr">IP Address</th>
+<th dir="ltr">Subnet Mask</th>
+<th dir="ltr">DCHP IP Range</th>
+<th dir="ltr">SSID</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td dir="auto">10.0.0.1</td>
+<td dir="auto">255.255.255.0</td>
+<td dir="auto">10.0.0.100-254</td>
+<td dir="ltr"><code>LabNetwork</code></td>
+</tr>
+</tbody>
+</table></div><div class="el-p"><p dir="auto">Figure 7: Lab router's LAN configuration.</p></div><div class="el-ol"><ol start="2">
+<li data-line="0" dir="auto">Then, I disabled Network Address Translation (NAT) on the lab router. </li>
+</ol></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="" data-callout="arch" class="callout"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-network"><rect x="16" y="16" width="6" height="6" rx="1"></rect><rect x="2" y="16" width="6" height="6" rx="1"></rect><rect x="9" y="2" width="6" height="6" rx="1"></rect><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"></path><path d="M12 12V8"></path></svg></div><div class="callout-title-inner">Architecture</div></div><div class="callout-content">
+<p dir="auto">The router will now forward traffic to its default gateway (firewall's <code>lan0</code> interface) without changing the source IP addresses. With the placement of the firewall, disabling NAT on the edge router allows the firewall to see internal IP addresses which gives more control and insights over the traffic coming in and out of the lab.</p>
+</div></div></div><div class="el-p"><p dir="auto"><span alt="Pasted image 20260614101307.png" src="_files/pasted-image-20260614101307.png" class="internal-embed media-embed image-embed is-loaded" target="_self" style="width: 410px; max-width: 100%;"><img alt="Pasted image 20260614101307.png" src="_files/pasted-image-20260614101307.png" target="_self" style="width: 410px; max-width: 100%;"></span><br>
+Figure 8: NAT was disabled on the lab router. </p></div><div class="el-h6"><h6 data-heading="3.1.5 Apply, test, and verify basic firewall rules." dir="auto" class="heading" id="3.1.5_Apply,_test,_and_verify_basic_firewall_rules._0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>3.1.5 Apply, test, and verify basic firewall rules.</h6></div><div class="el-ol"><ol>
+<li data-line="0" dir="auto">I applied the nftables rules and for the dnsmasq using the command below.</li>
+</ol></div><div class="el-pre"><pre class="language-bash"><code data-line="0" class="language-bash is-loaded"><span class="token function">sudo</span> nft <span class="token parameter variable">-f</span> /etc/nftables.conf
+<span class="token function">sudo</span> <span class="token function">service</span> dnsmasq restart
+<span class="token function">sudo</span> <span class="token function">service</span> rsyslog restart
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre></div><div class="el-p"><p dir="auto">Figure 9: Apply the <code>nftables.conf</code> rules and restart <code>dnsmasq</code> and <code>rsyslog</code> service.</p></div><div class="el-ol"><ol start="2">
+<li data-line="0" dir="auto">I connected to the <code>LabNetwork</code> and tested the created rules.<br>
+Based on the test summary (see Figure 10), the <code>nftables</code> and <code>dnsmasq</code> implementation is working as expected.</li>
+</ol></div><div class="el-table" dir="ltr" style="overflow-x: auto;"><table>
+<thead>
+<tr>
+<th dir="ltr">Source</th>
+<th dir="ltr">Destination</th>
+<th dir="ltr">proto/port</th>
+<th dir="ltr">Result</th>
+<th dir="ltr">Logged</th>
+<th dir="ltr">Is_expected</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td dir="ltr">External</td>
+<td dir="ltr">Firewall</td>
+<td dir="auto">22</td>
+<td dir="ltr">Connection timeout, packet was dropped</td>
+<td dir="ltr">Yes</td>
+<td dir="ltr">Yes</td>
+</tr>
+<tr>
+<td dir="ltr">Lab (<code>.100</code>)</td>
+<td dir="ltr">Firewall</td>
+<td dir="auto">22</td>
+<td dir="ltr">Connection timeout, packet was dropped</td>
+<td dir="ltr">Yes</td>
+<td dir="ltr">Yes</td>
+</tr>
+<tr>
+<td dir="ltr">Lab</td>
+<td dir="ltr">Firewall</td>
+<td dir="auto">53</td>
+<td dir="ltr">Connection established, IP resolution was returned</td>
+<td dir="ltr">No</td>
+<td dir="ltr">Yes</td>
+</tr>
+<tr>
+<td dir="ltr">Lab</td>
+<td dir="ltr">External</td>
+<td dir="auto">22</td>
+<td dir="ltr">Connection timeout, packet was dropped</td>
+<td dir="ltr">Yes</td>
+<td dir="ltr">Yes</td>
+</tr>
+<tr>
+<td dir="ltr">Lab</td>
+<td dir="ltr">External</td>
+<td dir="auto">8080</td>
+<td dir="ltr">Connection timeout, packet was dropped</td>
+<td dir="ltr">Yes</td>
+<td dir="ltr">Yes</td>
+</tr>
+<tr>
+<td dir="ltr">Lab</td>
+<td dir="ltr">External</td>
+<td dir="ltr">ICMP</td>
+<td dir="ltr">Requests were sent, received replies.</td>
+<td dir="ltr">No</td>
+<td dir="ltr">Yes</td>
+</tr>
+<tr>
+<td dir="ltr">Firewall</td>
+<td dir="ltr">External</td>
+<td dir="auto">443</td>
+<td dir="ltr">Connection established, received HTTP response.</td>
+<td dir="ltr">Yes (@<code>19:39</code>)</td>
+<td dir="ltr">Yes</td>
+</tr>
+<tr>
+<td dir="ltr">Lab</td>
+<td dir="ltr"><code>Jamilosa.com</code></td>
+<td dir="auto">53</td>
+<td dir="ltr">Resolved to its proper IP address.</td>
+<td dir="ltr">Yes</td>
+<td dir="ltr">Yes</td>
+</tr>
+<tr>
+<td dir="ltr">Lab</td>
+<td dir="ltr"><code>Chess.com</code></td>
+<td dir="auto">53</td>
+<td dir="ltr">Resolved to NXDOMAIN (Non-eXistent domain).</td>
+<td dir="ltr">Yes</td>
+<td dir="ltr">Yes</td>
+</tr>
+</tbody>
+</table></div><div class="el-p"><p dir="auto">Figure 10. Test Summary</p></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="example" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-list"><path d="M3 5h.01"></path><path d="M3 12h.01"></path><path d="M3 19h.01"></path><path d="M8 5h13"></path><path d="M8 12h13"></path><path d="M8 19h13"></path></svg></div><div class="callout-title-inner">Input Chain Tests </div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto"><strong>A. SSH - External host connecting to firewall via SSH</strong><br>
+nftables log:</p>
+<pre><code data-line="3">2026-06-17T19:02:30.790210+08:00 firewall kernel: [  948.929678] NFT-IN-DROP-DEFAULT IN=wan0 OUT= MAC=00:13:02:2e:1f:c9:d6:6b:98:02:e7:74:08:00 SRC=192.168.11.183 DST=192.168.11.200 LEN=60 TOS=0x18 PREC=0xA0 TTL=64 ID=54929 DF PROTO=TCP SPT=49080 DPT=22 WINDOW=65535 RES=0x00 SYN URGP=
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><strong>B. SSH - Lab host (<code>.100</code>) connecting to firewall via SSH</strong><br>
+nftables log:</p>
+<pre><code data-line="8">2026-06-17T19:28:53.751939+08:00 firewall kernel: [ 2531.891358] NFT-IN-DROP-DEFAULT IN=lan0 OUT= MAC=00:03:0d:53:17:49:30:16:9d:72:51:2b:08:00 SRC=10.0.0.100 DST=172.16.0.1 LEN=60 TOS=0x00 PREC=0x00 TTL=63 ID=14874 DF PROTO=TCP SPT=43002 DPT=22 WINDOW=65535 RES=0x00 SYN URGP=0
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><strong>C. DNS Lookup using the firewall</strong><br>
+output:</p>
+<pre><code data-line="13">Server:  UnKnown
+Address:  172.16.0.1
+
+Non-authoritative answer:
+Name:    jamilosa.com
+Addresses:  185.199.108.153
+       185.199.110.153
+        185.199.111.153
+        185.199.109.153
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+</div></div></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="example" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-list"><path d="M3 5h.01"></path><path d="M3 12h.01"></path><path d="M3 19h.01"></path><path d="M8 5h13"></path><path d="M8 12h13"></path><path d="M8 19h13"></path></svg></div><div class="callout-title-inner">Forward Chain Tests</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto"><strong>A. Lab host connecting to am external SSH server</strong><br>
+nftables log:</p>
+<pre><code data-line="3">2026-06-17T19:32:51.174478+08:00 firewall kernel: [ 2769.313896] NFT-FOR-DROP-DEFAULT IN=lan0 OUT=wan0 MAC=00:03:0d:53:17:49:30:16:9d:72:51:2b:08:00 SRC=10.0.0.100 DST=192.168.1.1 LEN=60 TOS=0x18 PREC=0xA0 TTL=62 ID=30969 DF PROTO=TCP SPT=41394 DPT=22 WINDOW=65535 RES=0x00 SYN URGP=0
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><strong>B. Lab host connecting to an external host via port <code>8080</code></strong><br>
+nftables log:</p>
+<pre><code data-line="9">2026-06-17T19:35:10.349186+08:00 firewall kernel: [ 2908.488607] NFT-FOR-DROP-DEFAULT IN=lan0 OUT=wan0 MAC=00:03:0d:53:17:49:30:16:9d:72:51:2b:08:00 SRC=10.0.0.100 DST=192.168.1.1 LEN=60 TOS=0x00 PREC=0x00 TTL=62 ID=24723 DF PROTO=TCP SPT=43256 DPT=8080 WINDOW=65535 RES=0x00 SYN URGP=0
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><strong>C. Lab host pings external host <code>jamilosa.com</code></strong><br>
+output:</p>
+<pre><code data-line="15">Reply from 185.199.110.153: bytes=32 time=13ms TTL=56
+Reply from 185.199.110.153: bytes=32 time=16ms TTL=56
+Reply from 185.199.110.153: bytes=32 time=12ms TTL=56
+Reply from 185.199.110.153: bytes=32 time=19ms TTL=56
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+</div></div></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="example" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-list"><path d="M3 5h.01"></path><path d="M3 12h.01"></path><path d="M3 19h.01"></path><path d="M8 5h13"></path><path d="M8 12h13"></path><path d="M8 19h13"></path></svg></div><div class="callout-title-inner">Output Chain Tests</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto"><strong>A. Firewall host connecting to external IP on allowed port <code>443</code></strong><br>
+output:<br>
+<span alt="Pasted image 20260617201151.png" src="_files/pasted-image-20260617201151.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260617201151.png" src="_files/pasted-image-20260617201151.png" target="_self"></span><br>
+nftables log:</p>
+<pre><code data-line="5">2026-06-17T19:39:10.794366+08:00 firewall kernel: [ 3148.933773] NFT-OUT-ACCEPT-OFFHOUR_TRAFFIC IN= OUT=wan0 SRC=192.168.11.200 DST=192.168.1.1 LEN=60 TOS=0x00 PREC=0x00 TTL=64 ID=3067 DF PROTO=TCP SPT=58604 DPT=443 WINDOW=64240 RES=0x00 SYN URGP=0
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+</div></div></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="example" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-list"><path d="M3 5h.01"></path><path d="M3 12h.01"></path><path d="M3 19h.01"></path><path d="M8 5h13"></path><path d="M8 12h13"></path><path d="M8 19h13"></path></svg></div><div class="callout-title-inner">DNS Sinkhole Tests</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto"><strong>A. Accessing blocked domain <code>chess.com</code></strong><br>
+output:</p>
+<pre><code data-line="3">$ nslookup chess.com
+Server:  UnKnown
+Address:  172.16.0.1
+*** UnKnown can't find chess.com: No response from server
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><span alt="Pasted image 20260617211527.png" src="_files/pasted-image-20260617211527.png" class="internal-embed media-embed image-embed is-loaded" target="_self" style="width: 314px; max-width: 100%;"><img alt="Pasted image 20260617211527.png" src="_files/pasted-image-20260617211527.png" target="_self" style="width: 314px; max-width: 100%;"></span></p>
+<p dir="auto">dns log:</p>
+<pre><code data-line="12">2026-06-17T21:05:27.351505+08:00 firewall dnsmasq_log Jun 17 21:05:27 dnsmasq[4579]: query[A] chess.com from 10.0.0.50
+2026-06-17T21:05:27.351547+08:00 firewall dnsmasq_log Jun 17 21:05:27 dnsmasq[4579]: config chess.com is NXDOMAIN
+2026-06-17T21:05:27.354389+08:00 firewall dnsmasq_log Jun 17 21:05:27 dnsmasq[4579]: query[AAAA] chess.com from 10.0.0.50
+2026-06-17T21:05:27.354447+08:00 firewall dnsmasq_log Jun 17 21:05:27 dnsmasq[4579]: config chess.com is NXDOMAIN
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+</div></div></div><div class="el-h5"><h5 data-heading="3.2 Challenges &amp; Fixes" dir="auto" class="heading" id="3.2_Challenges_&amp;_Fixes_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>3.2 Challenges &amp; Fixes</h5></div><div class="el-table" dir="ltr" style="overflow-x: auto;"><table>
+<thead>
+<tr>
+<th dir="ltr">Challenges</th>
+<th dir="ltr">Probable Cause</th>
+<th dir="ltr">Fixes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td dir="ltr">I was not able to find and install an operating system that worked for the laptop.</td>
+<td dir="ltr">- Support on 32-bit OS are being dropped by maintainers. <br>- USB ports might also be faulty.</td>
+<td dir="ltr">- I tried many lightweight 32-bit operating systems as recommended by Reddit users.<br>- I installed the operating systems on a different machine then swap it back to the old laptop to see if it would boot.</td>
+</tr>
+<tr>
+<td dir="ltr">Overheating, low memory, low capacity storage, clock/time issues.</td>
+<td dir="ltr">- Dried thermal paste and dust blocking the airflow.<br>- Built-in memory was quite low.<br>- Storage type was HDD.</td>
+<td dir="ltr">- Replaced thermal paste and cleaned the fans. <br>- Used external fan for extra air flow.<br>- Added extra 2GB or RAM<br>- Swapped with higher capacity SATA SSD.</td>
+</tr>
+<tr>
+<td dir="ltr">Time does not match with the real time and devices on the network.</td>
+<td dir="ltr">- Oscillator drift from aging hardware.</td>
+<td dir="ltr">- Swapped a new CMOS battery and used <code>chrony</code> to resync to the correct time.</td>
+</tr>
+<tr>
+<td dir="ltr">Unfamiliar with nftables syntax.</td>
+<td dir="ltr">- I used iptables before and decided to switch to nftables</td>
+<td dir="ltr">- Viewed documentations/blogs/videos and used genAI tools about nftables.</td>
+</tr>
+<tr>
+<td dir="ltr">Designing a correct cybersecurty network architecture with limited resources.</td>
+<td dir="ltr">- Lack of first-hand experience on real world cybersecurity environment and enterprise resources.</td>
+<td dir="ltr">- Utilized the available resources by designing a simplified cybersecurity lab.</td>
+</tr>
+<tr>
+<td dir="ltr">USB to ethernet adapter was not recognized by the firewall. <code>dmesg -w</code>: <code>device descriptor read/64, error -71</code>, <code>device not accepting address</code>, <code>unable to enumerate USB device</code></td>
+<td dir="ltr">- Daisy-chained connection (<code>laptop</code> -&gt; <code>USB-A to USB-C</code> -&gt; <code>USB-C to Ethernet</code>).<br>- USB ports might also be faulty.</td>
+<td dir="ltr">- Modified boot parameter by adding <code>delay=5</code> as USB errors pop up immediately after turning on the computer.<br>- Modified boot parameter with <code>pci=noehci</code> to force downgrade to USB1.1. <br>- Ended up using the built-in wireless interface instead.</td>
+</tr>
+</tbody>
+</table></div><div class="el-h2"><h2 data-heading="IV. Observations &amp; Insights" dir="auto" class="heading" id="IV._Observations_&amp;_Insights_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>IV. Observations &amp; Insights</h2></div><div class="el-p"><p dir="auto"><span alt="Pasted image 20260614184059.png" src="_files/pasted-image-20260614184059.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260614184059.png" src="_files/pasted-image-20260614184059.png" target="_self"></span></p></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span>The internet connection on the lab network (firewall's <code>wan0</code> interface) is really slow. The wireless adaptor only supports <code>802.11a/g standards</code> which can theoretically handle only up to 54Mbps. This is the bottleneck is in terms of connection speed for the lab.</li>
+<li data-line="1" dir="auto"><span class="list-bullet"></span><code>dns.log</code> and <code>nftables.log</code> have different log formats. This is likely true for a lot of applications and services. In order to properly parse them on the SIEM, I need to use different decoders.  </li>
+<li data-line="2" dir="auto"><span class="list-bullet"></span><code>nftables</code> is mainly for filtering Layer 3 (Network) and Layer 4 (Transport) traffic. It can also act as a stateful firewall. </li>
+<li data-line="3" dir="auto"><span class="list-bullet"></span>For blocking domains, using IP ranges could potentially cause inconvenience and holes on the network. Many modern websites are being delivered or tunneled via the massive IP blocks of companies like Cloudflare. DNS Sinkholing solves this specific problem. </li>
+<li data-line="4" dir="auto"><span class="list-bullet"></span>Devices generate a lot of DNS query. While it might be useful to log for correlation and attack mapping, it will also be accompanied with a lot of noise.   </li>
+<li data-line="5" dir="auto"><span class="list-bullet"></span>I tried triggering a firewall drop rule and the log shows it was triggered on a different time. The longer the inaccuracy on the time, the more it would be confusing to correlate them especially across multiple hosts. This shows the importance of synchronized time across systems.</li>
+</ul></div><div class="el-h2"><h2 data-heading="V. Considerations &amp; Next Steps" dir="auto" class="heading" id="V._Considerations_&amp;_Next_Steps_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>V. Considerations &amp; Next Steps</h2></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span>Setup Wazuh server for centralized log collection and to monitor lab hosts.</li>
+<li data-line="1" dir="auto"><span class="list-bullet"></span>Update firewall rules for better security.</li>
+<li data-line="2" dir="auto"><span class="list-bullet"></span>Setup windows server and vulnerable hosts inside the lab.</li>
+<li data-line="3" dir="auto"><span class="list-bullet"></span>Attack the vulnerable hosts inside the lab</li>
+</ul></div><div class="el-h2"><h2 data-heading="VI. Conclusion" dir="auto" class="heading" id="VI._Conclusion_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>VI. Conclusion</h2></div><div class="el-p"><p dir="auto">This project successfully turned and old 32-bit laptop into a functioning firewall for my simple cybersecurity lab. It provided network address translation, network and transport layer filtering, along with stateful filtering using nftables. It also functions as dns sinkhole for blocking domains using dnsmasq. Logs are recorded on the firewall for log correlation and analysis. The logs are also rotated to prevent storage issues.</p></div><div class="el-p"><p dir="auto">While working in this project, I realized the limitations of L3/L4 firewalls in network security. That's why I added domain sinkholing on the go to try and imitate the basic network security capabilites most real world corporate network have. I also learned the critical value of syncing time across systems as it is one of the fields used for correlation.</p></div><div class="el-p"><p dir="auto">In the next entries, I would setup a Wazuh server that will store logs of lab hosts. Having a centralized place to view and correlate logs would make it easier to discover anomalies on the network. I will also install and attack a windows server and vulnerable hosts in the lab.</p></div><div class="footer"><div class="data-bar"></div></div></div></div></div><div id="right-content" class="leaf" style="--sidebar-width: var(--sidebar-width-right);"><div id="right-sidebar" class="sidebar"><div class="sidebar-handle"></div><div class="sidebar-topbar"><div class="topbar-content"></div><div class="clickable-icon sidebar-collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21 3H3C1.89543 3 1 3.89543 1 5V19C1 20.1046 1.89543 21 3 21H21C22.1046 21 23 20.1046 23 19V5C23 3.89543 22.1046 3 21 3Z"></path><path d="M10 4V20"></path><path d="M4 7H7"></path><path d="M4 10H7"></path><path d="M4 13H7"></path></svg></div></div><div class="sidebar-content-wrapper"><div id="right-sidebar-content" class="leaf-content"><div class="graph-view-wrapper"><div class="feature-header"><div class="feature-title">Interactive Graph</div></div><div class="graph-view-placeholder">
+		<div class="graph-view-container">
+			<div class="graph-icon graph-expand" role="button" aria-label="Expand" data-tooltip-position="top"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></div>
+			<div class="graph-icon graph-global" role="button" aria-label="Global Graph" data-tooltip-position="top"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-git-fork"><circle cx="12" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><circle cx="18" cy="6" r="3"></circle><path d="M18 9v2c0 .6-.4 1-1 1H7c-.6 0-1-.4-1-1V9"></path><path d="M12 12v3"></path></svg></div>
+			<canvas id="graph-canvas" class="hide" width="512px" height="512px"></canvas>
+		</div>
+		</div></div><div id="outline" class=" tree-container"><div class="feature-header"><div class="feature-title">Table Of Contents</div><button class="clickable-icon nav-action-button tree-collapse-all" aria-label="Collapse All"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg></button></div><div class="tree-item" data-depth="1"><a class="tree-item-self is-clickable" href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html#Turning_32-bit_laptop_into_an_nftables_Firewall_0" data-path="#Turning_32-bit_laptop_into_an_nftables_Firewall_0"><div class="tree-item-inner heading-link" heading-name="Turning 32-bit laptop into an nftables Firewall">Turning 32-bit laptop into an nftables Firewall</div></a><div class="tree-item-children"></div></div><div class="tree-item mod-collapsible" data-depth="1"><a class="tree-item-self is-clickable mod-collapsible" href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html#Title_Turning_32-bit_laptop_into_an_nftables_Firewall_0" data-path="#Title_Turning_32-bit_laptop_into_an_nftables_Firewall_0"><div class="tree-item-icon collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div><div class="tree-item-inner heading-link" heading-name="Title: Turning 32-bit laptop into an nftables Firewall">Title: Turning 32-bit laptop into an nftables Firewall</div></a><div class="tree-item-children"><div class="tree-item mod-collapsible" data-depth="2"><a class="tree-item-self is-clickable mod-collapsible" href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html#I._Introduction_0" data-path="#I._Introduction_0"><div class="tree-item-icon collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div><div class="tree-item-inner heading-link" heading-name="I. Introduction">I. Introduction</div></a><div class="tree-item-children"><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html#1.1_Context_&amp;_Purpose_0" data-path="#1.1_Context_&amp;_Purpose_0"><div class="tree-item-inner heading-link" heading-name="1.1 Context &amp; Purpose">1.1 Context &amp; Purpose</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html#1.2_What_This_Covers_0" data-path="#1.2_What_This_Covers_0"><div class="tree-item-inner heading-link" heading-name="1.2 What This Covers">1.2 What This Covers</div></a><div class="tree-item-children"></div></div></div></div><div class="tree-item mod-collapsible" data-depth="2"><a class="tree-item-self is-clickable mod-collapsible" href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html#II._Setup_&amp;_Environment_0" data-path="#II._Setup_&amp;_Environment_0"><div class="tree-item-icon collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div><div class="tree-item-inner heading-link" heading-name="II. Setup &amp; Environment">II. Setup &amp; Environment</div></a><div class="tree-item-children"><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html#2.1_Network_&amp;_Tools_Overview_0" data-path="#2.1_Network_&amp;_Tools_Overview_0"><div class="tree-item-inner heading-link" heading-name="2.1 Network &amp; Tools Overview">2.1 Network &amp; Tools Overview</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html#2.2_Prerequisites_/_Preparations_0" data-path="#2.2_Prerequisites_/_Preparations_0"><div class="tree-item-inner heading-link" heading-name="2.2 Prerequisites / Preparations">2.2 Prerequisites / Preparations</div></a><div class="tree-item-children"></div></div></div></div><div class="tree-item mod-collapsible" data-depth="2"><a class="tree-item-self is-clickable mod-collapsible" href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html#III._Execution_&amp;_Findings_0" data-path="#III._Execution_&amp;_Findings_0"><div class="tree-item-icon collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div><div class="tree-item-inner heading-link" heading-name="III. Execution &amp; Findings">III. Execution &amp; Findings</div></a><div class="tree-item-children"><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html#3.1_Steps_Taken_0" data-path="#3.1_Steps_Taken_0"><div class="tree-item-inner heading-link" heading-name="3.1 Steps Taken">3.1 Steps Taken</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="6"><a class="tree-item-self is-clickable" href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html#3.1.1_Configure_network_configuration_for_the_AntiX_Linux._0" data-path="#3.1.1_Configure_network_configuration_for_the_AntiX_Linux._0"><div class="tree-item-inner heading-link" heading-name="3.1.1 Configure network configuration for the AntiX Linux.">3.1.1 Configure network configuration for the AntiX Linux.</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="6"><a class="tree-item-self is-clickable" href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html#3.1.2_Configure_AntiX_as_nftables_firewall_and_DNS_sinkhole_0" data-path="#3.1.2_Configure_AntiX_as_nftables_firewall_and_DNS_sinkhole_0"><div class="tree-item-inner heading-link" heading-name="3.1.2 Configure AntiX as nftables firewall and DNS sinkhole">3.1.2 Configure AntiX as nftables firewall and DNS sinkhole</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="6"><a class="tree-item-self is-clickable" href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html#3.1.3_Configure_log_rotation._0" data-path="#3.1.3_Configure_log_rotation._0"><div class="tree-item-inner heading-link" heading-name="3.1.3 Configure log rotation.">3.1.3 Configure log rotation.</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="6"><a class="tree-item-self is-clickable" href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html#3.1.4_Configure_Lab_Router_for_the_lab._0" data-path="#3.1.4_Configure_Lab_Router_for_the_lab._0"><div class="tree-item-inner heading-link" heading-name="3.1.4 Configure Lab Router for the lab.">3.1.4 Configure Lab Router for the lab.</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="6"><a class="tree-item-self is-clickable" href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html#3.1.5_Apply,_test,_and_verify_basic_firewall_rules._0" data-path="#3.1.5_Apply,_test,_and_verify_basic_firewall_rules._0"><div class="tree-item-inner heading-link" heading-name="3.1.5 Apply, test, and verify basic firewall rules.">3.1.5 Apply, test, and verify basic firewall rules.</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html#3.2_Challenges_&amp;_Fixes_0" data-path="#3.2_Challenges_&amp;_Fixes_0"><div class="tree-item-inner heading-link" heading-name="3.2 Challenges &amp; Fixes">3.2 Challenges &amp; Fixes</div></a><div class="tree-item-children"></div></div></div></div><div class="tree-item" data-depth="2"><a class="tree-item-self is-clickable" href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html#IV._Observations_&amp;_Insights_0" data-path="#IV._Observations_&amp;_Insights_0"><div class="tree-item-inner heading-link" heading-name="IV. Observations &amp; Insights">IV. Observations &amp; Insights</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="2"><a class="tree-item-self is-clickable" href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html#V._Considerations_&amp;_Next_Steps_0" data-path="#V._Considerations_&amp;_Next_Steps_0"><div class="tree-item-inner heading-link" heading-name="V. Considerations &amp; Next Steps">V. Considerations &amp; Next Steps</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="2"><a class="tree-item-self is-clickable" href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html#VI._Conclusion_0" data-path="#VI._Conclusion_0"><div class="tree-item-inner heading-link" heading-name="VI. Conclusion">VI. Conclusion</div></a><div class="tree-item-children"></div></div></div></div></div></div></div><script defer="">let rs = document.querySelector("#right-sidebar"); rs.classList.toggle("is-collapsed", window.innerWidth < 768); rs.style.setProperty("--sidebar-width", localStorage.getItem("sidebar-right-width"));</script></div></div></div></div>
+<!-- Navigation Buttons -->
+<div class="nav-buttons">
+  <button class="nav-btn nav-back" id="navBack" title="Go back" aria-label="Navigate back">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 18l-6-6 6-6"></path>
+    </svg>
+  </button>
+  
+  <button class="nav-btn nav-home" id="navHome" title="Go to home" aria-label="Navigate to home">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+    </svg>
+  </button>
+  
+  <button class="nav-btn nav-forward" id="navForward" title="Go forward" aria-label="Navigate forward">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 18l6-6-6-6"></path>
+    </svg>
+  </button>
+</div>
+
+<style>
+:root {
+  /* Navigation Button Colors */
+  --nav-bg: #20242B;
+  --nav-border: #424958;
+  --nav-icon-color: #888888;
+  --nav-icon-hover: #DCDDDE;
+  --nav-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  --nav-glow: 0 0 10px rgba(97, 175, 239, 0.15);
+  --nav-accent: #61AFEF;
+  --nav-transition: all 0.2s ease-in-out;
+}
+
+.nav-buttons {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 1000;
+  background: rgba(32, 36, 43, 0.85);
+  backdrop-filter: blur(8px);
+  padding: 10px 14px;
+  border-radius: 12px;
+  box-shadow: var(--nav-shadow);
+  border: 1px solid rgba(66, 73, 88, 0.6);
+  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.nav-btn {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--nav-border);
+  border-radius: 8px;
+  background: var(--nav-bg);
+  color: var(--nav-icon-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--nav-transition);
+  padding: 0;
+  font: inherit;
+  flex-shrink: 0;
+}
+
+.nav-btn:hover:not(:disabled) {
+  color: var(--nav-icon-hover);
+  border-color: var(--nav-accent);
+  transform: translateY(-3px);
+  box-shadow: var(--nav-glow);
+}
+
+.nav-btn:active:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 0 8px rgba(97, 175, 239, 0.2);
+}
+
+.nav-btn:disabled {
+  border-color: rgba(66, 73, 88, 0.3);
+  color: rgba(136, 136, 136, 0.4);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.nav-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+/* Focus state for keyboard navigation */
+.nav-btn:focus-visible {
+  outline: none;
+  border-color: var(--nav-accent);
+  box-shadow: var(--nav-glow);
+}
+
+/* Responsive: Hide back/forward on mobile, keep home */
+@media (max-width: 768px) {
+  .nav-buttons {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .nav-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .nav-btn.nav-back,
+  .nav-btn.nav-forward {
+    display: none;
+  }
+
+  .nav-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Tablet: Reduce size slightly */
+@media (max-width: 1024px) {
+  .nav-buttons {
+    bottom: 1.5rem;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const backBtn = document.getElementById('navBack');
+  const homeBtn = document.getElementById('navHome');
+  const forwardBtn = document.getElementById('navForward');
+  
+  if (!backBtn || !homeBtn || !forwardBtn) return;
+  
+  // Check if back is available
+  function updateNavButtons() {
+    backBtn.disabled = !window.history.length || window.history.length <= 1;
+  }
+  
+  backBtn.addEventListener('click', () => window.history.back());
+  forwardBtn.addEventListener('click', () => window.history.forward());
+  homeBtn.addEventListener('click', () => window.location.href = 'index.html');
+  
+  updateNavButtons();
+  
+  // Update on navigation
+  window.addEventListener('pageshow', updateNavButtons);
+});
+</script>
+
+</body></html>
