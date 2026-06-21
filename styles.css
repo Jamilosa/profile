@@ -484,11 +484,80 @@ h1{
 
 .icons { 
   display: flex; 
-  gap: 12px; /* Back to 12px for tighter fit */
+  gap: 12px;
+  padding-top: 24px;
+  flex-shrink: 0;
+  justify-content: flex-start;
   margin-top: auto; /* Push icons to bottom in flexbox */
-  padding-top: 24px; /* Reduced from 40px to save space */
-  flex-shrink: 0; /* Prevent icons from shrinking */
-  justify-content: flex-start; /* Align icons to the left */
+}
+
+/* Portfolio Stats - visible only on large screens */
+.portfolio-stats {
+  margin-top: 24px;
+  padding: 16px 0;
+  border-top: 1px solid var(--divider);
+  border-bottom: 1px solid var(--divider);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.stats-title {
+  font-size: var(--font-small);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px;
+  background: var(--chip);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.stat-label {
+  font-size: var(--font-xs);
+  color: var(--muted);
+  font-weight: var(--font-weight-normal);
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: var(--font-weight-bold);
+  color: var(--accent);
+}
+
+.stats-updated {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: baseline;
+  font-size: var(--font-xs);
+}
+
+.updated-label {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: var(--font-weight-medium);
+}
+
+.updated-date {
+  color: var(--text);
+  font-size: var(--font-small);
 }
 
 /* Media query for larger screens to ensure proper spacing */

@@ -60,14 +60,38 @@
         <label for="specialization">Focus: </label>
         <select id="specialization" class="select" aria-label="Choose specialization">
           <option class="select-option" value="cybersecurity">Cybersecurity</option>
-          <option class="select-option" value="cloud">Cloud</option>
           <option class="select-option" value="it-support">IT Support</option>
+        
         </select>
       </div>
 
+    <!-- Portfolio Stats Container (unique ID for script updates) -->
+    <div id="portfolioStatsContainer">
+    <!-- Portfolio Stats (visible only on large screens) -->
+    <div class="portfolio-stats" id="portfolioStats" data-portfolio-stats="{&quot;it-support&quot;: {&quot;project&quot;: 2, &quot;lab&quot;: 0, &quot;writeup&quot;: 0}, &quot;cybersecurity&quot;: {&quot;project&quot;: 1, &quot;lab&quot;: 0, &quot;writeup&quot;: 0}, &quot;lastUpdated&quot;: &quot;Jun 21 2026&quot;}">
+      <h3 class="stats-title">Portfolio Stats</h3>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-label">Projects</span>
+          <span class="stat-value" data-type="project">1</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Labs</span>
+          <span class="stat-value" data-type="lab">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Writeups</span>
+          <span class="stat-value" data-type="writeup">0</span>
+        </div>
+      </div>
+      <div class="stats-updated">
+        <span class="updated-label">Last Updated</span>
+        <span class="updated-date" id="lastUpdated">Jun 21 2026</span>
+      </div>
+    </div>
+    </div>
 
-
-<div class="icons" aria-label="social links">
+    <div class="icons" aria-label="social links">
     <!-- LinkedIn -->
     <a class="icon" href="https://www.linkedin.com/in/jamilosa/" aria-label="LinkedIn">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" aria-hidden="true">
@@ -140,52 +164,20 @@
       <h2 class="section-title">Projects and Blogs</h2>
 
       <div class="card-grid" id="projectGrid">
-        <article class="card project" data-specialization="cybersecurity it-support">
+        <article class="card project" data-specialization="cybersecurity it-support" data-spec-rankings="{&quot;cybersecurity&quot;: 9, &quot;it-support&quot;: 4}" data-spec-descriptions="{&quot;cybersecurity&quot;: &quot;cyber description&quot;, &quot;it-support&quot;: &quot;it support descriptio&quot;}" data-tag-specs="{&quot;Firewall&quot;: [&quot;cybersecurity&quot;], &quot;Log Management&quot;: [&quot;cybersecurity&quot;], &quot;Network Security&quot;: [&quot;cybersecurity&quot;], &quot;nftables&quot;: [&quot;cybersecurity&quot;], &quot;Linux&quot;: [&quot;global&quot;], &quot;rsyslog&quot;: [&quot;cybersecurity&quot;]}">
           <div class="thumb"><a href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html"><img src="_files/pasted-image-20260614083711.png" alt="Turning 32-bit laptop into an nftables Firewall"></a></div>
           <h3><a href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html" style="color: inherit; text-decoration: none;">Turning 32-bit laptop into an nftables Firewall</a></h3>
-          <p>This project repurposed a retired 32-bit laptop into a Linux-based firewall for a small cybersecurity lab. Using AntiX Linux, nftables, dnsmasq, rsyslog, and logrotate, the firewall provides network address translation (NAT), stateful packet filtering, DNS sinkholing, and centralized logging.</p>
+          <p class="card-description">cyber description</p>
           <div class="tags">
-            <a href="tags/log-management.html" class="chip" data-kind="concept">Log Management</a><a href="tags/linux.html" class="chip" data-kind="tool">Linux</a><a href="tags/nftables.html" class="chip" data-kind="tool">nftables</a><a href="tags/rsyslog.html" class="chip" data-kind="tool">rsyslog</a><a href="tags/network-security.html" class="chip" data-kind="domain">Network Security</a><a href="tags/firewall.html" class="chip" data-kind="concept">Firewall</a>
+            <a href="tags/network-security.html" class="chip" data-kind="domain" data-tag="Network Security">Network Security</a><a href="tags/firewall.html" class="chip" data-kind="concept" data-tag="Firewall">Firewall</a><a href="tags/log-management.html" class="chip" data-kind="concept" data-tag="Log Management">Log Management</a><a href="tags/linux.html" class="chip" data-kind="tool" data-tag="Linux">Linux</a><a href="tags/nftables.html" class="chip" data-kind="tool" data-tag="nftables">nftables</a><a href="tags/rsyslog.html" class="chip" data-kind="tool" data-tag="rsyslog">rsyslog</a>
           </div>
         </article>
-        <article class="card project" data-specialization="cloud">
-          <div class="thumb"><a href="blogs/building-a-cross-cloud-data-pipeline.html"><img src="_files/pasted-image-20260104202514.png" alt="Building a Cross-Cloud Data Pipeline"></a></div>
-          <h3><a href="blogs/building-a-cross-cloud-data-pipeline.html" style="color: inherit; text-decoration: none;">Building a Cross-Cloud Data Pipeline</a></h3>
-          <p>description BCCDP</p>
+        <article class="card project" data-specialization="it-support" data-spec-rankings="{&quot;it-support&quot;: 8}" data-spec-descriptions="{&quot;it-support&quot;: &quot;it support descriptiox&quot;}" data-tag-specs="{&quot;it-supportingxx&quot;: [&quot;it-support&quot;]}">
+          <div class="thumb"><a href="projects/sample-feed.html"><img src="_files/default-thumbnail.png" alt="Sample Feed"></a></div>
+          <h3><a href="projects/sample-feed.html" style="color: inherit; text-decoration: none;">Sample Feed</a></h3>
+          <p class="card-description">it support descriptiox</p>
           <div class="tags">
-            <a href="tags/amazon-web-services.html" class="chip" data-kind="domain">Amazon Web Services</a><a href="tags/bigquery.html" class="chip" data-kind="tool">BigQuery</a><a href="tags/data-engineering.html" class="chip" data-kind="concept">Data Engineering</a><a href="tags/google-cloud-platform.html" class="chip" data-kind="domain">Google Cloud Platform</a><a href="tags/s3.html" class="chip" data-kind="tool">S3</a>
-          </div>
-        </article>
-        <article class="card project" data-specialization="it-support">
-          <div class="thumb"><a href="blogs/powershell-onboarding-scripts-in-a-hybrid-ad-azure-environment.html"><img src="_files/pasted-image-20260104202623.png" alt="PowerShell Onboarding Scripts in a Hybrid AD-Azure Environment"></a></div>
-          <h3><a href="blogs/powershell-onboarding-scripts-in-a-hybrid-ad-azure-environment.html" style="color: inherit; text-decoration: none;">PowerShell Onboarding Scripts in a Hybrid AD-Azure Environment</a></h3>
-          <p>description POSHADAE</p>
-          <div class="tags">
-            <a href="tags/onboarding.html" class="chip" data-kind="concept">Onboarding</a><a href="tags/it-support.html" class="chip" data-kind="domain">IT Support</a><a href="tags/automation.html" class="chip" data-kind="concept">Automation</a><a href="tags/powershell.html" class="chip" data-kind="tool">PowerShell</a><a href="tags/active-directory.html" class="chip" data-kind="concept">Active Directory</a><a href="tags/azure-ad.html" class="chip" data-kind="concept">Azure AD</a>
-          </div>
-        </article>
-        <article class="card project" data-specialization="it-support cloud">
-          <div class="thumb"><a href="blogs/secret-management-in-aws-secrets-manager-vs.-google-secret-manager.html"><img src="_files/default-thumbnail.png" alt="Secret Management in AWS Secrets Manager vs. Google Secret Manager"></a></div>
-          <h3><a href="blogs/secret-management-in-aws-secrets-manager-vs.-google-secret-manager.html" style="color: inherit; text-decoration: none;">Secret Management in AWS Secrets Manager vs. Google Secret Manager</a></h3>
-          <p>description SMASMGPSM</p>
-          <div class="tags">
-            <a href="tags/secrets-management.html" class="chip" data-kind="concept">Secrets Management</a><a href="tags/amazon-web-services.html" class="chip" data-kind="domain">Amazon Web Services</a><a href="tags/security.html" class="chip" data-kind="concept">Security</a><a href="tags/google-cloud-platform.html" class="chip" data-kind="domain">Google Cloud Platform</a><a href="tags/devops.html" class="chip" data-kind="concept">DevOps</a>
-          </div>
-        </article>
-        <article class="card project" data-specialization="it-support">
-          <div class="thumb"><a href="blogs/troubleshooting-gpo-driven-drive-mappings.html"><img src="_files/default-thumbnail.png" alt="Troubleshooting GPO-Driven Drive Mappings"></a></div>
-          <h3><a href="blogs/troubleshooting-gpo-driven-drive-mappings.html" style="color: inherit; text-decoration: none;">Troubleshooting GPO-Driven Drive Mappings</a></h3>
-          <p>description TGDD</p>
-          <div class="tags">
-            <a href="tags/networking.html" class="chip" data-kind="concept">Networking</a><a href="tags/windows.html" class="chip" data-kind="tool">Windows</a><a href="tags/group-policy.html" class="chip" data-kind="concept">Group Policy</a><a href="tags/it-support.html" class="chip" data-kind="domain">IT Support</a><a href="tags/troubleshooting.html" class="chip" data-kind="concept">Troubleshooting</a><a href="tags/dfs.html" class="chip" data-kind="concept">DFS</a>
-          </div>
-        </article>
-        <article class="card project" data-specialization="cybersecurity">
-          <div class="thumb"><a href="blogs/weaponizing-public-buckets.html"><img src="_files/default-thumbnail.png" alt="Weaponizing Public Buckets"></a></div>
-          <h3><a href="blogs/weaponizing-public-buckets.html" style="color: inherit; text-decoration: none;">Weaponizing Public Buckets</a></h3>
-          <p>description WPB</p>
-          <div class="tags">
-            <a href="tags/reconnaissance.html" class="chip" data-kind="concept">Reconnaissance</a><a href="tags/amazon-web-services.html" class="chip" data-kind="domain">Amazon Web Services</a><a href="tags/privilege-escalation.html" class="chip" data-kind="concept">Privilege Escalation</a><a href="tags/penetration-testing.html" class="chip" data-kind="domain">Penetration Testing</a><a href="tags/cloud-security.html" class="chip" data-kind="domain">Cloud Security</a>
+            <a href="tags/it-supportingxx.html" class="chip" data-kind="domain" data-tag="it-supportingxx">it-supportingxx</a>
           </div>
         </article>
       

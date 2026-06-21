@@ -170,32 +170,148 @@ function renderChips(container, freqMap, kind, limit) {
   render(false); // default collapsed
 }
 
+function updatePortfolioStats(spec) {
+  /**
+   * Update portfolio stats display based on current specialization
+   * Reads data-portfolio-stats from portfolioStats element and updates stat values
+   */
+  const portfolioStats = document.getElementById('portfolioStats');
+  if (!portfolioStats) return;
+  
+  const statsData = portfolioStats.dataset.portfolioStats;
+  if (!statsData) {
+    console.warn('[updatePortfolioStats] No stats data found');
+    return;
+  }
+  
+  try {
+    const stats = JSON.parse(statsData);
+    const specStats = stats[spec] || { project: 0, lab: 0, writeup: 0 };
+    
+    // Update stat values
+    const projectStat = document.querySelector('[data-type="project"]');
+    const labStat = document.querySelector('[data-type="lab"]');
+    const writeupStat = document.querySelector('[data-type="writeup"]');
+    
+    if (projectStat) projectStat.textContent = specStats.project || 0;
+    if (labStat) labStat.textContent = specStats.lab || 0;
+    if (writeupStat) writeupStat.textContent = specStats.writeup || 0;
+    
+    console.log(`[updatePortfolioStats] Updated for ${spec}: ${specStats.project} projects, ${specStats.lab} labs, ${specStats.writeup} writeups`);
+  } catch (e) {
+    console.warn('[updatePortfolioStats] Failed to parse stats data:', e);
+  }
+}
+
 function updateView() {
   const spec = specializationSelect.value;
+  console.log(`[updateView] Switching to specialization: ${spec}`);
 
-  // Filter projects
-  const cards = projectGrid.querySelectorAll('.project');
+  // Filter projects and update descriptions
+  const cards = Array.from(projectGrid.querySelectorAll('.project'));
   let visibleCount = 0;
+  
   cards.forEach(card => {
     const specAttr = card.dataset.specialization;
     // Cards with no specialization are shown in all views
     const specs = specAttr ? specAttr.split(" ") : [spec];
     const show = specs.includes(spec);
     card.style.display = show ? '' : 'none';
+    
+    // Update description for this specialization if available
+    if (show) {
+      const specDescriptions = card.dataset.specDescriptions;
+      if (specDescriptions) {
+        try {
+          const descMap = JSON.parse(specDescriptions);
+          const descElement = card.querySelector('.card-description');
+          if (descElement && descMap[spec]) {
+            descElement.textContent = descMap[spec];
+          }
+        } catch (e) {
+          console.warn(`[updateView] Failed to parse spec descriptions:`, e);
+        }
+      }
+      
+      // Update tags visibility based on spec
+      const tagSpecsMap = card.dataset.tagSpecs;
+      if (tagSpecsMap) {
+        try {
+          const tagsSpec = JSON.parse(tagSpecsMap);
+          const tagElements = card.querySelectorAll('.chip[data-tag]');
+          tagElements.forEach(tagEl => {
+            const tagName = tagEl.dataset.tag;
+            const tagSpecs = tagsSpec[tagName];
+            // Show tag if: it includes current spec OR it includes 'global'
+            if (tagSpecs && (tagSpecs.includes(spec) || tagSpecs.includes('global'))) {
+              tagEl.style.display = '';
+            } else {
+              tagEl.style.display = 'none';
+            }
+          });
+        } catch (e) {
+          console.warn(`[updateView] Failed to parse tag specs:`, e);
+        }
+      }
+    }
+    
     if (show) visibleCount++;
   });
 
-  // Collect frequency maps
+  console.log(`[updateView] Visible cards: ${visibleCount}`);
+
+  // Sort visible cards by their spec-specific ranking
+  const visibleCards = cards.filter(card => card.style.display !== 'none');
+  visibleCards.sort((cardA, cardB) => {
+    const rankingsA = cardA.dataset.specRankings;
+    const rankingsB = cardB.dataset.specRankings;
+    
+    let rankA = 0;
+    let rankB = 0;
+    
+    if (rankingsA) {
+      try {
+        const ranksA = JSON.parse(rankingsA);
+        rankA = ranksA[spec] || 0;
+      } catch (e) {
+        console.warn(`[updateView] Failed to parse rankings for card A:`, e);
+      }
+    }
+    
+    if (rankingsB) {
+      try {
+        const ranksB = JSON.parse(rankingsB);
+        rankB = ranksB[spec] || 0;
+      } catch (e) {
+        console.warn(`[updateView] Failed to parse rankings for card B:`, e);
+      }
+    }
+    
+    // Sort descending (highest rank first)
+    return rankB - rankA;
+  });
+  
+  // Reorder cards in DOM based on sorted order
+  visibleCards.forEach(card => {
+    projectGrid.appendChild(card);
+  });
+
+  // Collect frequency maps from visible cards only (only visible tags)
   const domains = {};
   const concepts = {};
   const tools = {};
 
-  projectGrid.querySelectorAll(`.project[data-specialization*="${spec}"] .chip`).forEach(chip => {
-    const kind = chip.dataset.kind;
-    const text = chip.textContent.trim();
-    if (kind === 'domain') domains[text] = (domains[text] || 0) + 1;
-    if (kind === 'concept') concepts[text] = (concepts[text] || 0) + 1;
-    if (kind === 'tool') tools[text] = (tools[text] || 0) + 1;
+  visibleCards.forEach(card => {
+    // Only count visible tags
+    card.querySelectorAll('.chip[data-tag]').forEach(chip => {
+      if (chip.style.display !== 'none') {
+        const kind = chip.dataset.kind;
+        const text = chip.textContent.trim();
+        if (kind === 'domain') domains[text] = (domains[text] || 0) + 1;
+        if (kind === 'concept') concepts[text] = (concepts[text] || 0) + 1;
+        if (kind === 'tool') tools[text] = (tools[text] || 0) + 1;
+      }
+    });
   });
 
   // render chips with limits
@@ -208,11 +324,16 @@ function updateView() {
   // Practical training - now with links from spec files
   renderTrainingList(trainingList, spec);
 
+  // Update Portfolio Stats for current specialization
+  updatePortfolioStats(spec);
+
   // Update CV view link
   if (downloadCvBtn) { //Specialized CV filename: `Ryan_Jamilosa_${spec}_resume_2026.pdf` 
     const filename = `Ryan_Jamilosa_resume_2026.pdf`;
     downloadCvBtn.dataset.cvPath = `./cv/${filename}`;
   }
+  
+  console.log(`[updateView] Complete`);
 }
 
 // Check for URL parameter on page load
