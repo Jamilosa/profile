@@ -386,7 +386,7 @@ body{
 aside.sidebar{
   min-width:35%;
   max-width: 520px;
-  padding:56px 40px; /* Further reduced right padding to accommodate icons */
+  padding:56px 28px 20px 40px; /* top left bottom right - keeping top/left, reducing right/bottom */
   position:sticky;
   top:0;
   align-self:flex-start;
@@ -403,6 +403,11 @@ aside.sidebar{
   flex: 1;
   min-height: 0; /* Important for flex child with overflow */
   overflow: hidden; /* Prevent content overflow */
+}
+
+/* Add a small left offset to all sidebar content blocks except the icons row */
+#sidebarContent > *:not(.icons-wrapper) {
+  margin-left: 3px;
 }
 
 main.content{
@@ -425,11 +430,35 @@ h1{
   margin:0 0 12px 0; 
   font-size: var(--font-h4);
   font-weight: var(--font-weight-medium);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3em;
+}
+
+.subtitle-word {
+  color: var(--muted);
+  transition: color 0.6s ease;
+}
+
+.subtitle-word.active-cybersecurity {
+  color: #4ade80; /* Clean terminal green */
+}
+
+.subtitle-word.active-it-support {
+  color: #38bdf8; /* Clean data blue */
+}
+
+.subtitle-word.active-cloud {
+  color: #fbbf24; /* Warm amber for cloud */
+}
+
+.subtitle-word.active-data-analyst {
+  color: #c084fc; /* Purple for data */
 }
 .tagline{ 
   color:var(--muted); 
   font-style:italic; 
-  margin:0 0 22px 0;
+  margin:0 0 16px 0;
   font-size: var(--font-h4);
   font-weight: var(--font-weight-normal);
 }
@@ -437,7 +466,7 @@ h1{
   display: flex; /* Changed from grid to flex */
   align-items: center; /* Vertically center items */
   gap: 12px; /* Space between label and select */
-  margin: 18px 0 26px 0;
+  margin: 12px 0 8px 0;
 }
 
 .field label { 
@@ -482,62 +511,104 @@ h1{
   outline: none;
 }
 
-.icons { 
+.icons-wrapper { 
   display: flex; 
   gap: 12px;
-  padding-top: 24px;
+  padding-top: 8px;
+  margin-bottom: 2px;
+  flex-direction: row;
   flex-shrink: 0;
   justify-content: flex-start;
-  margin-top: auto; /* Push icons to bottom in flexbox */
+}
+
+.icons-wrapper > a.icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+.icons-wrapper > button.icon {
+  height: 40px;
+  flex-shrink: 0;
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
+.icons-wrapper > a.icon svg,
+.icons-wrapper > button.icon svg {
+  width: 22px;
+  height: 22px;
 }
 
 /* Portfolio Stats - visible only on large screens */
 .portfolio-stats {
-  margin-top: 24px;
-  padding: 16px 0;
-  border-top: 1px solid var(--divider);
-  border-bottom: 1px solid var(--divider);
+  margin-top: 0;
+  padding: 8px 0 12px 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
+}
+
+#portfolioStatsContainer {
+}
+
+#lastUpdatedContainer {
+  margin-top: auto;
+  padding-bottom: 16px;
+  margin-bottom: 12px; /* add breathing room between date and bottom icons/logo */
 }
 
 .stats-title {
   font-size: var(--font-small);
   font-weight: var(--font-weight-semibold);
-  color: var(--text);
-  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 4px 0;
   letter-spacing: 0.5px;
-  margin: 0;
+}
+
+.stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-line {
+  display: flex;
+  gap: 8px;
+  font-size: var(--font-small);
+  font-weight: var(--font-weight-bold);
 }
 
 .stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  display: none;
 }
 
 .stat-item {
+  display: none;
+}
+
+.stat-line {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 12px;
-  background: var(--chip);
-  border-radius: var(--radius);
-  text-align: center;
+  gap: 8px;
+  font-size: var(--font-body); /* slightly larger for readability */
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.5px;
 }
 
 .stat-label {
-  font-size: var(--font-xs);
   color: var(--muted);
-  font-weight: var(--font-weight-normal);
+  font-weight: inherit;
+  flex-shrink: 0;
+  text-align: right;
+  white-space: pre;
 }
 
 .stat-value {
-  font-size: 24px;
+  color: var(--text);
   font-weight: var(--font-weight-bold);
-  color: var(--accent);
+  font-size: var(--font-body);
 }
 
 .stats-updated {
@@ -545,37 +616,31 @@ h1{
   flex-direction: row;
   gap: 8px;
   align-items: baseline;
-  font-size: var(--font-xs);
+  font-size: var(--font-small);
+  margin-top: 16px;
 }
 
 .updated-label {
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: var(--font-weight-medium);
+  font-size: var(--font-small);
+  font-weight: var(--font-weight-normal);
 }
 
 .updated-date {
-  color: var(--text);
+  color: var(--muted);
   font-size: var(--font-small);
+  font-weight: var(--font-weight-normal);
+  letter-spacing: normal;
 }
 
-/* Media query for larger screens to ensure proper spacing */
-@media (min-width: 981px) {
-  .icons {
-    /* Ensure minimum distance from dropdown but don't force too much space */
-    margin-top: max(24px, auto);
-  }
-  
-  /* Remove the min-height that was causing overflow */
-}
+/* Only icons-wrapper needs margin-top: auto !important in base styles */
 
 @media (min-width: 981px) and (max-height: 800px) {
-  .icons {
-    margin-bottom: 50px; /* Fixed margin instead of auto on shorter screens */
-    gap: 12px; /* Maintain gap even on smaller screens */
-    padding-top: 16px; /* Reduce padding */
-  }
+  /* Compact spacing for shorter screens */
+  h1 { font-size: 36px; margin-bottom: 4px; }
+  .title { font-size: 16px; margin-bottom: 8px; }
+  .tagline { font-size: 14px; margin-bottom: 16px; }
+  .field { margin: 12px 0 8px 0; }
   
   .icon {
     width: 38px; /* Slightly smaller icons */
@@ -586,12 +651,6 @@ h1{
     width: 18px;
     height: 18px;
   }
-  
-  /* Compact spacing for shorter screens */
-  h1 { font-size: 36px; margin-bottom: 4px; }
-  .title { font-size: 16px; margin-bottom: 8px; }
-  .tagline { font-size: 14px; margin-bottom: 16px; }
-  .field { margin: 12px 0 20px 0; }
 }
 
 .icon {
@@ -610,6 +669,8 @@ h1{
   font: inherit;
   cursor: pointer;
   flex-shrink: 0; /* Keep icons at fixed square size */
+  padding: 8px;
+  box-sizing: border-box;
 }
 
 .icon svg {
@@ -861,6 +922,11 @@ ul.clean{
     background: var(--bg);
   }
 
+  #portfolioStatsContainer,
+  #lastUpdatedContainer {
+    display: none;
+  }
+
   aside.sidebar{
     position:static;
     width:100%;
@@ -874,7 +940,7 @@ ul.clean{
     display: block; /* Reset flex on mobile */
   }
 
-  .icons {
+  .icons-wrapper {
     position: static;
     margin-top: 40px;
     margin-bottom: 24px;

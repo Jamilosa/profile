@@ -45,37 +45,39 @@ const downloadCvBtn = document.getElementById('download-cv'); // <-- your CV but
 
 const TRAINING_BY_SPEC = {
   'cloud': [
-    'Launched EC2/Linux VM and secured SSH (key-based auth, ufw).',
-    'Configured S3 static hosting and CloudFront distribution.',
-    'Wrote basic IaC snippets (AWS CLI / user data) and deployment notes.',
+    'Title.',
   ],
   'cybersecurity': [
-    'Built a Wazuh SIEM lab and tuned basic rules.',
-    'Practiced packet capture and log analysis (tcpdump/Wireshark).',
-    'Hardened Linux services with firewall rules and least-privilege users.',
+    'Implemented basic network defenses and configured stateful firewall rules.',
+    'Basic understanding of Linux operating system (directory structure, and command-line operations).',
+    'Basic understanding of event log (structures, event fields, and collection utilities).',
+  ],
+  'data-analyst': [
+    'Practical for data',
+    'Practical for data 2',
   ],
   'it-support': [
-    'Resolved simulated tickets (account lockout, printer setup, Wi-Fi issues).',
-    'Documented SOPs for password resets and on-boarding.',
-    'Performed AD user lifecycle tasks in a lab (create/disable, groups).',
+    'Installed, managed, and troubleshot physical hardware and software components.',
+    'Basic understanding of networking concepts (OSI model, static routing, and common service ports).',
   ],
 };
 
 const TRAINING_LINKS_BY_SPEC = {
   'cloud': {
-    'Launched EC2/Linux VM and secured SSH (key-based auth, ufw).': 'blogs/building-a-cross-cloud-data-pipeline.html',
-    'Configured S3 static hosting and CloudFront distribution.': 'blogs/weaponizing-public-buckets.html',
-    'Wrote basic IaC snippets (AWS CLI / user data) and deployment notes.': 'blogs/weaponizing-public-buckets.html',
+    'Title.': '.html',
   },
   'cybersecurity': {
-    'Built a Wazuh SIEM lab and tuned basic rules.': 'projects/iptables-firewall-setup.html',
-    'Practiced packet capture and log analysis (tcpdump/Wireshark).': 'projects/iptables-firewall-setup.html',
-    'Hardened Linux services with firewall rules and least-privilege users.': 'blogs/building-a-cross-cloud-data-pipeline.html',
+    'Implemented basic network defenses and configured stateful firewall rules.': 'notes/implemented-network-defenses.html',
+    'Basic understanding of Linux operating system (directory structure, and command-line operations).': 'notes/understanding-of-linux-operating-system.html',
+    'Basic understanding of event log (structures, event fields, and collection utilities).': 'notes/understanding-of-event-logs.html',
+  },
+  'data-analyst': {
+    'Practical for data': '.html',
+    'Practical for data 2': '.html',
   },
   'it-support': {
-    'Resolved simulated tickets (account lockout, printer setup, Wi-Fi issues).': 'blogs/powershell-onboarding-scripts-in-a-hybrid-ad-azure-environment.html',
-    'Documented SOPs for password resets and on-boarding.': 'blogs/secret-management-in-aws-secrets-manager-vs.-google-secret-manager.html',
-    'Performed AD user lifecycle tasks in a lab (create/disable, groups).': 'blogs/powershell-onboarding-scripts-in-a-hybrid-ad-azure-environment.html',
+    'Installed, managed, and troubleshot physical hardware and software components.': 'notes/installation,-management,-and-troubleshooting-of-hardware-and-software-components.html',
+    'Basic understanding of networking concepts (OSI model, static routing, and common service ports).': 'notes/understanding-of-networking-concepts.html',
   },
 };function getUrlParameter(name) {
   name = name.replace(/[[]/, '\\[').replace(/[\]]/, '\\]');
@@ -88,6 +90,76 @@ const TRAINING_LINKS_BY_SPEC = {
 const DOMAIN_LIMIT = 5;
 const CONCEPT_LIMIT = 5;
 const TOOL_LIMIT = 7;
+
+// Specialization display names (user-friendly labels)
+const SPEC_DISPLAY_NAMES = {
+  'cybersecurity': 'Cybersecurity',
+  'it-support': 'IT Support',
+  'cloud': 'Cloud',
+  'data-analyst': 'Data Analytics',
+};
+
+function updateSubtitle() {
+  /**
+   * Generate subtitle from available specialization options
+   * and apply color highlighting based on current selection
+   */
+  const subtitleEl = document.getElementById('subtitle');
+  if (!subtitleEl) return;
+
+  // Get all available specializations from the dropdown
+  const options = Array.from(specializationSelect.querySelectorAll('option'))
+    .map(opt => ({
+      value: opt.value,
+      display: SPEC_DISPLAY_NAMES[opt.value] || opt.textContent
+    }))
+    .filter(opt => opt.value); // exclude empty options
+
+  // Create the subtitle with spans for each specialization
+  subtitleEl.innerHTML = '';
+  options.forEach((opt, idx) => {
+    const span = document.createElement('span');
+    span.className = 'subtitle-word';
+    span.textContent = opt.display;
+    span.dataset.spec = opt.value;
+    subtitleEl.appendChild(span);
+
+    // Add separator between items (except last)
+    if (idx < options.length - 1) {
+      const sep = document.createElement('span');
+      sep.textContent = '|';
+      sep.style.opacity = '0.5';
+      subtitleEl.appendChild(sep);
+    }
+  });
+
+  // Apply active color
+  updateSubtitleColors();
+}
+
+function updateSubtitleColors() {
+  /**
+   * Update subtitle word colors based on current specialization
+   */
+  const currentSpec = specializationSelect.value;
+  const subtitleWords = document.querySelectorAll('.subtitle-word');
+
+  subtitleWords.forEach(word => {
+    const spec = word.dataset.spec;
+    // Remove all active classes
+    word.classList.remove(
+      'active-cybersecurity',
+      'active-it-support',
+      'active-cloud',
+      'active-data-analyst'
+    );
+    
+    // Add active class if this word matches current spec
+    if (spec === currentSpec) {
+      word.classList.add(`active-${spec}`);
+    }
+  });
+}
 
 function renderList(el, items) {
   el.innerHTML = '';
@@ -174,6 +246,7 @@ function updatePortfolioStats(spec) {
   /**
    * Update portfolio stats display based on current specialization
    * Reads data-portfolio-stats from portfolioStats element and updates stat values
+   * Also updates the Last Updated date based on spec-specific date
    */
   const portfolioStats = document.getElementById('portfolioStats');
   if (!portfolioStats) return;
@@ -186,7 +259,7 @@ function updatePortfolioStats(spec) {
   
   try {
     const stats = JSON.parse(statsData);
-    const specStats = stats[spec] || { project: 0, lab: 0, writeup: 0 };
+    const specStats = stats[spec] || { project: 0, lab: 0, writeup: 0, lastUpdated: 'N/A' };
     
     // Update stat values
     const projectStat = document.querySelector('[data-type="project"]');
@@ -197,7 +270,13 @@ function updatePortfolioStats(spec) {
     if (labStat) labStat.textContent = specStats.lab || 0;
     if (writeupStat) writeupStat.textContent = specStats.writeup || 0;
     
-    console.log(`[updatePortfolioStats] Updated for ${spec}: ${specStats.project} projects, ${specStats.lab} labs, ${specStats.writeup} writeups`);
+    // Update last updated date for this spec
+    const lastUpdatedElement = document.getElementById('lastUpdated');
+    if (lastUpdatedElement) {
+      lastUpdatedElement.textContent = specStats.lastUpdated || 'N/A';
+    }
+    
+    console.log(`[updatePortfolioStats] Updated for ${spec}: ${specStats.project} projects, ${specStats.lab} labs, ${specStats.writeup} writeups, last updated: ${specStats.lastUpdated}`);
   } catch (e) {
     console.warn('[updatePortfolioStats] Failed to parse stats data:', e);
   }
@@ -207,7 +286,8 @@ function updateView() {
   const spec = specializationSelect.value;
   console.log(`[updateView] Switching to specialization: ${spec}`);
 
-  // Filter projects and update descriptions
+  // Update subtitle colors for new selection
+  updateSubtitleColors();
   const cards = Array.from(projectGrid.querySelectorAll('.project'));
   let visibleCount = 0;
   
@@ -342,6 +422,10 @@ document.addEventListener('DOMContentLoaded', () => {
   if (specParam && specializationSelect.querySelector(`option[value="${specParam}"]`)) {
     specializationSelect.value = specParam;
   }
+  
+  // Generate subtitle from available specializations
+  updateSubtitle();
+  
   updateView();
 });
 

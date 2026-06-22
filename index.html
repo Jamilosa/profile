@@ -53,8 +53,8 @@
 
     <div id="sidebarContent" class="sidebar-collapsible">
       <h1>Ryan Jamilosa</h1>
-      <div class="title">IT | Cybersecurity | Cloud</div>
-      <p class="tagline">Not an expert yet, but actively becoming one.</p>
+      <div class="title" id="subtitle"></div>
+      <!--<p class="tagline">Not an expert yet, but actively becoming one.</p> -->
 
       <div class="field">
         <label for="specialization">Focus: </label>
@@ -65,33 +65,33 @@
         </select>
       </div>
 
-    <!-- Portfolio Stats Container (unique ID for script updates) -->
+    <!-- Portfolio Stats Container (unique ID for script updates) - below focus dropdown -->
     <div id="portfolioStatsContainer">
-    <!-- Portfolio Stats (visible only on large screens) -->
-    <div class="portfolio-stats" id="portfolioStats" data-portfolio-stats="{&quot;it-support&quot;: {&quot;project&quot;: 2, &quot;lab&quot;: 0, &quot;writeup&quot;: 0}, &quot;cybersecurity&quot;: {&quot;project&quot;: 1, &quot;lab&quot;: 0, &quot;writeup&quot;: 0}, &quot;lastUpdated&quot;: &quot;Jun 21 2026&quot;}">
-      <h3 class="stats-title">Portfolio Stats</h3>
-      <div class="stats-grid">
-        <div class="stat-item">
-          <span class="stat-label">Projects</span>
-          <span class="stat-value" data-type="project">1</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Labs</span>
-          <span class="stat-value" data-type="lab">0</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Writeups</span>
-          <span class="stat-value" data-type="writeup">0</span>
+<div class="portfolio-stats" id="portfolioStats" data-portfolio-stats="{&quot;cybersecurity&quot;: {&quot;project&quot;: 1, &quot;lab&quot;: 0, &quot;writeup&quot;: 0, &quot;lastUpdated&quot;: &quot;Jun 14, 2026&quot;}, &quot;it-support&quot;: {&quot;project&quot;: 1, &quot;lab&quot;: 0, &quot;writeup&quot;: 0, &quot;lastUpdated&quot;: &quot;Jun 14, 2026&quot;}}">
+        <h3 class="stats-title">Portfolio Stats</h3>
+        <div class="stats-list">
+          <div class="stat-line">
+            <span class="stat-label">Projects:&#9;</span>
+            <span class="stat-value" data-type="project">1</span>
+          </div>
+          <div class="stat-line">
+            <span class="stat-label">Labs:&#9;&#9;</span>
+            <span class="stat-value" data-type="lab">0</span>
+          </div>
+          <div class="stat-line">
+            <span class="stat-label">Writeups:&#9;</span>
+            <span class="stat-value" data-type="writeup">0</span>
+          </div>
         </div>
       </div>
-      <div class="stats-updated">
-        <span class="updated-label">Last Updated</span>
-        <span class="updated-date" id="lastUpdated">Jun 21 2026</span>
-      </div>
-    </div>
     </div>
 
-    <div class="icons" aria-label="social links">
+    <div id="lastUpdatedContainer" class="stats-updated">
+        <span class="updated-label">Last Updated:</span>
+        <span class="updated-date" id="lastUpdated">Jun 14, 2026</span>
+      </div>
+
+    <div class="icons-wrapper" aria-label="social links">
     <!-- LinkedIn -->
     <a class="icon" href="https://www.linkedin.com/in/jamilosa/" aria-label="LinkedIn">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" aria-hidden="true">
@@ -164,20 +164,12 @@
       <h2 class="section-title">Projects and Blogs</h2>
 
       <div class="card-grid" id="projectGrid">
-        <article class="card project" data-specialization="cybersecurity it-support" data-spec-rankings="{&quot;cybersecurity&quot;: 9, &quot;it-support&quot;: 4}" data-spec-descriptions="{&quot;cybersecurity&quot;: &quot;cyber description&quot;, &quot;it-support&quot;: &quot;it support descriptio&quot;}" data-tag-specs="{&quot;Firewall&quot;: [&quot;cybersecurity&quot;], &quot;Log Management&quot;: [&quot;cybersecurity&quot;], &quot;Network Security&quot;: [&quot;cybersecurity&quot;], &quot;nftables&quot;: [&quot;cybersecurity&quot;], &quot;Linux&quot;: [&quot;global&quot;], &quot;rsyslog&quot;: [&quot;cybersecurity&quot;]}">
+        <article class="card project" data-specialization="cybersecurity it-support" data-spec-descriptions="{&quot;cybersecurity&quot;: &quot;Repurposed a retired 32-bit laptop into a Linux-based firewall for a small cybersecurity lab. Using AntiX Linux, nftables, dnsmasq, rsyslog, and logrotate, the firewall provides network address translation (NAT), stateful packet filtering, DNS sinkholing, and centralized logging.&quot;, &quot;it-support&quot;: &quot;Extended the usability of legacy 32-bit laptop by upgrading hardware components, installing a lightweight operating system, and configuring the device as a firewall host.&quot;}" data-tag-specs="{&quot;nftables&quot;: [&quot;cybersecurity&quot;], &quot;Log Management&quot;: [&quot;cybersecurity&quot;], &quot;Network Security&quot;: [&quot;cybersecurity&quot;], &quot;System Administration&quot;: [&quot;it-support&quot;], &quot;DNS Sinkhole&quot;: [&quot;cybersecurity&quot;], &quot;Hardware Troubleshooting&quot;: [&quot;it-support&quot;], &quot;Firewall&quot;: [&quot;cybersecurity&quot;], &quot;Linux&quot;: [&quot;global&quot;], &quot;rsyslog&quot;: [&quot;cybersecurity&quot;]}">
           <div class="thumb"><a href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html"><img src="_files/pasted-image-20260614083711.png" alt="Turning 32-bit laptop into an nftables Firewall"></a></div>
           <h3><a href="projects/turning-32-bit-laptop-into-an-nftables-firewall.html" style="color: inherit; text-decoration: none;">Turning 32-bit laptop into an nftables Firewall</a></h3>
-          <p class="card-description">cyber description</p>
+          <p class="card-description">Repurposed a retired 32-bit laptop into a Linux-based firewall for a small cybersecurity lab. Using AntiX Linux, nftables, dnsmasq, rsyslog, and logrotate, the firewall provides network address translation (NAT), stateful packet filtering, DNS sinkholing, and centralized logging.</p>
           <div class="tags">
-            <a href="tags/network-security.html" class="chip" data-kind="domain" data-tag="Network Security">Network Security</a><a href="tags/firewall.html" class="chip" data-kind="concept" data-tag="Firewall">Firewall</a><a href="tags/log-management.html" class="chip" data-kind="concept" data-tag="Log Management">Log Management</a><a href="tags/linux.html" class="chip" data-kind="tool" data-tag="Linux">Linux</a><a href="tags/nftables.html" class="chip" data-kind="tool" data-tag="nftables">nftables</a><a href="tags/rsyslog.html" class="chip" data-kind="tool" data-tag="rsyslog">rsyslog</a>
-          </div>
-        </article>
-        <article class="card project" data-specialization="it-support" data-spec-rankings="{&quot;it-support&quot;: 8}" data-spec-descriptions="{&quot;it-support&quot;: &quot;it support descriptiox&quot;}" data-tag-specs="{&quot;it-supportingxx&quot;: [&quot;it-support&quot;]}">
-          <div class="thumb"><a href="projects/sample-feed.html"><img src="_files/default-thumbnail.png" alt="Sample Feed"></a></div>
-          <h3><a href="projects/sample-feed.html" style="color: inherit; text-decoration: none;">Sample Feed</a></h3>
-          <p class="card-description">it support descriptiox</p>
-          <div class="tags">
-            <a href="tags/it-supportingxx.html" class="chip" data-kind="domain" data-tag="it-supportingxx">it-supportingxx</a>
+            <a href="tags/network-security.html" class="chip" data-kind="domain" data-tag="Network Security">Network Security</a><a href="tags/system-administration.html" class="chip" data-kind="domain" data-tag="System Administration">System Administration</a><a href="tags/dns-sinkhole.html" class="chip" data-kind="concept" data-tag="DNS Sinkhole">DNS Sinkhole</a><a href="tags/firewall.html" class="chip" data-kind="concept" data-tag="Firewall">Firewall</a><a href="tags/hardware-troubleshooting.html" class="chip" data-kind="concept" data-tag="Hardware Troubleshooting">Hardware Troubleshooting</a><a href="tags/log-management.html" class="chip" data-kind="concept" data-tag="Log Management">Log Management</a><a href="tags/linux.html" class="chip" data-kind="tool" data-tag="Linux">Linux</a><a href="tags/nftables.html" class="chip" data-kind="tool" data-tag="nftables">nftables</a><a href="tags/rsyslog.html" class="chip" data-kind="tool" data-tag="rsyslog">rsyslog</a>
           </div>
         </article>
       
