@@ -45,7 +45,7 @@ const downloadCvBtn = document.getElementById('download-cv'); // <-- your CV but
 
 const TRAINING_BY_SPEC = {
   'cloud': [
-    'Title.',
+    'Practical_Training_1',
   ],
   'cybersecurity': [
     'Implemented basic network defenses and configured stateful firewall rules.',
@@ -64,7 +64,7 @@ const TRAINING_BY_SPEC = {
 
 const TRAINING_LINKS_BY_SPEC = {
   'cloud': {
-    'Title.': '.html',
+    'Practical_Training_1': '.html',
   },
   'cybersecurity': {
     'Implemented basic network defenses and configured stateful firewall rules.': 'notes/implemented-network-defenses.html',

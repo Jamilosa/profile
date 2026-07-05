@@ -1,0 +1,601 @@
+<!DOCTYPE html> <html lang="en"><head>
+<title>Bridging Lab to the Cloud with Site-to-Site VPN</title>
+<base href="..">
+<meta name="pathname" content="projects/bridging-lab-to-the-cloud-with-site-to-site-vpn.html">
+<meta name="description" content="Explorer - Bridging Lab to the Cloud with Site-to-Site VPN">
+<meta property="og:title" content="Bridging Lab to the Cloud with Site-to-Site VPN">
+<meta property="og:description" content="Explorer - Bridging Lab to the Cloud with Site-to-Site VPN">
+<meta property="og:type" content="website">
+<meta property="og:url" content="projects/bridging-lab-to-the-cloud-with-site-to-site-vpn.html">
+<meta property="og:image" content="_files/pasted-image-20260628123544.png">
+<meta charset="UTF-8"><meta property="og:site_name" content="Explorer"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=1.0, maximum-scale=5.0"><script async="" id="webpage-script" src="site-lib/scripts/webpage.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><script async="" id="graph-wasm-script" src="site-lib/scripts/graph-wasm.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><script async="" id="graph-render-worker-script" src="site-lib/scripts/graph-render-worker.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><link rel="icon" href="site-lib/media/favicon.ico"><link rel="preload" href="site-lib/styles/snippets.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="site-lib/styles/snippets.css"></noscript><link rel="stylesheet" href="site-lib/styles/obsidian.css"><link rel="stylesheet" href="site-lib/styles/theme.css"><link rel="preload" href="site-lib/styles/global-variable-styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="site-lib/styles/global-variable-styles.css"></noscript><link rel="preload" href="site-lib/styles/main-styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="site-lib/styles/main-styles.css"></noscript><style>body{--line-width:40em;--line-width-adaptive:40em;--file-line-width:40em;--sidebar-width:min(20em, 80vw);--collapse-arrow-size:11px;--tree-vertical-spacing:1.3em;--sidebar-margin:12px}:root{background-color:#202124}.sidebar{height:100%;font-size:14px;z-index:10;min-width:calc(var(--sidebar-width) + var(--divider-width-hover));max-width:calc(var(--sidebar-width) + var(--divider-width-hover));position:relative;overflow:hidden;overflow:clip;transition:min-width ease-in-out,max-width ease-in-out;transition-duration:.2s;contain:size}#left-sidebar{left:0}#right-sidebar{right:0}.sidebar.is-collapsed{min-width:0;max-width:0}.sidebar.floating{position:absolute}.sidebar .leaf-content{height:100%;min-width:calc(var(--sidebar-width) - var(--divider-width-hover));top:0;padding:var(--sidebar-margin);padding-top:4em;line-height:var(--line-height-tight);background-color:var(--background-secondary);transition:background-color,border-right,border-left,box-shadow;transition-duration:var(--color-fade-speed);transition-timing-function:ease-in-out;position:absolute;display:flex;flex-direction:column}.sidebar:not(.is-collapsed) .leaf-content{min-width:calc(max(100%,var(--sidebar-width)) - 3px);max-width:calc(max(100%,var(--sidebar-width)) - 3px)}#left-sidebar-content{left:0;border-top-right-radius:var(--radius-l);border-bottom-right-radius:var(--radius-l)}#right-sidebar-content{right:0;border-top-left-radius:var(--radius-l);border-bottom-left-radius:var(--radius-l)}.sidebar #left-sidebar-content,.sidebar #right-sidebar-content{contain:none!important;container-type:normal!important;animation:none!important}.sidebar:has(.leaf-content:empty):has(.topbar-content:empty){display:none}.sidebar-topbar{height:calc(2.3em + 2 * var(--sidebar-margin));width:var(--sidebar-width);padding:var(--sidebar-margin);z-index:1;position:fixed;display:flex;align-items:center;transition:width ease-in-out;transition-duration:inherit}.sidebar.is-collapsed .sidebar-topbar{width:calc(2.3em + var(--sidebar-margin) * 2)}.sidebar .sidebar-topbar.is-collapsed{width:0}#left-sidebar .sidebar-topbar{left:0;flex-direction:row;border-top-right-radius:var(--radius-l)}#right-sidebar .sidebar-topbar{right:0;flex-direction:row-reverse;border-top-left-radius:var(--radius-l)}#left-sidebar .topbar-content{margin-right:calc(2.3em + var(--sidebar-margin));flex-direction:row}#right-sidebar .topbar-content{margin-left:calc(2.3em + var(--sidebar-margin));flex-direction:row-reverse}.topbar-content{overflow:hidden visible;overflow:clip visible;width:100%;height:100%;display:flex;align-items:center;transition:inherit}.sidebar.is-collapsed .topbar-content{width:0;transition:inherit}.clickable-icon.sidebar-collapse-icon{background-color:transparent;color:var(--icon-color-focused);padding:2px!important;margin:0!important;height:100%!important;width:2.3em!important;margin-inline:0.14em!important;position:absolute}#left-sidebar .clickable-icon.sidebar-collapse-icon{transform:rotateY(180deg);right:var(--sidebar-margin)}#right-sidebar .clickable-icon.sidebar-collapse-icon{transform:rotateY(180deg);left:var(--sidebar-margin)}.clickable-icon.sidebar-collapse-icon svg.svg-icon{width:100%;height:100%}.feature-title{margin-left:1px;text-transform:uppercase;letter-spacing:.06em;margin-top:.75em;margin-bottom:.75em}.feature-header{display:flex;align-items:center;padding-top:0;font-size:1em;padding-left:0}body.floating-sidebars .sidebar{position:absolute}body{transition:background-color var(--color-fade-speed) ease-in-out}#navbar:not(:empty){display:flex;align-items:center;justify-content:space-between;padding:.5em 1em;width:100%}#main{display:flex;flex-direction:column;height:100%;width:100%;align-items:stretch;justify-content:center}#main-horizontal{display:flex;flex-direction:row;flex-grow:1;width:100%;align-items:stretch;justify-content:center}#center-content{flex-basis:100%;max-width:100%;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;transition:opacity .2s ease-in-out;contain:inline-size}.hide{opacity:0!important;transition:opacity .2s ease-in-out;pointer-events:none}#center-content>.obsidian-document{padding-left:2em;padding-right:1em;margin-bottom:0;width:100%;width:-webkit-fill-available;width:-moz-available;width:fill-available;transition:background-color var(--color-fade-speed) ease-in-out;border-top-right-radius:var(--window-radius,var(--radius-m));border-top-left-radius:var(--window-radius,var(--radius-m));overflow-x:hidden!important;overflow-y:auto!important;display:flex!important;flex-direction:column!important;align-items:center!important;contain:inline-size}body #center-content>.obsidian-document>.markdown-preview-sizer{padding-bottom:80vh;width:100%;max-width:var(--line-width);flex-basis:var(--line-width);transition:background-color var(--color-fade-speed) ease-in-out;contain:inline-size}#center-content>.obsidian-document>div{width:100%!important;transition:background-color var(--color-fade-speed) ease-in-out;contain:inline-size}#center-content>.obsidian-document:not([data-type=markdown]).embed{display:flex;padding:1em;height:100%;width:100%;align-items:center;justify-content:center}#center-content>.obsidian-document:not([data-type=markdown]).embed>*{max-width:100%;max-height:100%;object-fit:contain}:not(h1,h2,h3,h4,h5,h6,li):has(> :is(.math,table)){overflow-x:auto!important}#center-content>.obsidian-document:not([data-type=markdown]){overflow-x:auto;contain:content;padding:0;margin:0;height:100%}.obsidian-document[data-type=attachment]{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;width:100%}.obsidian-document[data-type=attachment]>*{outline:0;border:none;box-shadow:none}.obsidian-document[data-type=attachment] :is(img){max-width:90%;max-height:90%;object-fit:contain}.obsidian-document[data-type=attachment]>:is(audio){width:100%;max-width:min(90%,var(--line-width))}.obsidian-document[data-type=attachment]>:is(embed,iframe,video){width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain}.canvas-wrapper>:is(.header,.footer){z-index:100;position:absolute;display:flex;justify-content:center;flex-direction:column;width:100%;align-items:center}.scroll-highlight{position:absolute;width:100%;height:100%;pointer-events:none;z-index:1000;background-color:hsla(var(--color-accent-hsl),.25);opacity:0;padding:1em;inset:50%;translate:-50% -50%;border-radius:var(--radius-s)}</style><script defer="">async function loadIncludes(){let e=document.querySelectorAll("link[itemprop='include']");for(const t of e){let e=t.getAttribute("href");try{let o="";if(e.startsWith("https:")||e.startsWith("http:")||"file:"!=window.location.protocol){const n=await fetch(e);if(!n.ok){console.log("Could not include file: "+e),t?.remove();continue}o=await n.text()}else{const t=document.getElementById(btoa(encodeURI(e)));if(t){const e=JSON.parse(decodeURI(atob(t.getAttribute("value")??"")));o=e?.data??""}}let n=document.createRange().createContextualFragment(o);t.before(n),t.remove(),console.log("Included text: "+o),console.log("Included file: "+e)}catch(o){t?.remove(),console.log("Could not include file: "+e,o);continue}}}document.addEventListener("DOMContentLoaded",(()=>{loadIncludes()}));let isFileProtocol="file:"==location.protocol;function waitLoadScripts(e,t){let o=e.map((e=>document.getElementById(e+"-script")));!function e(n){let l=o[n],c=n+1;l?(l&&"true"!=l.getAttribute("loaded")||n<o.length&&e(c),n<o.length&&l.addEventListener("load",(()=>e(c)))):n<o.length?e(c):t()}(0)}</script><style>
+/* Hide _files directories in file explorer */
+/* Hide parent when child has _files in data-path */
+.tree-item > .tree-item-self[data-path*="_files"],
+.tree-item[data-path*="_files"] {
+  display: none !important;
+}
+/* Hide sibling children of the folder */
+.tree-item-self[data-path*="_files"] ~ .tree-item-children {
+  display: none !important;
+}
+/* Hide the entire tree-item folder wrapper */
+.nav-folder:has(> .tree-item-self[data-path*="_files"]) {
+  display: none !important;
+}
+</style>
+</head><body class="publish css-settings-manager styled-scrollbars show-inline-title show-ribbon is-focused"><script defer="">document.body.classList.add("theme-dark");document.body.classList.remove("theme-light");window.innerWidth<480?document.body.classList.add("is-phone"):window.innerWidth<768?document.body.classList.add("is-tablet"):window.innerWidth<1024?document.body.classList.add("is-small-screen"):document.body.classList.add("is-large-screen")</script><div class="parsed-feature-container" style="display: contents;"><link itemprop="include" href="site-lib/html/custom-head-content-content.html"></div><div id="main"><div id="navbar"></div><div id="main-horizontal"><div id="left-content" class="leaf" style="--sidebar-width: var(--sidebar-width-left);"><div id="left-sidebar" class="sidebar"><div class="sidebar-handle"></div><div class="sidebar-topbar"><div class="topbar-content"><div id="search-container"><div id="search-wrapper"><input enterkeyhint="search" type="search" spellcheck="false" placeholder="Search..."><div aria-label="Clear search" id="search-clear-button"></div></div></div></div><div class="clickable-icon sidebar-collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21 3H3C1.89543 3 1 3.89543 1 5V19C1 20.1046 1.89543 21 3 21H21C22.1046 21 23 20.1046 23 19V5C23 3.89543 22.1046 3 21 3Z"></path><path d="M10 4V20"></path><path d="M4 7H7"></path><path d="M4 10H7"></path><path d="M4 13H7"></path></svg></div></div><div class="sidebar-content-wrapper"><div id="left-sidebar-content" class="leaf-content"><link itemprop="include" href="site-lib/html/file-tree-content.html"></div></div><script defer="">let ls = document.querySelector("#left-sidebar"); ls.classList.toggle("is-collapsed", window.innerWidth < 768); ls.style.setProperty("--sidebar-width", localStorage.getItem("sidebar-left-width"));</script></div></div><div id="center-content" class="leaf"><div class="obsidian-document markdown-preview-view markdown-rendered node-insert-event is-readable-line-width allow-fold-headings allow-fold-lists show-indentation-guide show-properties" data-type="markdown"><style id="MJX-CHTML-styles"></style><div class="markdown-preview-sizer markdown-preview-section"><div class="header"><h1 class="page-title heading inline-title" id="Bridging_Lab_to_the_Cloud_with_Site-to-Site_VPN_0">Bridging Lab to the Cloud with Site-to-Site VPN</h1><div class="data-bar"></div></div><div class="markdown-preview-pusher" style="width: 1px; height: 0.1px; margin-bottom: 0px;"></div><div class="el-div"></div><div class="el-p"><p dir="auto">Date: Jun 24, 2026<br>
+Tags: <a data-href="Network Security" href="tags/network-security.html" class="internal-link" target="_self" rel="noopener nofollow">Network Security</a> <a data-href="Cloud Infrastructure" href="tags/cloud-infrastructure.html" class="internal-link" target="_self" rel="noopener nofollow">Cloud Infrastructure</a> <a data-href="System Administration" href="tags/system-administration.html" class="internal-link" target="_self" rel="noopener nofollow">System Administration</a> <a data-href="AWS Security Group" href="tags/aws-security-group.html" class="internal-link" target="_self" rel="noopener nofollow">AWS Security Group</a> <a data-href="Firewall" href="tags/firewall.html" class="internal-link" target="_self" rel="noopener nofollow">Firewall</a> <a data-href="WireGuard" href="tags/wireguard.html" class="internal-link" target="_self" rel="noopener nofollow">WireGuard</a> <a data-href="nftables" href="tags/nftables.html" class="internal-link" target="_self" rel="noopener nofollow">nftables</a> <a data-href="tcpdump" href="tags/tcpdump.html" class="internal-link" target="_self" rel="noopener nofollow">tcpdump</a> <a data-href="netcat" href="tags/netcat.html" class="internal-link" target="_self" rel="noopener nofollow">netcat</a> <a data-href="iperf" href="tags/iperf.html" class="internal-link" target="_self" rel="noopener nofollow">iperf</a> <a data-href="Linux" href="tags/linux.html" class="internal-link" target="_self" rel="noopener nofollow">Linux</a></p></div><div class="el-p"><p dir="auto"><span alt="Pasted image 20260628123544.png" src="_files/pasted-image-20260628123544.png" class="internal-embed media-embed image-embed is-loaded" target="_self" style="width: 501px; max-width: 100%;"><img alt="Pasted image 20260628123544.png" src="_files/pasted-image-20260628123544.png" target="_self" style="width: 501px; max-width: 100%;"></span></p></div><div class="el-h5"><h5 data-heading="I. Project Summary" dir="auto" class="heading" id="I._Project_Summary_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>I. Project Summary</h5></div><div class="el-p"><p dir="auto">Collecting event logs in a centralized location is important for network visibility and incident response. However, as infrastructure expands to remote branches and into the cloud, transmitting traffic over the public internet introduces risks of interception from threat actors.</p></div><div class="el-p"><p dir="auto">To address this, I established a site-to-site VPN using WireGuard to connect the Lab network directly to my AWS cloud environment. This encrypted tunnel will be used to transport logs and access the Wazuh SIEM without exposing the web management ports to the public internet. This builds on top of the previous entry where I turned an AntiX Linux host into a firewall and DNS sinkhole.</p></div><div class="el-p"><p dir="auto"><span alt="Pasted image 20260628125617.png" src="_files/pasted-image-20260628125617.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260628125617.png" src="_files/pasted-image-20260628125617.png" target="_self"></span></p></div><div class="el-h5"><h5 data-heading="II. Key Engineering Decisions" dir="auto" class="heading" id="II._Key_Engineering_Decisions_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>II. Key Engineering Decisions</h5></div><div class="el-h6"><h6 data-heading="1. Secure Remote Connections (WireGuard)" dir="auto" class="heading" id="1._Secure_Remote_Connections_(WireGuard)_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>1. Secure Remote Connections (WireGuard)</h6></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span>Established an encrypted communication tunnel between lab and remote infrastructures by implementing a site-to-site VPN using WireGuard. This adds an extra layer of protection when sending important data through the internet.</li>
+</ul></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="cmd" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-terminal"><path d="M12 19h8"></path><path d="m4 17 6-6-6-6"></path></svg></div><div class="callout-title-inner">Established a Secured Site-to-Site VPN Solution</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto">I chose WireGuard primarily as it is lighter compared to other common VPN protocols like IPsec and OpenVPN. This is important as WireGuard will be running on the AntiX Firewall that has 32-bit CPU. The tunnel will also be used to access Wazuh Dashboard and management ports.<br>
+Lab firewall:</p>
+<pre class="language-bash"><code data-line="3" class="language-bash is-loaded"> <span class="token number">1</span>  <span class="token punctuation">[</span>Interface<span class="token punctuation">]</span>
+ <span class="token number">2</span>  Address <span class="token operator">=</span> <span class="token number">172.16</span>.99.1/24
+ <span class="token number">3</span>  SaveConfig <span class="token operator">=</span> <span class="token boolean">false</span>
+ <span class="token number">4</span>  ListenPort <span class="token operator">=</span> <span class="token number">51820</span>
+ <span class="token number">5</span>  PrivateKey <span class="token operator">=</span> <span class="token operator">&lt;</span>LAB-FW_PRIVATE-KEY<span class="token operator">&gt;</span>
+ <span class="token number">6</span>
+ <span class="token number">7</span>  <span class="token punctuation">[</span>Peer<span class="token punctuation">]</span>
+ <span class="token number">8</span>  PublicKey <span class="token operator">=</span> <span class="token operator">&lt;</span>AWS-GW_PUBLIC-KEY<span class="token operator">&gt;</span>
+ <span class="token number">9</span>  Endpoint <span class="token operator">=</span> <span class="token operator">&lt;</span>AWS-GW_PUBLIC-IP<span class="token operator">&gt;</span>:51820
+<span class="token number">10</span>  AllowedIPs <span class="token operator">=</span> <span class="token number">172.31</span>.20.233/32, <span class="token number">172.31</span>.11.191/32, <span class="token number">172.16</span>.99.2/32
+<span class="token number">11</span>  PersistentKeepalive <span class="token operator">=</span> <span class="token number">25</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto">AWS Gateway:</p>
+<pre class="language-bash"><code data-line="18" class="language-bash is-loaded"> <span class="token number">1</span>  <span class="token punctuation">[</span>Interface<span class="token punctuation">]</span>
+ <span class="token number">2</span>  Address <span class="token operator">=</span> <span class="token number">172.16</span>.99.2/24
+ <span class="token number">3</span>  SaveConfig <span class="token operator">=</span> <span class="token boolean">false</span>
+ <span class="token number">4</span>  ListenPort <span class="token operator">=</span> <span class="token number">51820</span>
+ <span class="token number">5</span>  PrivateKey <span class="token operator">=</span> <span class="token operator">&lt;</span>AWS-GW_PRIVATE-KEY<span class="token operator">&gt;</span>
+ <span class="token number">6</span>  MTU <span class="token operator">=</span> <span class="token number">1420</span>
+ <span class="token number">7</span>
+ <span class="token number">8</span>  <span class="token punctuation">[</span>Peer<span class="token punctuation">]</span>
+ <span class="token number">9</span>  PublicKey <span class="token operator">=</span> <span class="token operator">&lt;</span>LAB-FW_PUBLIC-KEY<span class="token operator">&gt;</span>
+<span class="token number">10</span>  AllowedIPs <span class="token operator">=</span> <span class="token number">172.16</span>.99.1/32
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+</div></div></div><div class="el-h6"><h6 data-heading="2. Unidirectional Telemetry for Simplified Routing" dir="auto" class="heading" id="2._Unidirectional_Telemetry_for_Simplified_Routing_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>2. Unidirectional Telemetry for Simplified Routing</h6></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span>I enabled NAT on traffic from lab network going to AWS Gateway via the encrypted tunnel. AWS instances would only see the (AntiX) Lab Firewall <code>172.16.99.1</code> as source of all traffic. This simplifies routing but relies on the Lab Firewall to apply strict security policies.</li>
+</ul></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="cmd" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-terminal"><path d="M12 19h8"></path><path d="m4 17 6-6-6-6"></path></svg></div><div class="callout-title-inner">Simplified Routing Tables on AWS</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto">On the <strong>(AntiX) Lab Firewall</strong>, On postrouting chain, only traffic destined to AWS gateway or Wazuh Server will be source-NATed to Lab Router IP (<code>172.16.99.1</code>) (See line 102).</p>
+<pre class="language-bash"><code data-line="2" class="language-bash is-loaded"><span class="token number">1</span>  flush ruleset
+<span class="token number">2</span>
+<span class="token number">3</span>  <span class="token comment"># Interfaces</span>
+<span class="token number">4</span>  define wireguard <span class="token operator">=</span> <span class="token string">"wg0"</span>
+<span class="token number">5</span>  define lan <span class="token operator">=</span> <span class="token string">"lan0"</span>
+<span class="token number">6</span>  define wan <span class="token operator">=</span> <span class="token string">"wan0"</span>
+<span class="token number">7</span>
+<span class="token number">8</span>  <span class="token comment"># Addresses</span>
+<span class="token number">9</span>  define gateway_public_ip <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">18.138</span>.54.108 <span class="token punctuation">}</span>
+<span class="token number">10</span>  define gateway_private_ip <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">172.31</span>.11.191 <span class="token punctuation">}</span>
+<span class="token punctuation">..</span>.
+<span class="token number">98</span>      chain postrouting <span class="token punctuation">{</span>
+<span class="token number">99</span>          <span class="token builtin class-name">type</span> nat hook postrouting priority srcnat<span class="token punctuation">;</span> policy accept<span class="token punctuation">;</span>
+<span class="token number">100</span>
+<span class="token number">101</span>          oifname <span class="token variable">$wan</span> masquerade
+<span class="token number">102</span>          oifname <span class="token variable">$wireguard</span> <span class="token function">ip</span> daddr <span class="token punctuation">{</span> <span class="token variable">$gateway_private_ip</span>, <span class="token variable">$wazuh_ip</span><span class="token punctuation">}</span> masquerade
+<span class="token number">103</span>      <span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<hr>
+<p dir="auto">Since <strong>AWS Gateway</strong> will act mainly as a WireGuard peer, I only allowed <code>wg_port</code> so that Lab Firewall can initiate a connection, ICMP request from lab for troubleshooting, and SSH from lab for management. It will only forward traffic used by Wazuh services. </p>
+<pre class="language-bash"><code data-line="25" class="language-bash is-loaded"><span class="token number">1</span>  <span class="token comment">#!/usr/sbin/nft -f</span>
+ <span class="token number">2</span>
+ <span class="token number">3</span>  flush ruleset
+ <span class="token number">4</span>  <span class="token comment"># -- Interfaces --</span>
+ <span class="token number">5</span>  define pub_iface <span class="token operator">=</span> <span class="token string">"ens5"</span>
+ <span class="token number">6</span>  define wg_iface <span class="token operator">=</span> <span class="token string">"wg0"</span>
+ <span class="token number">7</span>  <span class="token comment"># -- Target IPs --</span>
+ <span class="token number">8</span>  define wazuh_ip <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">172.31</span>.20.233 <span class="token punctuation">}</span>
+ <span class="token number">9</span>  define lab_ip <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">172.16</span>.99.1 <span class="token punctuation">}</span>
+<span class="token number">10</span>  <span class="token comment"># -- Ports --</span>
+<span class="token number">11</span>  define ssh_ports    <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">22</span> <span class="token punctuation">}</span>
+<span class="token number">12</span>  define wazuh_ports  <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">1514</span>, <span class="token number">1515</span>, <span class="token number">443</span> <span class="token punctuation">}</span>
+<span class="token number">13</span>  define syslog_ports <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">514</span> <span class="token punctuation">}</span>
+<span class="token number">14</span>  define wg_port      <span class="token operator">=</span> <span class="token number">51820</span>
+<span class="token number">15</span>
+<span class="token number">16</span>  table inet filter <span class="token punctuation">{</span>
+<span class="token number">17</span>      chain input <span class="token punctuation">{</span>
+<span class="token number">18</span>          <span class="token builtin class-name">type</span> filter hook input priority filter<span class="token punctuation">;</span> policy drop<span class="token punctuation">;</span>
+<span class="token number">19</span>          iif <span class="token string">"lo"</span> accept
+<span class="token number">20</span>          ct state established,related accept
+<span class="token number">21</span>          ct state invalid drop
+<span class="token number">22</span>          icmp <span class="token builtin class-name">type</span> echo-request accept
+<span class="token number">23</span>          iifname <span class="token variable">$pub_iface</span> udp dport <span class="token variable">$wg_port</span> accept
+<span class="token number">24</span>          iifname <span class="token variable">$wg_iface</span> <span class="token function">ip</span> saddr <span class="token variable">$lab_ip</span> tcp dport <span class="token variable">$ssh_ports</span> accept
+<span class="token number">25</span>      <span class="token punctuation">}</span>
+<span class="token number">26</span>
+<span class="token number">27</span>      chain forward <span class="token punctuation">{</span>
+<span class="token number">28</span>          <span class="token builtin class-name">type</span> filter hook forward priority filter<span class="token punctuation">;</span> policy drop<span class="token punctuation">;</span>
+<span class="token number">29</span>          ct state established,related accept
+<span class="token number">30</span>          ct state invalid drop
+<span class="token number">31</span>          icmp <span class="token builtin class-name">type</span> echo-request accept
+<span class="token number">32</span>
+<span class="token number">33</span>          iifname <span class="token variable">$wg_iface</span> <span class="token function">ip</span> daddr <span class="token variable">$wazuh_ip</span> tcp dport <span class="token punctuation">{</span> <span class="token variable">$wazuh_ports</span>, <span class="token variable">$syslog_ports</span>, <span class="token variable">$ssh_ports</span> <span class="token punctuation">}</span> accept
+<span class="token number">34</span>          iifname <span class="token variable">$wg_iface</span> <span class="token function">ip</span> daddr <span class="token variable">$wazuh_ip</span> udp dport <span class="token punctuation">{</span> <span class="token variable">$wazuh_ports</span> <span class="token punctuation">}</span> accept
+<span class="token number">35</span>      <span class="token punctuation">}</span>
+<span class="token number">36</span>  <span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<hr>
+<p dir="auto">I also updated the security group of Wazuh Server to only accept through the intended ports. (Antix) Lab Firewall IP is still visible because sNAT is not enabled on the AWS Gateway. This allows Security Group to give different access level for different VPN peers.</p>
+<p dir="auto"><span alt="Pasted image 20260704211825.png" src="_files/pasted-image-20260704211825.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260704211825.png" src="_files/pasted-image-20260704211825.png" target="_self"></span></p>
+<p dir="auto">In order for return traffic to arrive, I set up a route on the VPC:</p>
+<p dir="auto"><span alt="Pasted image 20260704211509.png" src="_files/pasted-image-20260704211509.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260704211509.png" src="_files/pasted-image-20260704211509.png" target="_self"></span></p>
+</div></div></div><div class="el-h6"><h6 data-heading="3. Centralized Security Policy on Lab Firewall" dir="auto" class="heading" id="3._Centralized_Security_Policy_on_Lab_Firewall_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>3. Centralized Security Policy on Lab Firewall</h6></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span>Applied strict filtering on the lab firewall by specifying which hosts or networks have access to which remote servers and services. This filters the invalid traffic before it leaves the network which saves bandwidth and adds an extra layer of security.</li>
+</ul></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="cmd" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-terminal"><path d="M12 19h8"></path><path d="m4 17 6-6-6-6"></path></svg></div><div class="callout-title-inner">Implementing Layered Security (nftables &amp; WireGuard)</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto">On AntiX Firewall, I specified which protocol/ports are allowed to be forwarded to Wazuh. Then allowed SSH and HTTPS from admin IP only. While admin IP can be spoofed, SSH to aws instances still requires ssh key file. Then, to implement SNAT on traffic going out of wireguard interface (See line 99).</p>
+<pre class="language-bash"><code data-line="2" class="language-bash is-loaded"> <span class="token number">1</span>  flush ruleset
+ <span class="token number">2</span>
+ <span class="token number">3</span>  <span class="token comment"># Interfaces</span>
+ <span class="token number">4</span>  define wireguard <span class="token operator">=</span> <span class="token string">"wg0"</span>
+ <span class="token number">5</span>  define lan <span class="token operator">=</span> <span class="token string">"lan0"</span>
+ <span class="token number">6</span>  define wan <span class="token operator">=</span> <span class="token string">"wan0"</span>
+ <span class="token number">7</span>
+ <span class="token number">8</span>  <span class="token comment"># Addresses</span>
+ <span class="token number">9</span>  define gateway_public_ip <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">18.138</span>.54.108 <span class="token punctuation">}</span>
+<span class="token number">10</span>  define gateway_private_ip <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">172.31</span>.11.191 <span class="token punctuation">}</span>
+<span class="token number">11</span>  define gateway_wireguard_ip <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">172.16</span>.99.2 <span class="token punctuation">}</span>
+<span class="token number">12</span>  define wazuh_ip <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">172.31</span>.20.233 <span class="token punctuation">}</span>
+<span class="token number">13</span>  define admin_ip <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">10.0</span>.0.50 <span class="token punctuation">}</span>
+<span class="token number">14</span>  define blocked_ip <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">9.9</span>.9.9 <span class="token punctuation">}</span>
+<span class="token number">15</span>
+<span class="token number">16</span>  <span class="token comment"># Ports</span>
+<span class="token number">17</span>  define dns_ports      <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">53</span> <span class="token punctuation">}</span>
+<span class="token number">18</span>  define web_ports      <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">80,443</span> <span class="token punctuation">}</span>
+<span class="token number">19</span>  define ntp_ports      <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">123</span> <span class="token punctuation">}</span>
+<span class="token number">20</span>  define ssh_ports      <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">22</span> <span class="token punctuation">}</span>
+<span class="token number">21</span>  define wazuh_ports    <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">1514,1515</span> <span class="token punctuation">}</span>
+<span class="token number">22</span>  define syslog_ports   <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">514</span> <span class="token punctuation">}</span>
+<span class="token number">23</span>  define vpn_ports      <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">51820</span> <span class="token punctuation">}</span>
+<span class="token number">24</span>
+<span class="token number">25</span>  define common_tcp_ports <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">53,80</span>,443 <span class="token punctuation">}</span>
+<span class="token number">26</span>  define common_udp_ports <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token number">53,123</span> <span class="token punctuation">}</span>
+<span class="token number">27</span>
+<span class="token number">28</span>  <span class="token comment"># FILTER TABLE</span>
+<span class="token number">29</span>  table inet filter <span class="token punctuation">{</span>
+<span class="token punctuation">..</span>.
+<span class="token number">44</span>      chain forward <span class="token punctuation">{</span>
+<span class="token number">45</span>          <span class="token builtin class-name">type</span> filter hook forward priority filter<span class="token punctuation">;</span> policy drop<span class="token punctuation">;</span>
+<span class="token number">46</span>          ct state established,related accept
+<span class="token number">47</span>          ct state invalid log prefix <span class="token string">"NFT-FOR-DROP-INVALID "</span> drop
+<span class="token number">48</span>          <span class="token function">ip</span> daddr <span class="token variable">$blocked_ip</span> log prefix <span class="token string">"NFT-FOR-DROP-QUAD9 "</span> drop
+<span class="token number">49</span>          iifname <span class="token variable">$lan</span> oifname <span class="token variable">$wan</span> tcp dport <span class="token variable">$common_tcp_ports</span> accept
+<span class="token number">50</span>          iifname <span class="token variable">$lan</span> oifname <span class="token variable">$wan</span> udp dport <span class="token variable">$common_udp_ports</span> accept
+<span class="token number">51</span>          iifname <span class="token variable">$lan</span> oifname <span class="token variable">$wireguard</span> <span class="token function">ip</span> daddr <span class="token variable">$wazuh_ip</span> tcp dport <span class="token variable">$wazuh_ports</span> accept
+<span class="token number">52</span>          <span class="token function">ip</span> saddr <span class="token variable">$admin_ip</span> <span class="token function">ip</span> daddr <span class="token punctuation">{</span> <span class="token variable">$gateway_private_ip</span>, <span class="token variable">$wazuh_ip</span> <span class="token punctuation">}</span> tcp dport <span class="token number">22</span> accept
+<span class="token number">53</span>          <span class="token function">ip</span> saddr <span class="token variable">$admin_ip</span> <span class="token function">ip</span> daddr <span class="token variable">$wazuh_ip</span> tcp dport <span class="token number">443</span> accept
+<span class="token number">54</span>          icmp <span class="token builtin class-name">type</span> echo-request accept
+<span class="token number">55</span>          log prefix <span class="token string">"NFT-FOR-DROP-DEFAULT "</span>
+<span class="token number">56</span>      <span class="token punctuation">}</span>
+<span class="token punctuation">..</span>.
+<span class="token number">87</span>  table <span class="token function">ip</span> nat <span class="token punctuation">{</span>
+<span class="token punctuation">..</span>.
+<span class="token number">95</span>      chain postrouting <span class="token punctuation">{</span>
+<span class="token number">96</span>          <span class="token builtin class-name">type</span> nat hook postrouting priority srcnat<span class="token punctuation">;</span> policy accept<span class="token punctuation">;</span>
+<span class="token number">97</span>
+<span class="token number">98</span>          oifname <span class="token variable">$wan</span> masquerade
+<span class="token number">99</span>          oifname <span class="token variable">$wireguard</span> masquerade
+<span class="token number">100</span>      <span class="token punctuation">}</span>
+<span class="token number">101</span>  <span class="token punctuation">}</span>
+
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto">AntiX firewall will also accept traffic only if they are intended to Wazuh Server (<code>172.31.20.233</code>) or AWS Gateway (<code>172.16.99.2</code> / <code>172.31.11.191</code>). Even if the nftables break, there is another layer of security before it gets tunneled to AWS Gateway. </p>
+<pre class="language-bash"><code data-line="59" class="language-bash is-loaded"><span class="token number">10</span>  AllowedIPs <span class="token operator">=</span> <span class="token number">172.31</span>.20.233/32, <span class="token number">172.31</span>.11.191/32, <span class="token number">172.16</span>.99.2/32
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><code>File: /etc/wireguard/wg0.conf (Lab Firewall)</code></p>
+</div></div></div><div class="el-h6"><h6 data-heading="4. Agent-Based and Agentless Telemetry Aggregation (Wazuh)" dir="auto" class="heading" id="4._Agent-Based_and_Agentless_Telemetry_Aggregation_(Wazuh)_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>4. Agent-Based and Agentless Telemetry Aggregation (Wazuh)</h6></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span>Deployed a security information and event management (SIEM) system that collects telemetry from various endpoints and devices. This provides better visibility on overall security posture, improves threat detection, and incident response.</li>
+</ul></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="cmd" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-terminal"><path d="M12 19h8"></path><path d="m4 17 6-6-6-6"></path></svg></div><div class="callout-title-inner">Deploying Endpoint Detection and Response Agent  </div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto">While I can just install a Wazuh agent on AntiX firewall, I want to set it up as a real network device where installing an agent is not an option. So I emulated how they would transfer their traffic with rsyslog on the AntiX Firewall (see Line 3 &amp; 8). </p>
+<pre class="language-bash"><code data-line="3" class="language-bash is-loaded"> <span class="token number">1</span>  <span class="token comment"># 1. Capture Firewall logs</span>
+ <span class="token number">2</span>  :msg, contains, <span class="token string">"NFT-"</span> /var/log/nftables.log
+ <span class="token number">3</span>      action<span class="token punctuation">(</span>type<span class="token operator">=</span><span class="token string">"omfwd"</span> <span class="token assign-left variable">target</span><span class="token operator">=</span><span class="token string">"172.31.20.233"</span> <span class="token assign-left variable">port</span><span class="token operator">=</span><span class="token string">"514"</span> <span class="token assign-left variable">protocol</span><span class="token operator">=</span><span class="token string">"tcp"</span><span class="token punctuation">)</span>
+ <span class="token number">4</span>      stop
+ <span class="token number">5</span>
+ <span class="token number">6</span>  <span class="token comment"># 2. Capture all DNS queries</span>
+ <span class="token number">7</span>  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">$syslogtag</span> <span class="token operator">==</span> <span class="token string">'dnsmasq_log'</span><span class="token punctuation">)</span> <span class="token keyword">then</span> <span class="token punctuation">{</span>
+ <span class="token number">8</span>      action<span class="token punctuation">(</span>type<span class="token operator">=</span><span class="token string">"omfwd"</span> <span class="token assign-left variable">target</span><span class="token operator">=</span><span class="token string">"172.31.20.233"</span> <span class="token assign-left variable">port</span><span class="token operator">=</span><span class="token string">"514"</span> <span class="token assign-left variable">protocol</span><span class="token operator">=</span><span class="token string">"tcp"</span><span class="token punctuation">)</span>
+ <span class="token number">9</span>      /var/log/dns.log
+<span class="token number">10</span>      stop
+<span class="token number">11</span>  <span class="token punctuation">}</span>
+
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><code>File: /etc/rsyslog.d/10-firewall.conf (Lab Firewall)</code></p>
+<p dir="auto">I also added a syslog/TCP remote on Wazuh and specified to only accept logs from the Lab Firewall IP.  </p>
+<pre class="language-bash"><code data-line="20" class="language-bash is-loaded"><span class="token number">10</span>      <span class="token operator">&lt;</span>alerts_log<span class="token operator">&gt;</span>yes<span class="token operator">&lt;</span>/alerts_log<span class="token operator">&gt;</span>
+<span class="token number">11</span>      <span class="token operator">&lt;</span>logall<span class="token operator">&gt;</span>yes<span class="token operator">&lt;</span>/logall<span class="token operator">&gt;</span>
+<span class="token number">12</span>      <span class="token operator">&lt;</span>logall_json<span class="token operator">&gt;</span>yes<span class="token operator">&lt;</span>/logall_json<span class="token operator">&gt;</span>
+<span class="token number">13</span>      <span class="token operator">&lt;</span>email_notification<span class="token operator">&gt;</span>no<span class="token operator">&lt;</span>/email_notification<span class="token operator">&gt;</span>
+<span class="token punctuation">..</span>.
+<span class="token number">41</span>    <span class="token operator">&lt;</span>remote<span class="token operator">&gt;</span>
+<span class="token number">42</span>      <span class="token operator">&lt;</span>connection<span class="token operator">&gt;</span>syslog<span class="token operator">&lt;</span>/connection<span class="token operator">&gt;</span>
+<span class="token number">43</span>      <span class="token operator">&lt;</span>port<span class="token operator">&gt;</span><span class="token number">51</span><span class="token operator"><span class="token file-descriptor important">4</span>&lt;</span>/port<span class="token operator">&gt;</span>
+<span class="token number">44</span>      <span class="token operator">&lt;</span>protocol<span class="token operator">&gt;</span>tcp<span class="token operator">&lt;</span>/protocol<span class="token operator">&gt;</span>
+<span class="token number">45</span>      <span class="token operator">&lt;</span>allowed-ips<span class="token operator">&gt;</span><span class="token number">172.16</span>.99.1/3<span class="token operator"><span class="token file-descriptor important">2</span>&lt;</span>/allowed-ips<span class="token operator">&gt;</span>
+<span class="token number">46</span>      <span class="token operator">&lt;</span>local_ip<span class="token operator">&gt;</span><span class="token number">172.31</span>.20.23<span class="token operator"><span class="token file-descriptor important">3</span>&lt;</span>/local_ip<span class="token operator">&gt;</span>
+<span class="token number">47</span>    <span class="token operator">&lt;</span>/remote<span class="token operator">&gt;</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><code>File: /var/ossec/etc/ossec.conf (Wazuh Server)</code></p>
+<p dir="auto">I also installed Wazuh Agent one of the Linux Machine from the lab.<br>
+<span alt="Pasted image 20260703074931.png" src="_files/pasted-image-20260703074931.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260703074931.png" src="_files/pasted-image-20260703074931.png" target="_self"></span> </p>
+</div></div></div><div class="el-h5"><h5 data-heading="III. Challenges" dir="auto" class="heading" id="III._Challenges_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>III. Challenges</h5></div><div class="el-table" dir="ltr" style="overflow-x: auto;"><table>
+<thead>
+<tr>
+<th dir="ltr">Challenges</th>
+<th dir="ltr">Probable Cause</th>
+<th dir="ltr">Fixes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td dir="ltr">Opening and viewing large config files hangs up the interactive SSH connection.</td>
+<td dir="ltr">Packet MTU is too large; <code>ip addr</code> on the AWS Gateway shows <code>mtu 8921</code> for <code>wg0</code> interface.</td>
+<td dir="ltr">Added <code>MTU = 1420</code> on the <code>wg0.conf</code> to trim packets to 1420 bytes.</td>
+</tr>
+<tr>
+<td dir="ltr">Firewall logs are reaching Wazuh Server but not displayed on the dashboard.</td>
+<td dir="ltr">Forwarded log's format does not match built-in rules/decoders.</td>
+<td dir="ltr">Enabled <code>logall</code> on <code>ossec.conf</code> so Wazuh archives all logs.</td>
+</tr>
+<tr>
+<td dir="ltr">Packets not reaching the desired destination / not receiving responses.</td>
+<td dir="ltr">AWS SG/firewall blocks the traffic or missing routes.</td>
+<td dir="ltr">Utilized <code>ping</code> to check host connectivity. Used <code>tcpdump</code> on each hop to see if the packet was dropped before or after that hop. Checked routing tables with <code>route</code> command.</td>
+</tr>
+</tbody>
+</table></div><div class="el-h5"><h5 data-heading="IV. Validation and Testing" dir="auto" class="heading" id="IV._Validation_and_Testing_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>IV. Validation and Testing</h5></div><div class="el-p"><p dir="auto">According to the test summary below, the site-to-site VPN implementation was able to bridge the lab network to the remote AWS infrastructure. I also verified that while WireGuard places additional load on the legacy 32-bit CPU, it is not heavy enough to cause bandwidth drops and overheating.</p></div><div class="el-p"><p dir="auto">Bandwidth &amp; Load Test Summary:</p></div><div class="el-table" dir="ltr" style="overflow-x: auto;"><table>
+<thead>
+<tr>
+<th dir="ltr">Direction</th>
+<th dir="ltr">Send (Mbits/s)</th>
+<th dir="ltr">Receive (Mbits/s)</th>
+<th dir="ltr">CPU Load (Last 1min)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td dir="ltr">Lab to External</td>
+<td dir="auto">10.21</td>
+<td dir="auto">10.17</td>
+<td dir="auto">1.20</td>
+</tr>
+<tr>
+<td dir="ltr">Lab to AWS</td>
+<td dir="auto">12.83</td>
+<td dir="auto">12.73</td>
+<td dir="auto">1.26</td>
+</tr>
+</tbody>
+</table></div><div class="el-p"><p dir="auto">Network Access Test Summary:</p></div><div class="el-table" dir="ltr" style="overflow-x: auto;"><table>
+<thead>
+<tr>
+<th dir="ltr">Source</th>
+<th dir="ltr">Destination</th>
+<th dir="ltr">Port</th>
+<th dir="ltr">Accepted</th>
+<th dir="ltr">Is_expected</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td dir="auto"><code>10.0.0.50</code></td>
+<td dir="ltr">AWS Gateway</td>
+<td dir="auto">22</td>
+<td dir="ltr">yes</td>
+<td dir="ltr">yes</td>
+</tr>
+<tr>
+<td dir="auto"><code>10.0.0.50</code></td>
+<td dir="ltr">Wazuh Server</td>
+<td dir="auto">22</td>
+<td dir="ltr">yes</td>
+<td dir="ltr">yes</td>
+</tr>
+<tr>
+<td dir="auto"><code>10.0.0.50</code></td>
+<td dir="ltr">Wazuh Server</td>
+<td dir="auto">443</td>
+<td dir="ltr">yes</td>
+<td dir="ltr">yes</td>
+</tr>
+<tr>
+<td dir="auto"><code>10.0.0.50</code></td>
+<td dir="ltr">AntiX Firewall</td>
+<td dir="auto">22</td>
+<td dir="ltr">yes</td>
+<td dir="ltr">yes</td>
+</tr>
+<tr>
+<td dir="auto"><code>10.0.0.100</code></td>
+<td dir="ltr">AWS Gateway</td>
+<td dir="auto">22</td>
+<td dir="ltr">no</td>
+<td dir="ltr">yes</td>
+</tr>
+<tr>
+<td dir="auto"><code>10.0.0.100</code></td>
+<td dir="ltr">Wazuh Server</td>
+<td dir="auto">22</td>
+<td dir="ltr">no</td>
+<td dir="ltr">yes</td>
+</tr>
+<tr>
+<td dir="auto"><code>10.0.0.100</code></td>
+<td dir="ltr">Wazuh Server</td>
+<td dir="auto">443</td>
+<td dir="ltr">no</td>
+<td dir="ltr">yes</td>
+</tr>
+<tr>
+<td dir="auto"><code>10.0.0.100</code></td>
+<td dir="ltr">AntiX Firewall</td>
+<td dir="auto">22</td>
+<td dir="ltr">no</td>
+<td dir="ltr">yes</td>
+</tr>
+<tr>
+<td dir="auto"><code>10.0.0.100</code></td>
+<td dir="ltr">Wazuh Server</td>
+<td dir="auto">1514</td>
+<td dir="ltr">yes</td>
+<td dir="ltr">yes</td>
+</tr>
+<tr>
+<td dir="auto"><code>10.0.0.100</code></td>
+<td dir="ltr">Wazuh Server</td>
+<td dir="auto">1515</td>
+<td dir="ltr">yes</td>
+<td dir="ltr">yes</td>
+</tr>
+</tbody>
+</table></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="example" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-list"><path d="M3 5h.01"></path><path d="M3 12h.01"></path><path d="M3 19h.01"></path><path d="M8 5h13"></path><path d="M8 12h13"></path><path d="M8 19h13"></path></svg></div><div class="callout-title-inner">Bandwidth Test (Tunneled v External)</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto">Baseline:<br>
+<span alt="Pasted image 20260705180724.png" src="_files/pasted-image-20260705180724.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260705180724.png" src="_files/pasted-image-20260705180724.png" target="_self"></span></p>
+<p dir="auto">A. Tunneled: iperf3 server on <code>172.16.99.2</code><br>
+Test 1A:<br>
+<span alt="Pasted image 20260705182735.png" src="_files/pasted-image-20260705182735.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260705182735.png" src="_files/pasted-image-20260705182735.png" target="_self"></span><br>
+<span alt="Pasted image 20260705182816.png" src="_files/pasted-image-20260705182816.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260705182816.png" src="_files/pasted-image-20260705182816.png" target="_self"></span><br>
+Test 2A:<br>
+<span alt="Pasted image 20260705183036.png" src="_files/pasted-image-20260705183036.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260705183036.png" src="_files/pasted-image-20260705183036.png" target="_self"></span><br>
+<span alt="Pasted image 20260705183107.png" src="_files/pasted-image-20260705183107.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260705183107.png" src="_files/pasted-image-20260705183107.png" target="_self"></span><br>
+Test 3A:<br>
+<span alt="Pasted image 20260705183455.png" src="_files/pasted-image-20260705183455.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260705183455.png" src="_files/pasted-image-20260705183455.png" target="_self"></span><br>
+<span alt="Pasted image 20260705183527.png" src="_files/pasted-image-20260705183527.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260705183527.png" src="_files/pasted-image-20260705183527.png" target="_self"></span></p>
+<p dir="auto">B. External: iperf3 server on <code>192.168.1.2</code><br>
+Test 1B:<br>
+<span alt="Pasted image 20260705183232.png" src="_files/pasted-image-20260705183232.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260705183232.png" src="_files/pasted-image-20260705183232.png" target="_self"></span><br>
+<span alt="Pasted image 20260705183252.png" src="_files/pasted-image-20260705183252.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260705183252.png" src="_files/pasted-image-20260705183252.png" target="_self"></span><br>
+Test 2B:<br>
+<span alt="Pasted image 20260705184604.png" src="_files/pasted-image-20260705184604.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260705184604.png" src="_files/pasted-image-20260705184604.png" target="_self"></span><br>
+<span alt="Pasted image 20260705184627.png" src="_files/pasted-image-20260705184627.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260705184627.png" src="_files/pasted-image-20260705184627.png" target="_self"></span><br>
+Test 3B:<br>
+<span alt="Pasted image 20260705184801.png" src="_files/pasted-image-20260705184801.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260705184801.png" src="_files/pasted-image-20260705184801.png" target="_self"></span><br>
+<span alt="Pasted image 20260705184814.png" src="_files/pasted-image-20260705184814.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260705184814.png" src="_files/pasted-image-20260705184814.png" target="_self"></span></p>
+</div></div></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="example" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-list"><path d="M3 5h.01"></path><path d="M3 12h.01"></path><path d="M3 19h.01"></path><path d="M8 5h13"></path><path d="M8 12h13"></path><path d="M8 19h13"></path></svg></div><div class="callout-title-inner">Admin IP (<strong>10.0.0.50</strong>)</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto">SSH on AWS Gateway</p>
+<pre><code data-line="2">PS C:\Users\Ryan&gt; C:\"Program Files (x86)"\Nmap\ncat.exe -zv 172.31.11.191 22
+Ncat: Version 7.99 ( https://nmap.org/ncat )
+Ncat: Connected to 172.31.11.191:22.
+Ncat: 0 bytes sent, 0 bytes received in 0.30 seconds.
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto">SSH on Wazuh Server</p>
+<pre><code data-line="9">PS C:\Users\Ryan&gt; C:\"Program Files (x86)"\Nmap\ncat.exe -zv 172.31.20.233 22
+Ncat: Version 7.99 ( https://nmap.org/ncat )
+Ncat: Connected to 172.31.20.233:22.
+Ncat: 0 bytes sent, 0 bytes received in 0.33 seconds.
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto">HTTPS (for web management) on Wazuh Server</p>
+<pre><code data-line="16">PS C:\Users\Ryan&gt; C:\"Program Files (x86)"\Nmap\ncat.exe -zv 172.31.20.233 443
+Ncat: Version 7.99 ( https://nmap.org/ncat )
+Ncat: Connected to 172.31.20.233:443.
+Ncat: 0 bytes sent, 0 bytes received in 0.33 seconds.
+PS C:\Users\Ryan&gt;
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+</div></div></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="example" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-list"><path d="M3 5h.01"></path><path d="M3 12h.01"></path><path d="M3 19h.01"></path><path d="M8 5h13"></path><path d="M8 12h13"></path><path d="M8 19h13"></path></svg></div><div class="callout-title-inner">Normal Users IP (<strong>10.0.0.100</strong>)</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto">Wazuh Ports</p>
+<pre><code data-line="2">PS C:\Users\Ryan&gt; C:\"Program Files (x86)"\Nmap\ncat.exe -zv 172.31.20.233 1514
+Ncat: Version 7.99 ( https://nmap.org/ncat )
+Ncat: Connected to 172.31.20.233:1514.
+Ncat: 0 bytes sent, 0 bytes received in 0.29 seconds.
+PS C:\Users\Ryan&gt; C:\"Program Files (x86)"\Nmap\ncat.exe -zv 172.31.20.233 1515
+Ncat: Version 7.99 ( https://nmap.org/ncat )
+Ncat: Connected to 172.31.20.233:1515.
+Ncat: 0 bytes sent, 0 bytes received in 0.40 seconds.
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto">Management Ports</p>
+<pre><code data-line="13">PS C:\Users\Ryan&gt; C:\"Program Files (x86)"\Nmap\ncat.exe -zv 172.31.11.191 22
+Ncat: Version 7.99 ( https://nmap.org/ncat )
+Ncat: TIMEOUT.
+PS C:\Users\Ryan&gt; C:\"Program Files (x86)"\Nmap\ncat.exe -zv 172.31.20.233 22
+Ncat: Version 7.99 ( https://nmap.org/ncat )
+Ncat: TIMEOUT.
+PS C:\Users\Ryan&gt; C:\"Program Files (x86)"\Nmap\ncat.exe -zv 172.31.20.233 443
+Ncat: Version 7.99 ( https://nmap.org/ncat )
+Ncat: TIMEOUT.
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+</div></div></div><div class="el-h5"><h5 data-heading="V. Lessons Learned" dir="auto" class="heading" id="V._Lessons_Learned_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>V. Lessons Learned</h5></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span>Fully routed site-to-site VPN implementations allow both sides to initiate connection with each other but it requires maintaining a lot of routing tables and firewall rules.</li>
+</ul></div><div class="el-h5"><h5 data-heading="VI. Next Steps" dir="auto" class="heading" id="VI._Next_Steps_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>VI. Next Steps</h5></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span>Write custom Wazuh decoders and rules.</li>
+<li data-line="1" dir="auto"><span class="list-bullet"></span>Reduce AntiX Firewall log noise.</li>
+</ul></div><div class="el-h5"><h5 data-heading="References" dir="auto" class="heading" id="References_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>References</h5></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span><a data-tooltip-position="top" aria-label="https://www.wireguard.com/#cryptokey-routing" rel="noopener nofollow" class="external-link is-unresolved" href="https://www.wireguard.com/#cryptokey-routing" target="_self">WireGuard: fast, modern, secure VPN tunnel</a></li>
+<li data-line="1" dir="auto"><span class="list-bullet"></span><a data-tooltip-position="top" aria-label="https://www.procustodibus.com/blog/2021/11/wireguard-nftables/" rel="noopener nofollow" class="external-link is-unresolved" href="https://www.procustodibus.com/blog/2021/11/wireguard-nftables/" target="_self">How to Use WireGuard With Nftables | Pro Custodibus</a></li>
+<li data-line="2" dir="auto"><span class="list-bullet"></span><a data-tooltip-position="top" aria-label="https://netplan.readthedocs.io/en/stable/howto/" rel="noopener nofollow" class="external-link is-unresolved" href="https://netplan.readthedocs.io/en/stable/howto/" target="_self">How-to guides - Netplan documentation</a></li>
+<li data-line="3" dir="auto"><span class="list-bullet"></span><a data-tooltip-position="top" aria-label="https://documentation.wazuh.com/current/index.html" rel="noopener nofollow" class="external-link is-unresolved" href="https://documentation.wazuh.com/current/index.html" target="_self">Wazuh documentation</a></li>
+<li data-line="4" dir="auto"><span class="list-bullet"></span><a data-tooltip-position="top" aria-label="https://www.geeksforgeeks.org/linux-unix/practical-uses-of-ncnetcat-command-in-linux/" rel="noopener nofollow" class="external-link is-unresolved" href="https://www.geeksforgeeks.org/linux-unix/practical-uses-of-ncnetcat-command-in-linux/" target="_self">Practical Uses of nc(netcat) command in Linux - GeeksforGeeks</a></li>
+</ul></div><div class="footer"><div class="data-bar"></div></div></div></div></div><div id="right-content" class="leaf" style="--sidebar-width: var(--sidebar-width-right);"><div id="right-sidebar" class="sidebar"><div class="sidebar-handle"></div><div class="sidebar-topbar"><div class="topbar-content"></div><div class="clickable-icon sidebar-collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21 3H3C1.89543 3 1 3.89543 1 5V19C1 20.1046 1.89543 21 3 21H21C22.1046 21 23 20.1046 23 19V5C23 3.89543 22.1046 3 21 3Z"></path><path d="M10 4V20"></path><path d="M4 7H7"></path><path d="M4 10H7"></path><path d="M4 13H7"></path></svg></div></div><div class="sidebar-content-wrapper"><div id="right-sidebar-content" class="leaf-content"><div id="outline" class=" tree-container"><div class="feature-header"><div class="feature-title">Table Of Contents</div><button class="clickable-icon nav-action-button tree-collapse-all" aria-label="Collapse All"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg></button></div><div class="tree-item mod-collapsible" data-depth="1"><a class="tree-item-self is-clickable mod-collapsible" href="projects/bridging-lab-to-the-cloud-with-site-to-site-vpn.html#Bridging_Lab_to_the_Cloud_with_Site-to-Site_VPN_0" data-path="#Bridging_Lab_to_the_Cloud_with_Site-to-Site_VPN_0"><div class="tree-item-icon collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div><div class="tree-item-inner heading-link" heading-name="Bridging Lab to the Cloud with Site-to-Site VPN">Bridging Lab to the Cloud with Site-to-Site VPN</div></a><div class="tree-item-children"><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/bridging-lab-to-the-cloud-with-site-to-site-vpn.html#I._Project_Summary_0" data-path="#I._Project_Summary_0"><div class="tree-item-inner heading-link" heading-name="I. Project Summary">I. Project Summary</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/bridging-lab-to-the-cloud-with-site-to-site-vpn.html#II._Key_Engineering_Decisions_0" data-path="#II._Key_Engineering_Decisions_0"><div class="tree-item-inner heading-link" heading-name="II. Key Engineering Decisions">II. Key Engineering Decisions</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="6"><a class="tree-item-self is-clickable" href="projects/bridging-lab-to-the-cloud-with-site-to-site-vpn.html#1._Secure_Remote_Connections_(WireGuard)_0" data-path="#1._Secure_Remote_Connections_(WireGuard)_0"><div class="tree-item-inner heading-link" heading-name="1. Secure Remote Connections (WireGuard)">1. Secure Remote Connections (WireGuard)</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="6"><a class="tree-item-self is-clickable" href="projects/bridging-lab-to-the-cloud-with-site-to-site-vpn.html#2._Unidirectional_Telemetry_for_Simplified_Routing_0" data-path="#2._Unidirectional_Telemetry_for_Simplified_Routing_0"><div class="tree-item-inner heading-link" heading-name="2. Unidirectional Telemetry for Simplified Routing">2. Unidirectional Telemetry for Simplified Routing</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="6"><a class="tree-item-self is-clickable" href="projects/bridging-lab-to-the-cloud-with-site-to-site-vpn.html#3._Centralized_Security_Policy_on_Lab_Firewall_0" data-path="#3._Centralized_Security_Policy_on_Lab_Firewall_0"><div class="tree-item-inner heading-link" heading-name="3. Centralized Security Policy on Lab Firewall">3. Centralized Security Policy on Lab Firewall</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="6"><a class="tree-item-self is-clickable" href="projects/bridging-lab-to-the-cloud-with-site-to-site-vpn.html#4._Agent-Based_and_Agentless_Telemetry_Aggregation_(Wazuh)_0" data-path="#4._Agent-Based_and_Agentless_Telemetry_Aggregation_(Wazuh)_0"><div class="tree-item-inner heading-link" heading-name="4. Agent-Based and Agentless Telemetry Aggregation (Wazuh)">4. Agent-Based and Agentless Telemetry Aggregation (Wazuh)</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/bridging-lab-to-the-cloud-with-site-to-site-vpn.html#III._Challenges_0" data-path="#III._Challenges_0"><div class="tree-item-inner heading-link" heading-name="III. Challenges">III. Challenges</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/bridging-lab-to-the-cloud-with-site-to-site-vpn.html#IV._Validation_and_Testing_0" data-path="#IV._Validation_and_Testing_0"><div class="tree-item-inner heading-link" heading-name="IV. Validation and Testing">IV. Validation and Testing</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/bridging-lab-to-the-cloud-with-site-to-site-vpn.html#V._Lessons_Learned_0" data-path="#V._Lessons_Learned_0"><div class="tree-item-inner heading-link" heading-name="V. Lessons Learned">V. Lessons Learned</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/bridging-lab-to-the-cloud-with-site-to-site-vpn.html#VI._Next_Steps_0" data-path="#VI._Next_Steps_0"><div class="tree-item-inner heading-link" heading-name="VI. Next Steps">VI. Next Steps</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/bridging-lab-to-the-cloud-with-site-to-site-vpn.html#References_0" data-path="#References_0"><div class="tree-item-inner heading-link" heading-name="References">References</div></a><div class="tree-item-children"></div></div></div></div></div><div class="graph-view-wrapper"><div class="feature-header"><div class="feature-title">Interactive Graph</div></div><div class="graph-view-placeholder">
+		<div class="graph-view-container">
+			<div class="graph-icon graph-expand" role="button" aria-label="Expand" data-tooltip-position="top"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></div>
+			<div class="graph-icon graph-global" role="button" aria-label="Global Graph" data-tooltip-position="top"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-git-fork"><circle cx="12" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><circle cx="18" cy="6" r="3"></circle><path d="M18 9v2c0 .6-.4 1-1 1H7c-.6 0-1-.4-1-1V9"></path><path d="M12 12v3"></path></svg></div>
+			<canvas id="graph-canvas" class="hide" width="512px" height="512px"></canvas>
+		</div>
+		</div></div></div></div><script defer="">let rs = document.querySelector("#right-sidebar"); rs.classList.toggle("is-collapsed", window.innerWidth < 768); rs.style.setProperty("--sidebar-width", localStorage.getItem("sidebar-right-width"));</script></div></div></div></div>
+<!-- Navigation Buttons -->
+<div class="nav-buttons">
+  <button class="nav-btn nav-back" id="navBack" title="Go back" aria-label="Navigate back">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 18l-6-6 6-6"></path>
+    </svg>
+  </button>
+  
+  <button class="nav-btn nav-home" id="navHome" title="Go to home" aria-label="Navigate to home">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+    </svg>
+  </button>
+  
+  <button class="nav-btn nav-forward" id="navForward" title="Go forward" aria-label="Navigate forward">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 18l6-6-6-6"></path>
+    </svg>
+  </button>
+</div>
+
+<style>
+:root {
+  /* Navigation Button Colors */
+  --nav-bg: #20242B;
+  --nav-border: #424958;
+  --nav-icon-color: #888888;
+  --nav-icon-hover: #DCDDDE;
+  --nav-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  --nav-glow: 0 0 10px rgba(97, 175, 239, 0.15);
+  --nav-accent: #61AFEF;
+  --nav-transition: all 0.2s ease-in-out;
+}
+
+.nav-buttons {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 1000;
+  background: rgba(32, 36, 43, 0.85);
+  backdrop-filter: blur(8px);
+  padding: 10px 14px;
+  border-radius: 12px;
+  box-shadow: var(--nav-shadow);
+  border: 1px solid rgba(66, 73, 88, 0.6);
+  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.nav-btn {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--nav-border);
+  border-radius: 8px;
+  background: var(--nav-bg);
+  color: var(--nav-icon-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--nav-transition);
+  padding: 0;
+  font: inherit;
+  flex-shrink: 0;
+}
+
+.nav-btn:hover:not(:disabled) {
+  color: var(--nav-icon-hover);
+  border-color: var(--nav-accent);
+  transform: translateY(-3px);
+  box-shadow: var(--nav-glow);
+}
+
+.nav-btn:active:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 0 8px rgba(97, 175, 239, 0.2);
+}
+
+.nav-btn:disabled {
+  border-color: rgba(66, 73, 88, 0.3);
+  color: rgba(136, 136, 136, 0.4);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.nav-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+/* Focus state for keyboard navigation */
+.nav-btn:focus-visible {
+  outline: none;
+  border-color: var(--nav-accent);
+  box-shadow: var(--nav-glow);
+}
+
+/* Responsive: Hide back/forward on mobile, keep home */
+@media (max-width: 768px) {
+  .nav-buttons {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .nav-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .nav-btn.nav-back,
+  .nav-btn.nav-forward {
+    display: none;
+  }
+
+  .nav-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Tablet: Reduce size slightly */
+@media (max-width: 1024px) {
+  .nav-buttons {
+    bottom: 1.5rem;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const backBtn = document.getElementById('navBack');
+  const homeBtn = document.getElementById('navHome');
+  const forwardBtn = document.getElementById('navForward');
+  
+  if (!backBtn || !homeBtn || !forwardBtn) return;
+  
+  // Check if back is available
+  function updateNavButtons() {
+    backBtn.disabled = !window.history.length || window.history.length <= 1;
+  }
+  
+  backBtn.addEventListener('click', () => window.history.back());
+  forwardBtn.addEventListener('click', () => window.history.forward());
+  homeBtn.addEventListener('click', () => window.location.href = 'index.html');
+  
+  updateNavButtons();
+  
+  // Update on navigation
+  window.addEventListener('pageshow', updateNavButtons);
+});
+</script>
+
+</body></html>

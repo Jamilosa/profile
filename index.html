@@ -60,6 +60,7 @@
       <div class="field">
         <label for="specialization">Focus: </label>
         <select id="specialization" class="select" aria-label="Choose specialization">
+          <option class="select-option" value="cloud">Cloud</option>
           <option class="select-option" value="cybersecurity">Cybersecurity</option>
           <option class="select-option" value="it-support">IT Support</option>
         
@@ -68,12 +69,12 @@
 
     <!-- Portfolio Stats Container (unique ID for script updates) - below focus dropdown -->
     <div id="portfolioStatsContainer">
-<div class="portfolio-stats" id="portfolioStats" data-portfolio-stats="{&quot;cybersecurity&quot;: {&quot;project&quot;: 1, &quot;lab&quot;: 0, &quot;writeup&quot;: 0, &quot;lastUpdated&quot;: &quot;Jun 14, 2026&quot;}, &quot;it-support&quot;: {&quot;project&quot;: 1, &quot;lab&quot;: 0, &quot;writeup&quot;: 0, &quot;lastUpdated&quot;: &quot;Jun 14, 2026&quot;}}">
+<div class="portfolio-stats" id="portfolioStats" data-portfolio-stats="{&quot;cloud&quot;: {&quot;project&quot;: 1, &quot;lab&quot;: 0, &quot;writeup&quot;: 0, &quot;lastUpdated&quot;: &quot;Jun 24, 2026&quot;}, &quot;cybersecurity&quot;: {&quot;project&quot;: 2, &quot;lab&quot;: 0, &quot;writeup&quot;: 0, &quot;lastUpdated&quot;: &quot;Jun 24, 2026&quot;}, &quot;it-support&quot;: {&quot;project&quot;: 1, &quot;lab&quot;: 0, &quot;writeup&quot;: 0, &quot;lastUpdated&quot;: &quot;Jun 14, 2026&quot;}}">
         <h3 class="stats-title">Portfolio Stats</h3>
         <div class="stats-list">
           <div class="stat-line">
             <span class="stat-label">Projects:&#9;</span>
-            <span class="stat-value" data-type="project">1</span>
+            <span class="stat-value" data-type="project">2</span>
           </div>
           <div class="stat-line">
             <span class="stat-label">Labs:&#9;&#9;</span>
@@ -89,7 +90,7 @@
 
     <div id="lastUpdatedContainer" class="stats-updated">
         <span class="updated-label">Last Updated:</span>
-        <span class="updated-date" id="lastUpdated">Jun 14, 2026</span>
+        <span class="updated-date" id="lastUpdated">Jun 24, 2026</span>
       </div>
 
     <div class="icons-wrapper" aria-label="social links">
@@ -165,7 +166,15 @@
       <h2 class="section-title">Projects and Blogs</h2>
 
       <div class="card-grid" id="projectGrid">
-        <article class="card project" data-specialization="cybersecurity it-support" data-spec-descriptions="{&quot;cybersecurity&quot;: &quot;Repurposed a retired 32-bit laptop into a Linux-based firewall for a small cybersecurity lab. Using AntiX Linux, nftables, dnsmasq, rsyslog, and logrotate, the firewall provides network address translation (NAT), stateful packet filtering, DNS sinkholing, and centralized logging.&quot;, &quot;it-support&quot;: &quot;Extended the usability of legacy 32-bit laptop by upgrading hardware components, installing a lightweight operating system, and configuring the device as a firewall host.&quot;}" data-tag-specs="{&quot;System Administration&quot;: [&quot;it-support&quot;], &quot;DNS Sinkhole&quot;: [&quot;cybersecurity&quot;], &quot;nftables&quot;: [&quot;cybersecurity&quot;], &quot;Firewall&quot;: [&quot;cybersecurity&quot;], &quot;Linux&quot;: [&quot;global&quot;], &quot;Hardware Troubleshooting&quot;: [&quot;it-support&quot;], &quot;Network Security&quot;: [&quot;cybersecurity&quot;], &quot;rsyslog&quot;: [&quot;cybersecurity&quot;], &quot;Log Management&quot;: [&quot;cybersecurity&quot;]}">
+        <article class="card project" data-specialization="cloud cybersecurity" data-spec-descriptions="{&quot;cloud&quot;: &quot;Integrated the home lab with AWS by deploying a site-to-site WireGuard VPN, configuring VPC routing, Security Groups, and nftables to securely extend the lab into a cloud environment.&quot;, &quot;cybersecurity&quot;: &quot;Implemented secure connectivity between on-premises and cloud networks using network segmentation, least-privilege firewall policies, and centralized security monitoring through Wazuh.&quot;}" data-tag-specs="{&quot;WireGuard&quot;: [&quot;global&quot;], &quot;AWS Security Group&quot;: [&quot;cloud&quot;, &quot;cybersecurity&quot;], &quot;Linux&quot;: [&quot;global&quot;], &quot;nftables&quot;: [&quot;cybersecurity&quot;], &quot;Network Security&quot;: [&quot;cybersecurity&quot;], &quot;System Administration&quot;: [&quot;global&quot;], &quot;iperf&quot;: [&quot;global&quot;], &quot;Firewall&quot;: [&quot;cybersecurity&quot;, &quot;cloud&quot;], &quot;tcpdump&quot;: [&quot;global&quot;], &quot;Cloud Infrastructure&quot;: [&quot;cloud&quot;], &quot;netcat&quot;: [&quot;global&quot;]}">
+          <div class="thumb"><a href="projects/bridging-lab-to-the-cloud-with-site-to-site-vpn.html"><img src="_files/pasted-image-20260628123544.png" alt="Bridging Lab to the Cloud with Site-to-Site VPN"></a></div>
+          <h3><a href="projects/bridging-lab-to-the-cloud-with-site-to-site-vpn.html" style="color: inherit; text-decoration: none;">Bridging Lab to the Cloud with Site-to-Site VPN</a></h3>
+          <p class="card-description">Integrated the home lab with AWS by deploying a site-to-site WireGuard VPN, configuring VPC routing, Security Groups, and nftables to securely extend the lab into a cloud environment.</p>
+          <div class="tags">
+            <a href="tags/cloud-infrastructure.html" class="chip" data-kind="domain" data-tag="Cloud Infrastructure">Cloud Infrastructure</a><a href="tags/network-security.html" class="chip" data-kind="domain" data-tag="Network Security">Network Security</a><a href="tags/system-administration.html" class="chip" data-kind="domain" data-tag="System Administration">System Administration</a><a href="tags/firewall.html" class="chip" data-kind="concept" data-tag="Firewall">Firewall</a><a href="tags/aws-security-group.html" class="chip" data-kind="tool" data-tag="AWS Security Group">AWS Security Group</a><a href="tags/iperf.html" class="chip" data-kind="tool" data-tag="iperf">iperf</a><a href="tags/linux.html" class="chip" data-kind="tool" data-tag="Linux">Linux</a><a href="tags/netcat.html" class="chip" data-kind="tool" data-tag="netcat">netcat</a><a href="tags/nftables.html" class="chip" data-kind="tool" data-tag="nftables">nftables</a><a href="tags/tcpdump.html" class="chip" data-kind="tool" data-tag="tcpdump">tcpdump</a><a href="tags/wireguard.html" class="chip" data-kind="tool" data-tag="WireGuard">WireGuard</a>
+          </div>
+        </article>
+        <article class="card project" data-specialization="cybersecurity it-support" data-spec-descriptions="{&quot;cybersecurity&quot;: &quot;Repurposed a retired 32-bit laptop into a Linux-based firewall for a small cybersecurity lab. Using AntiX Linux, nftables, dnsmasq, rsyslog, and logrotate, the firewall provides network address translation (NAT), stateful packet filtering, DNS sinkholing, and centralized logging.&quot;, &quot;it-support&quot;: &quot;Extended the usability of legacy 32-bit laptop by upgrading hardware components, installing a lightweight operating system, and configuring the device as a firewall host.&quot;}" data-tag-specs="{&quot;Linux&quot;: [&quot;global&quot;], &quot;Hardware Troubleshooting&quot;: [&quot;it-support&quot;], &quot;nftables&quot;: [&quot;cybersecurity&quot;], &quot;Log Management&quot;: [&quot;cybersecurity&quot;], &quot;Network Security&quot;: [&quot;cybersecurity&quot;], &quot;DNS Sinkhole&quot;: [&quot;cybersecurity&quot;], &quot;System Administration&quot;: [&quot;global&quot;], &quot;Firewall&quot;: [&quot;cybersecurity&quot;, &quot;cloud&quot;], &quot;rsyslog&quot;: [&quot;global&quot;]}">
           <div class="thumb"><a href="projects/repurposing-32-bit-laptop-as-linux-firewall-for-cybersecurity-lab.html"><img src="_files/pasted-image-20260629153751.png" alt="Repurposing 32-bit Laptop as Linux Firewall for Cybersecurity Lab"></a></div>
           <h3><a href="projects/repurposing-32-bit-laptop-as-linux-firewall-for-cybersecurity-lab.html" style="color: inherit; text-decoration: none;">Repurposing 32-bit Laptop as Linux Firewall for Cybersecurity Lab</a></h3>
           <p class="card-description">Repurposed a retired 32-bit laptop into a Linux-based firewall for a small cybersecurity lab. Using AntiX Linux, nftables, dnsmasq, rsyslog, and logrotate, the firewall provides network address translation (NAT), stateful packet filtering, DNS sinkholing, and centralized logging.</p>
