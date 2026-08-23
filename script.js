@@ -45,12 +45,15 @@ const downloadCvBtn = document.getElementById('download-cv'); // <-- your CV but
 
 const TRAINING_BY_SPEC = {
   'cloud': [
-    'Practical_Training_1',
+    'Foundational knowledge of cloud infrastructure and secure remote connectivity.',
   ],
   'cybersecurity': [
     'Implemented basic network defenses and configured stateful firewall rules.',
     'Basic understanding of Linux operating system (directory structure, and command-line operations).',
-    'Basic understanding of event log (structures, event fields, and collection utilities).',
+    'Basic understanding of event logs (life-cycle, structures, event fields, and collection utilities).',
+    'Foundational knowledge of basic cloud security and infrastructures.',
+    'Basic understanding of SIEM rule creation and behavioral threat detection.',
+    'Familiarity with basic threat simulation and industry frameworks (MITRE ATT&amp;CK).',
   ],
   'data-analyst': [
     'Practical for data',
@@ -64,12 +67,15 @@ const TRAINING_BY_SPEC = {
 
 const TRAINING_LINKS_BY_SPEC = {
   'cloud': {
-    'Practical_Training_1': '.html',
+    'Foundational knowledge of cloud infrastructure and secure remote connectivity.': 'notes/understanding-of-cloud-infrastructure-and-connectivity.html',
   },
   'cybersecurity': {
     'Implemented basic network defenses and configured stateful firewall rules.': 'notes/implemented-network-defenses.html',
     'Basic understanding of Linux operating system (directory structure, and command-line operations).': 'notes/understanding-of-linux-operating-system.html',
-    'Basic understanding of event log (structures, event fields, and collection utilities).': 'notes/understanding-of-event-logs.html',
+    'Basic understanding of event logs (life-cycle, structures, event fields, and collection utilities).': 'notes/understanding-of-event-logs.html',
+    'Foundational knowledge of basic cloud security and infrastructures.': 'notes/understanding-of-security-in-the-cloud.html',
+    'Basic understanding of SIEM rule creation and behavioral threat detection.': 'notes/understanding-of-siem-and-threat-detection.html',
+    'Familiarity with basic threat simulation and industry frameworks (MITRE ATT&amp;CK).': 'notes/understanding-of-threat-simulation-and-frameworks.html',
   },
   'data-analyst': {
     'Practical for data': '.html',
@@ -499,4 +505,66 @@ document.addEventListener('DOMContentLoaded', () => {
       halo.style.opacity = '0.3';
     }
   });
+});
+
+/* ---------- In-Page Navigation Scroll Spy (Brittany Chiang Style) ---------- */
+document.addEventListener('DOMContentLoaded', () => {
+  const navLinks = document.querySelectorAll('.nav-link');
+  const sections = document.querySelectorAll('main.content section[id]');
+  const contentArea = document.getElementById('content');
+
+  if (navLinks.length > 0 && sections.length > 0) {
+    const updateActiveNav = () => {
+      let currentId = '';
+      
+      sections.forEach(section => {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= 240) {
+          currentId = section.getAttribute('id');
+        }
+      });
+
+      if (!currentId && (window.scrollY < 100 || (contentArea && contentArea.scrollTop < 100))) {
+        currentId = sections[0].getAttribute('id');
+      }
+
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${currentId}`) {
+          link.classList.add('active');
+        }
+      });
+    };
+
+    window.addEventListener('scroll', updateActiveNav, { passive: true });
+    if (contentArea) {
+      contentArea.addEventListener('scroll', updateActiveNav, { passive: true });
+    }
+    
+    // Initial calculation
+    updateActiveNav();
+    
+    // Smooth scroll for nav links
+    navLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = link.getAttribute('href').replace('#', '');
+        const targetEl = document.getElementById(targetId);
+        if (targetEl) {
+          const rect = targetEl.getBoundingClientRect();
+          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+          window.scrollTo({
+            top: rect.top + scrollTop - 40,
+            behavior: 'smooth'
+          });
+          if (contentArea) {
+            contentArea.scrollTo({
+              top: targetEl.offsetTop - 40,
+              behavior: 'smooth'
+            });
+          }
+        }
+      });
+    });
+  }
 });

