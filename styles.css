@@ -2,8 +2,8 @@
 
 :root {
   /* Core colors linked directly to site-lib/styles/theme.css */
-  --bg: var(--background-primary, #272B34);
-  --panel: var(--background-primary, #272B34);
+  --bg: #272B34;
+  --panel: #272B34;
   --panel-2: var(--background-secondary-alt, #1a1e24);
   --text: var(--text-normal, #DCDDDE);
   --muted: var(--text-muted, #888888);
@@ -356,7 +356,7 @@ body{
   display: flex;
   min-height: 100vh;
   position: relative;
-  background-color: var(--background-primary, #272B34);
+  background-color: #272B34;
   max-width: 1440px;
   margin: 0 auto;
 }
@@ -402,7 +402,7 @@ aside.sidebar {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background-color: var(--background-primary, #272B34) !important;
+  background-color: #272B34 !important;
   flex-shrink: 0;
 }
 
@@ -424,7 +424,7 @@ main.content {
   flex: 1 1 auto;
   min-height: 100vh;
   padding: 48px 48px 48px 48px;
-  background-color: var(--background-primary, #272B34) !important;
+  background-color: #272B34 !important;
 }
 
 /* ---- Sidebar ---- */
