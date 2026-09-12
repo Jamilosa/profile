@@ -31,11 +31,8 @@ const TRAINING_BY_SPEC = {
     'Basic understanding of event logs (life-cycle, structures, event fields, and collection utilities).',
     'Foundational knowledge of basic cloud security and infrastructures.',
     'Basic understanding of SIEM rule creation and behavioral threat detection.',
-    'Familiarity with basic threat simulation and industry frameworks (MITRE ATT&amp;CK).',
-  ],
-  'data-analyst': [
-    'Practical for data',
-    'Practical for data 2',
+    'Familiarity with basic threat simulation and industry frameworks (MITRE ATTACK).',
+    'Familiarity with endpoint telemetry and Windows Event IDs.',
   ],
   'it-support': [
     'Installed, managed, and troubleshot physical hardware and software components.',
@@ -53,11 +50,8 @@ const TRAINING_LINKS_BY_SPEC = {
     'Basic understanding of event logs (life-cycle, structures, event fields, and collection utilities).': 'notes/understanding-of-event-logs.html',
     'Foundational knowledge of basic cloud security and infrastructures.': 'notes/understanding-of-security-in-the-cloud.html',
     'Basic understanding of SIEM rule creation and behavioral threat detection.': 'notes/understanding-of-siem-and-threat-detection.html',
-    'Familiarity with basic threat simulation and industry frameworks (MITRE ATT&amp;CK).': 'notes/understanding-of-threat-simulation-and-frameworks.html',
-  },
-  'data-analyst': {
-    'Practical for data': '.html',
-    'Practical for data 2': '.html',
+    'Familiarity with basic threat simulation and industry frameworks (MITRE ATTACK).': 'notes/understanding-of-threat-simulation-and-frameworks.html',
+    'Familiarity with endpoint telemetry and Windows Event IDs.': 'notes/endpoint-telemetry-and-windows-events.html',
   },
   'it-support': {
     'Installed, managed, and troubleshot physical hardware and software components.': 'notes/installation,-management,-and-troubleshooting-of-hardware-and-software-components.html',
