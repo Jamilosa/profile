@@ -26,13 +26,15 @@ const TRAINING_BY_SPEC = {
     'Foundational knowledge of cloud infrastructure and secure remote connectivity.',
   ],
   'cybersecurity': [
-    'Implemented basic network defenses and configured stateful firewall rules.',
-    'Basic understanding of Linux operating system (directory structure, and command-line operations).',
-    'Basic understanding of event logs (life-cycle, structures, event fields, and collection utilities).',
+    'Basic understanding of Linux operating systems, directory structures, and command-line operations.',
     'Foundational knowledge of basic cloud security and infrastructures.',
-    'Basic understanding of SIEM rule creation and behavioral threat detection.',
-    'Familiarity with basic threat simulation and industry frameworks (MITRE ATTACK).',
+    'Implemented basic network defenses and configured stateful firewall rules.',
+    'Configured and analyzed system and security event logs from network and endpoint sources.',
     'Familiarity with endpoint telemetry and Windows Event IDs.',
+    'Developed basic SIEM detection rules and behavioral threat detection.',
+    'Applied security frameworks and threat intelligence concepts to document adversary behavior (MITRE ATTACK).',
+    'Conducted controlled threat simulations and detection validation.',
+    'Conducted basic endpoint investigation and digital forensics.',
   ],
   'it-support': [
     'Installed, managed, and troubleshot physical hardware and software components.',
@@ -45,13 +47,15 @@ const TRAINING_LINKS_BY_SPEC = {
     'Foundational knowledge of cloud infrastructure and secure remote connectivity.': 'notes/understanding-of-cloud-infrastructure-and-connectivity.html',
   },
   'cybersecurity': {
-    'Implemented basic network defenses and configured stateful firewall rules.': 'notes/implemented-network-defenses.html',
-    'Basic understanding of Linux operating system (directory structure, and command-line operations).': 'notes/understanding-of-linux-operating-system.html',
-    'Basic understanding of event logs (life-cycle, structures, event fields, and collection utilities).': 'notes/understanding-of-event-logs.html',
-    'Foundational knowledge of basic cloud security and infrastructures.': 'notes/understanding-of-security-in-the-cloud.html',
-    'Basic understanding of SIEM rule creation and behavioral threat detection.': 'notes/understanding-of-siem-and-threat-detection.html',
-    'Familiarity with basic threat simulation and industry frameworks (MITRE ATTACK).': 'notes/understanding-of-threat-simulation-and-frameworks.html',
+    'Basic understanding of Linux operating systems, directory structures, and command-line operations.': 'notes/understanding-of-linux-os,-directory-structures,-and-command-line-operations.html',
+    'Foundational knowledge of basic cloud security and infrastructures.': 'notes/foundational-knowledge-of-basic-cloud-security-and-infrastructures.html',
+    'Implemented basic network defenses and configured stateful firewall rules.': 'notes/implemented-basic-network-defenses-and-configured-stateful-firewall-rules.html',
+    'Configured and analyzed system and security event logs from network and endpoint sources.': 'notes/analyzed-system-and-security-event-logs-from-network-and-endpoint-sources.html',
     'Familiarity with endpoint telemetry and Windows Event IDs.': 'notes/endpoint-telemetry-and-windows-events.html',
+    'Developed basic SIEM detection rules and behavioral threat detection.': 'notes/understanding-of-siem-and-threat-detection.html',
+    'Applied security frameworks and threat intelligence concepts to document adversary behavior (MITRE ATTACK).': 'notes/understanding-of-threat-simulation-and-frameworks.html',
+    'Conducted controlled threat simulations and detection validation.': 'notes/threat-simulations-and-detection-validation.html',
+    'Conducted basic endpoint investigation and digital forensics.': 'notes/endpoint-investigation-and-digital-forensics.html',
   },
   'it-support': {
     'Installed, managed, and troubleshot physical hardware and software components.': 'notes/installation,-management,-and-troubleshooting-of-hardware-and-software-components.html',
@@ -65,9 +69,9 @@ const TRAINING_LINKS_BY_SPEC = {
 }
 
 // chip limits
-const DOMAIN_LIMIT = 5;
-const CONCEPT_LIMIT = 5;
-const TOOL_LIMIT = 7;
+const DOMAIN_LIMIT = 10;
+const CONCEPT_LIMIT = 20;
+const TOOL_LIMIT = 30;
 
 // Specialization display names (user-friendly labels)
 const SPEC_DISPLAY_NAMES = {
