@@ -391,7 +391,7 @@ function updateView() {
 
   // Update CV view link
   if (downloadCvBtn) { //Specialized CV filename: `Ryan_Jamilosa_${spec}_resume_2026.pdf` 
-    const filename = `Ryan_Jamilosa_resume_2026.pdf`;
+    const filename = `Resume_Jamilosa_Ryan-Don_2026-09.pdf`;
     downloadCvBtn.dataset.cvPath = `./cv/${filename}`;
   }
   
